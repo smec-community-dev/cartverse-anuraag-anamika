@@ -2,7 +2,12 @@
 from django.db import models
 # Create your models here.
 from core.models import User
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customer_profile")
+    address = models.TextField()
 
+    def _str_(self):
+        return self.user.username
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey('seller.Product', on_delete=models.CASCADE)
