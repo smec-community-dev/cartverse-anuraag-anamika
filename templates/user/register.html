@@ -4,527 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - StyleCart</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .form-header {
-            background: linear-gradient(to right, #8b5cf6, #7c3aed);
-        }
-                .mobile-login-btn, .mobile-register-btn {
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-        .auth-buttons {
-            display: flex;
-            gap: 12px;
-        }
-
-        .login-btn {
-            background-color: transparent;
-            border: 2px solid #9333ea;
-            color: #9333ea;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .login-btn:hover {
-            background-color: #f3e8ff;
-        }
-
-        .register-btn {
-            background-color: #9333ea;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .register-btn:hover {
-            background-color: #7e22ce;
-        }
-
-        /* Mobile menu styles */
-        .mobile-menu {
-            display: none;
-            background-color: white;
-            padding: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .mobile-menu.active {
-            display: block;
-        }
-
-        .mobile-auth-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .mobile-login-btn, .mobile-register-btn {
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .mobile-login-btn {
-            border: 2px solid #9333ea;
-            color: #9333ea;
-        }
-
-        .mobile-register-btn {
-            background-color: #9333ea;
-            color: white;
-        }
         .input-group {
             position: relative;
-            margin-bottom: 1.5rem;
         }
 
         .input-icon {
             position: absolute;
-            left: 12px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
             color: #8b5cf6;
+            font-size: 16px;
         }
 
         .form-input {
-            width: 100%;
-            padding: 12px 12px 12px 40px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        }
-
-        .submit-btn {
-            background: linear-gradient(to right, #8b5cf6, #7c3aed);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-        }
-
-        .submit-btn:hover {
-            background: linear-gradient(to right, #7c3aed, #6d28d9);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #d1d5db;
-        }
-
-        .divider span {
-            padding: 0 10px;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .social-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            font-weight: 500;
-        }
-
-        .social-btn:hover {
-            background: #f9fafb;
-            border-color: #9ca3af;
-        }
-
-        .social-icon {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .google { color: #db4437; }
-        .facebook { color: #4267B2; }
-
-        .terms-text {
-            font-size: 14px;
-            color: #6b7280;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .terms-text a {
-            color: #8b5cf6;
-            text-decoration: none;
-        }
-
-        .terms-text a:hover {
-            text-decoration: underline;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-            color: #6b7280;
-        }
-
-        .login-link a {
-            color: #8b5cf6;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-icon {
-            background: linear-gradient(to right, #8b5cf6, #7c3aed);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 20px;
+            padding-left: 48px !important;   /* More space for icons */
         }
     </style>
+
 </head>
-<body>
-    <!-- Navigation -->
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
     <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
-                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
-                </div>
-
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-8 items-center">
-                    <!-- text-purple-600 font-medium border-b-2 border-purple-600 -->
-                    <a href="home.html" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
-                    <a href="shop.html" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
-                    <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
-                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
-                </div>
-
-                <!-- Icons and Mobile Menu Button -->
-                <div class="flex items-center space-x-6">
-                    <div class="auth-buttons ml-4">
-                        <a href="#" class="login-btn">Login</a>
-                        <a href="#" class="register-btn">Register</a>
-                    </div>
-
-                    <!-- Mobile Menu Button -->
-                    <div class="md:hidden">
-                        <button id="mobileMenuButton" class="text-gray-700 focus:outline-none">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                    </div>
-                </div>
+        <div class="container mx-auto flex justify-between items-center py-4 px-4">
+            <div class="flex items-center">
+                <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                <span class="text-xl font-bold text-gray-800">StyleCart</span>
             </div>
 
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="mobile-menu md:hidden">
-                <div class="flex flex-col space-y-4">
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">Home</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">Shop</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">Categories</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">Deals</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">About</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">Contact</a>
+            <!-- Removed Login/Register Buttons -->
 
-                    <!-- Mobile Auth Buttons -->
-                    <div class="mobile-auth-buttons">
-                        <a href="#" class="mobile-login-btn">Login</a>
-                        <a href="#" class="mobile-register-btn">Register</a>
-                    </div>
-                </div>
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+                <label for="menu-toggle">
+                    <i class="fas fa-bars text-xl text-gray-700"></i>
+                </label>
+                <input type="checkbox" id="menu-toggle" class="hidden peer">
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="flex-grow flex items-center justify-center py-12 px-4">
-        <div class="container mx-auto flex max-w-6xl">
-            <!-- Registration Form -->
-            <div class="w-1/2 pr-8">
-                <div class="form-container p-8">
-                    <div class="form-header text-white py-4 px-6 -mx-8 -mt-8 mb-8">
-                        <h1 class="text-2xl font-bold">Create Your Account</h1>
-                        <p class="mt-2 opacity-90">Join StyleCart today and enjoy exclusive benefits</p>
+    <!-- Main Section -->
+    <div class="container mx-auto px-4 flex flex-col-reverse lg:flex-row gap-12 py-12">
+
+        <!-- Form -->
+        <div class="lg:w-1/2 bg-white p-8 shadow-lg rounded-xl">
+
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Create Your Account</h2>
+
+            <form method="POST" action="">
+                {% csrf_token %}
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="input-group">
+                        <i class="input-icon fas fa-user"></i>
+                        <input type="text" class="form-input w-full border rounded-lg p-3" placeholder="First Name" name="first_name" required>
                     </div>
 
-                    <form id="registerForm">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="input-group">
-                                <i class="input-icon fas fa-user"></i>
-                                <input type="text" class="form-input" placeholder="First Name" name="first_name"required>
-                            </div>
-
-                            <div class="input-group">
-                                <i class="input-icon fas fa-user"></i>
-                                <input type="text" class="form-input" placeholder="Last Name" name="last_name" required>
-                            </div>
-                        </div>
-
-                        <div class="input-group">
-                            <i class="input-icon fas fa-envelope"></i>
-                            <input type="email" class="form-input" placeholder="Email Address" name="email"required>
-                        </div>
-                        <div class="input-group">
-                            <i class="input-icon fas fa-envelope"></i>
-                            <input type="text" class="form-input" placeholder="Address" name="address"required>
-                        </div>
-
-                        <div class="input-group">
-                            <i class="input-icon fas fa-phone"></i>
-                            <input type="tel" class="form-input" placeholder="Phone Number" name="phone">
-                        </div>
-
-                        <div class="input-group">
-                            <i class="input-icon fas fa-lock"></i>
-                            <input type="password" class="form-input" placeholder="Password" name="password" required>
-                        </div>
-
-                        <div class="input-group">
-                            <i class="input-icon fas fa-lock"></i>
-                            <input type="password" class="form-input" placeholder="Confirm Password" name="password" required>
-                        </div>
-
-                        <div class="flex items-center mb-6">
-                            <input type="checkbox" id="newsletter" class="h-4 w-4 text-purple-600 rounded">
-                            <label for="newsletter" class="ml-2 text-gray-700">Subscribe to our newsletter for updates and offers</label>
-                        </div>
-                     <button type="submit" class="submit-btn">
-                       Create Account
-                     </button>
-                        <div class="divider">
-                            <span>Or sign up with</span>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <button type="button" class="social-btn">
-                                <i class="social-icon fab fa-google google"></i>
-                                Google
-                            </button>
-
-                            <button type="button" class="social-btn">
-                                <i class="social-icon fab fa-facebook-f facebook"></i>
-                                Facebook
-                            </button>
-                        </div>
-
-                        <p class="terms-text">
-                            By creating an account, you agree to our
-                            <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
-                        </p>
-
-                        <p class="login-link">
-                            Already have an account? <a href="login.html">Log in here</a>
-                        </p>
-                    </form>
+                    <div class="input-group">
+                        <i class="input-icon fas fa-user"></i>
+                        <input type="text" class="form-input w-full border rounded-lg p-3" placeholder="Last Name" name="last_name" required>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Benefits Section -->
-            <div class="w-1/2 pl-8">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">Why Join StyleCart?</h2>
-                <p class="text-gray-600 mb-8">Create an account to unlock these exclusive benefits and enhance your shopping experience.</p>
-
-                <div class="space-y-6">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-tags"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Exclusive Deals & Discounts</h3>
-                        <p class="text-gray-600">Get access to member-only sales, special promotions, and early access to new collections.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shipping-fast"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Free Shipping</h3>
-                        <p class="text-gray-600">Enjoy free standard shipping on all orders over $50 as a registered member.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Wishlist & Save Items</h3>
-                        <p class="text-gray-600">Save your favorite items to wishlists and get notified when they go on sale.</p>
-                    </div>
-
-
+                <div class="input-group mt-4">
+                    <i class="input-icon fas fa-user"></i>
+                    <input type="text" class="form-input w-full border rounded-lg p-3" placeholder="Username" name="username" required>
                 </div>
+
+                <div class="input-group mt-4">
+                    <i class="input-icon fas fa-envelope"></i>
+                    <input type="email" class="form-input w-full border rounded-lg p-3" placeholder="Email" name="email" required>
+                </div>
+
+                <div class="input-group mt-4">
+                    <i class="input-icon fas fa-location-dot"></i>
+                    <input type="text" class="form-input w-full border rounded-lg p-3" placeholder="Address" name="address" required>
+                </div>
+
+                <div class="input-group mt-4">
+                    <i class="input-icon fas fa-phone"></i>
+                    <input type="tel" class="form-input w-full border rounded-lg p-3" placeholder="Phone Number" name="phone">
+                </div>
+
+                <div class="input-group mt-4">
+                    <i class="input-icon fas fa-lock"></i>
+                    <input type="password" class="form-input w-full border rounded-lg p-3" placeholder="Password" name="password" required>
+                </div>
+
+                <div class="input-group mt-4">
+                    <i class="input-icon fas fa-lock"></i>
+                    <input type="password" class="form-input w-full border rounded-lg p-3" placeholder="Confirm Password" name="confirm_password" required>
+                </div>
+
+                <button type="submit" class="w-full mt-6 bg-purple-600 text-white py-3 rounded-lg text-lg font-semibold hover:bg-purple-700 transition">
+                    Create Account
+                </button>
+            </form>
+
+        </div>
+
+        <!-- Right Side Features -->
+        <div class="lg:w-1/2">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Why Join StyleCart?</h2>
+
+            <div class="space-y-6">
+
+                <div class="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">Exclusive Discounts</h3>
+                    <p class="text-gray-600">Get early access to sales & offers.</p>
+                </div>
+
+                <div class="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">Fast Shipping</h3>
+                    <p class="text-gray-600">Enjoy free standard shipping on orders over $50.</p>
+                </div>
+
+                <div class="p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold">Wishlist Items</h3>
+                    <p class="text-gray-600">Save items to wishlist & get alerts.</p>
+                </div>
+
             </div>
         </div>
+
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-4 gap-8 mb-8">
-                <!-- Company Info -->
-                <div>
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
-                        <span class="text-xl font-bold">StyleCart</span>
-                    </div>
-                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
-                    </ul>
-                </div>
-
-                <!-- Customer Service -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contact Info -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
-                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">info@stylecart.com</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
-                <p>&copy; 2023 StyleCart. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Form submission handler
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Get form values
-            const password = document.querySelector('input[type="password"]').value;
-            const confirmPassword = document.querySelectorAll('input[type="password"]')[1].value;
-
-            // Simple validation
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-
-
-
-            // Redirect to home page (in a real app)
-            // window.location.href = 'index.html';
-        });
-    </script>
 </body>
 </html>

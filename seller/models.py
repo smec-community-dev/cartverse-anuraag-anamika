@@ -5,18 +5,17 @@ from core.models import User
 from core.models import SubCategory,Category
 
 class Seller(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     shop_name = models.CharField(max_length=200)
     location = models.TextField()
 
     def __str__(self):
         return self.shop_name
 
-#hai
-#byebye
 class Product(models.Model):
 
     product_name = models.CharField(max_length=150)
+    slug = models.SlugField(unique=True, blank=True, null=True,)
     description = models.TextField()
     price = models.FloatField()
     stock = models.IntegerField()
@@ -27,7 +26,6 @@ class Product(models.Model):
         return self.product_name
 
 
-#
 # # ✅ VariantAttribute — created by seller (e.g., “Size”, “Color”, “Material”)
 # class VariantAttribute(models.Model):
 #     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
@@ -60,7 +58,7 @@ class Product(models.Model):
 
 # ✅ ProductImage — can belong to either the product or a specific variant
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='images')
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
     product_image = models.ImageField(upload_to='product_images/')
 

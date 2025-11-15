@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleCart - Your Fashion Destination</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .login-btn {
+            background-color: transparent;
+            border: 2px solid #9333ea;
+            color: #9333ea;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #f3e8ff;
+        }
+
+        .register-btn {
+            background-color: #9333ea;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .register-btn:hover {
+            background-color: #7e22ce;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .mobile-auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .mobile-login-btn, .mobile-register-btn {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .mobile-login-btn {
+            border: 2px solid #9333ea;
+            color: #9333ea;
+        }
+
+        .mobile-register-btn {
+            background-color: #9333ea;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <!-- text-purple-600 font-medium border-b-2 border-purple-600 -->
+                    <a href="home.html" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
+                    <a href="shop.html" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
+                    <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
+                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
+                </div>
+
+                <!-- Icons and Mobile Menu Button -->
+                <div class="flex items-center space-x-6">
+                    <div class="auth-buttons ml-4">
+                     <a href="{% url 'login' %}" class="login-btn">Login</a>
+                      <a href="{% url 'register' %}" class="register-btn">Register</a>
+
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden">
+                        <button id="mobileMenuButton" class="text-gray-700 focus:outline-none">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu md:hidden">
+                <div class="flex flex-col space-y-4">
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">Home</a>
+                    <a href="shop.html" class="text-gray-800 hover:text-purple-600 font-medium py-2">Shop</a>
+                    <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium py-2">Categories</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">Deals</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">About</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium py-2">Contact</a>
+
+                    <!-- Mobile Auth Buttons -->
+                    <div class="mobile-auth-buttons">
+                        <a href="#" class="mobile-login-btn">Login</a>
+                        <a href="#" class="mobile-register-btn">Register</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Summer Collection 2023</h1>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Discover the latest trends in fashion with up to 50% off on selected items</p>
+            <a href="shop.html" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition duration-300">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Shop by Category</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-semibold text-lg">Men's Fashion</h3>
+                        <a href="categories.html" class="text-purple-600 hover:text-purple-800 text-sm mt-2 inline-block">Explore</a>
+                    </div>
+                </div>
+                <div class="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-semibold text-lg">Women's Fashion</h3>
+                        <a href="categories.html" class="text-purple-600 hover:text-purple-800 text-sm mt-2 inline-block">Explore</a>
+                    </div>
+                </div>
+                <div class="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1505022610485-0249ba5b3675?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-semibold text-lg">Accessories</h3>
+                        <a href="#" class="text-purple-600 hover:text-purple-800 text-sm mt-2 inline-block">Explore</a>
+                    </div>
+                </div>
+                <div class="bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-semibold text-lg">Footwear</h3>
+                        <a href="#" class="text-purple-600 hover:text-purple-800 text-sm mt-2 inline-block">Explore</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">Featured Products</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Check out our handpicked selection of trending products</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Product 1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-64 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2">Classic White Shirt</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-600 font-bold">$49.99</span>
+                            <a href="cart.html"><button class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">Add to Cart</button></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-64 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2">Summer Dress</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-600 font-bold">$59.99</span>
+                        <a href="cart.html"><button class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">Add to Cart</button></a>                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-64 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2">Denim Jacket</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-600 font-bold">$79.99</span>
+                            <a href="cart.html"><button class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">Add to Cart</button></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
+                    <div class="h-64 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2">Running Shoes</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-purple-600 font-bold">$89.99</span>
+                            <button class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <a href="{% url 'product_list' %}" class="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 transition duration-300">View All Products</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-12 bg-purple-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-4">Subscribe to Our Newsletter</h2>
+            <p class="mb-8 max-w-2xl mx-auto">Get the latest updates on new products and upcoming sales</p>
+            <div class="max-w-md mx-auto flex">
+                <input type="email" placeholder="Your email address" class="flex-grow px-4 py-3 rounded-l focus:outline-none text-gray-800">
+                <button class="bg-purple-800 px-6 py-3 rounded-r font-semibold hover:bg-purple-900 transition duration-300">Subscribe</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle functionality
+        document.getElementById('mobileMenuButton').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

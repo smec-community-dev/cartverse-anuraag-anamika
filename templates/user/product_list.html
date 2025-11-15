@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .custom-scroll::-webkit-scrollbar { height: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
+
+        .gallery-img:hover { transform: scale(1.1); transition: 0.3s; }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            transition: 0.3s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+<!-- Header -->
+<header class="text-center py-8 bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
+    <h1 class="text-4xl font-bold">All Products</h1>
+    <p class="mt-2 text-gray-200">Explore all our products and images</p>
+</header>
+
+<!-- 🔍 Search Bar -->
+<div class="max-w-3xl mx-auto mt-6 px-4">
+    <form method="GET" action="" class="flex items-center bg-white shadow-lg rounded-full overflow-hidden">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search products..."
+            value="{{ request.GET.search }}"
+            class="w-full px-5 py-3 text-gray-700 focus:outline-none"
+        >
+        <button type="submit" class="bg-purple-600 text-white font-semibold px-6 py-3 hover:bg-purple-700 transition">
+            Search
+        </button>
+    </form>
+</div>
+
+<!-- Products Grid -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+        {% for product in products %}
+        <div class="bg-white shadow rounded overflow-hidden product-card p-5">
+
+            {% with first_image=product.images.first %}
+                {% if first_image and first_image.product_image %}
+                    <img src="{{ first_image.product_image.url }}" alt="{{ product.product_name }}" class="w-full h-60 object-cover">
+                {% else %}
+                    <div class="w-full h-60 bg-gray-200 flex items-center justify-center text-gray-500">No Image</div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="p-4">
+                <h2 class="text-lg font-semibold">{{ product.product_name }}</h2>
+                <p class="text-gray-500 text-sm mt-1">{{ product.description|truncatewords:15 }}</p>
+                <p class="text-green-600 font-bold mt-2">$ {{ product.price }}</p>
+                <p class="text-gray-600 mt-1">Stock: {{ product.stock }}</p>
+                <p class="text-gray-700 mt-1">Seller: {{ product.seller.shop_name }}</p>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'single' product.slug %}"
+                   class="bg-purple-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-purple-700 transition">
+                   View details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="text-center my-8">
+    <a href="{% url 'home' %}" class="bg-purple-600 text-white px-6 py-3 rounded-full hover:bg-purple-700 transition">
+        Back to Home
+    </a>
+</div>
+
+</body>
+</html>
