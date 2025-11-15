@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ product.product_name }}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+/* --- Image Switcher using Radio Buttons (no JS) --- */
+.image-option:checked + label img {
+    border: 3px solid #8b5cf6;
+    opacity: 1;
+}
+.image-option + label img {
+    opacity: 0.7;
+    transition: 0.2s;
+}
+.image-option + label img:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* --- When radio checked, show main image --- */
+#img1:checked ~ .main-img#main1,
+#img2:checked ~ .main-img#main2,
+#img3:checked ~ .main-img#main3,
+#img4:checked ~ .main-img#main4,
+#img5:checked ~ .main-img#main5 {
+    display: block;
+}
+
+/* Hide all main images by default */
+.main-img { display: none; }
+
+/* Custom horizontal scroll */
+.custom-scroll::-webkit-scrollbar { height: 6px; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 5px; }
+</style>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="max-w-6xl mx-auto py-10 px-4">
+
+    <!-- PRODUCT CARD -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-2xl shadow-lg">
+
+        <!-- IMAGE GALLERY -->
+        <div class="relative">
+
+            {% comment %} Radio buttons for switching {% endcomment %}
+            {% for img in product.images.all %}
+                <input type="radio" name="gallery" id="img{{ forloop.counter }}" class="image-option hidden" {% if forloop.first %}checked{% endif %}>
+            {% endfor %}
+
+            {% comment %} Main Images {% endcomment %}
+            {% for img in product.images.all %}
+                <img src="{{ img.product_image.url }}"
+                     id="main{{ forloop.counter }}"
+                     class="main-img w-full h-96 object-cover rounded-xl shadow">
+            {% empty %}
+                <div class="w-full h-96 bg-gray-200 rounded-xl flex items-center justify-center">
+                    No Image
+                </div>
+            {% endfor %}
+
+            <!-- Thumbnails -->
+            {% if product.images.count > 1 %}
+            <div class="flex gap-3 mt-4 overflow-x-auto custom-scroll">
+                {% for img in product.images.all %}
+                    <label for="img{{ forloop.counter }}" class="cursor-pointer">
+                        <img src="{{ img.product_image.url }}"
+                             class="w-24 h-24 object-cover rounded-lg shadow">
+                    </label>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- PRODUCT DETAILS -->
+        <div class="flex flex-col justify-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-3">{{ product.product_name }}</h1>
+
+            <p class="text-gray-600 leading-relaxed mb-4">{{ product.description }}</p>
+
+            <p class="text-green-600 text-2xl font-bold mb-2">$ {{ product.price }}</p>
+
+            <p class="text-gray-700">Stock:
+                <span class="font-semibold">{{ product.stock }}</span>
+            </p>
+            <p class="text-gray-700 mt-1">Seller:
+                <span class="font-semibold">{{ product.seller.shop_name }}</span>
+            </p>
+
+            <a href="{% url 'product_list' %}"
+               class="mt-6 inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+               Back to Home
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- OTHER PRODUCTS -->
+    {% if other_products %}
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Other Products</h2>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+
+            {% for p in other_products %}
+            <div class="bg-white rounded-xl shadow hover:shadow-lg transition p-3">
+
+                {% with first_image=p.images.first %}
+                    {% if first_image %}
+                        <img src="{{ first_image.product_image.url }}"
+                             class="w-full h-40 object-cover rounded-lg mb-3">
+                    {% else %}
+                        <div class="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-3">
+                            No Image
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <h3 class="text-gray-800 font-semibold">{{ p.product_name }}</h3>
+                <p class="text-green-600 font-bold">$ {{ p.price }}</p>
+
+                <a href="{% url 'single_product' p.slug %}"
+                   class="text-purple-600 hover:underline mt-2 inline-block">hai</a>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
