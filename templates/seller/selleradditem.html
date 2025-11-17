@@ -260,7 +260,7 @@
                             <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                             <p class="text-sm text-gray-600">Drag & drop your main image here or <span class="text-purple-600 cursor-pointer" id="browseMain">browse</span></p>
                             <p class="text-xs text-gray-500 mt-1">JPG, PNG up to 5MB. Recommended: 800x800px</p>
-                            <input type="file" class="hidden" id="mainImageFile" name="images" accept=".jpg,.jpeg,.png">
+                            <input type="file" class="hidden" id="mainImageFile" name="main_image" accept=".jpg,.jpeg,.png">
 
                         </div>
                         <div id="mainImagePreview" class="mt-2 hidden">
@@ -276,7 +276,7 @@
                             <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                             <p class="text-sm text-gray-600">Drag & drop additional images here or <span class="text-purple-600 cursor-pointer" id="browseAdd">browse</span></p>
                             <p class="text-xs text-gray-500 mt-1">JPG, PNG up to 5MB each. Max 8 images</p>
-                            <input type="file" class="hidden"  name="images" id="additionalImagesFiles" multiple accept=".jpg,.jpeg,.png">
+                            <input type="file" class="hidden"  name="additional_images" id="additionalImagesFiles" multiple accept=".jpg,.jpeg,.png">
                         </div>
                         <div id="additionalImagesPreview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 hidden">
                             <img src="" alt="Preview" class="h-32 rounded-lg border border-gray-200">
@@ -476,10 +476,11 @@
             document.getElementById("mainImageFile").click();
         });
 
-                document.getElementById("browseAdd").addEventListener("click", function (event) {
-            event.stopPropagation(); // prevent triggering parent click
-            document.getElementById("mainImageFile").click();
-        });
+           document.getElementById("browseAdd").addEventListener("click", function (event) {
+    event.stopPropagation();
+    document.getElementById("additionalImagesFiles").click();
+});
+
 
 
 
