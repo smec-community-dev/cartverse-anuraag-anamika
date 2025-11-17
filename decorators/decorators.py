@@ -5,6 +5,9 @@ def role_required(required_role, login_url):
     def decorator(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
+            # print("User:", request.user)
+            # print("Authenticated:", request.user.is_authenticated)
+            # print("User role:", getattr(request.user, "role", None))
 
             # 1. Check if logged in
             if not request.user.is_authenticated:
