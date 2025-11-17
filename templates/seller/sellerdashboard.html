@@ -81,9 +81,9 @@
                 
                 <!-- Seller Navigation -->
                 <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Products</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Orders</a>
+                    <a href="#" class="text-purple-600 hover:text-gray-800 font-medium">Dashboard</a>
+                    <a href="/seller/seller_product" class="text-gray-800 hover:text-purple-600 font-medium">Products</a>
+                    <a href="/seller/order_products" class="text-gray-800 hover:text-purple-600 font-medium">Orders</a>
                 </div>
                 
                 <!-- Seller Actions -->
@@ -142,7 +142,7 @@
                             
                             <div class="border-t border-gray-100 my-1"></div>
                             
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                            <a href="/seller/logout/" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                                 <i class="fas fa-sign-out-alt mr-3"></i>
                                 Exit Seller Mode
                             </a>
@@ -165,7 +165,6 @@
                         </div>
                         <div>
                             <h2 class="font-bold text-gray-800">{{seller.shop_name}}</h2>
-                            <p class="text-sm text-gray-600">Fashion & Apparel</p>
                             <div class="flex items-center mt-1">
                                 <div class="flex text-yellow-400 text-sm">
                                     <i class="fas fa-star"></i>
@@ -188,7 +187,7 @@
                             <i class="fas fa-box mr-3 text-gray-400"></i>
                             Products
                         </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                        <a href="/seller/order_products" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
                             <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
                             Orders
                         </a>
@@ -265,7 +264,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-sm text-gray-600">Total Revenue</p>
-                                <p class="text-2xl font-bold text-gray-800">$3,248</p>
+                                <p class="text-2xl font-bold text-gray-800">$7710</p>
                                 <p class="text-xs text-green-600 mt-1">
                                     <i class="fas fa-arrow-up mr-1"></i> 12.5% from last month
                                 </p>
@@ -395,10 +394,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-    {% for item in recent_orders %}
+    {% for item in order %}
         <tr class="border-b border-gray-100">
             <td class="py-4 text-sm font-medium text-gray-800">
-                #SC-{{ item.order.id }}
+                #SC-{{ item.product.id }}
             </td>
 
             <td class="py-4 text-sm text-gray-600">

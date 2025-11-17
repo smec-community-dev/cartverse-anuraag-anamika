@@ -54,7 +54,14 @@ class OrderItem(models.Model):
     product = models.ForeignKey("seller.Product", on_delete=models.CASCADE)
     price = models.FloatField()
     quantity = models.IntegerField()
-    status = models.CharField(max_length=50)
+    STATUS_CHOICES = (
+        ("Pending", "Pending"),
+        ("Shipped", "Shipped"),
+        ("Delivered", "Delivered"),
+        ("Cancelled", "Cancelled"),
+    )
+
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="Pending")
 
     def __str__(self):
         return f"{self.product.product_name} - {self.quantity}"

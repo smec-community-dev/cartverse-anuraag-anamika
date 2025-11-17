@@ -174,15 +174,15 @@
                     </div>
                     
                     <div class="space-y-1">
-                        <a href="sellerdashboard.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                        <a href="/seller/seller_dashboard" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
                             <i class="fas fa-tachometer-alt mr-3 text-gray-400"></i>
                             Dashboard
                         </a>
-                        <a href="products.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                        <a href="/seller/seller_product" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
                             <i class="fas fa-box mr-3 text-gray-400"></i>
                             Products
                         </a>
-                        <a href="sellorder.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg seller-nav-active">
+                        <a href="/seller/order_products" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg seller-nav-active">
                             <i class="fas fa-shopping-cart mr-3 text-purple-600"></i>
                             Orders
                         </a>
@@ -295,7 +295,7 @@
                                 <div>
                                     <div class="flex items-center space-x-4 mb-2">
                                         <h3 class="text-lg font-semibold text-gray-800">Order {{item.order.id}}</h3>
-                                        <span class="status-processing">Processing</span>
+                                        <span class="status-processing">{{item.status}}</span>
                                     </div>
                                     <p class="text-gray-600">Placed on {{item.order.order_date}}</p>
                                 </div>
@@ -327,7 +327,7 @@
                                 
                                 <div class="flex items-center p-3 bg-white border border-gray-200 rounded-lg">
                                     <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                                        <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" 
+                                        <img src="{{item.product.images.first.product_image.url}}"
                                              alt="Running Shoes" class="w-full h-full object-cover">
                                     </div>
                                     <div class="ml-4 flex-grow">
@@ -384,7 +384,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+
                 
                 <!-- Pagination -->
                 <div class="flex justify-center items-center space-x-2 mt-8">
@@ -398,6 +398,7 @@
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
+            </div>
             </div>
         </div>
     </div>

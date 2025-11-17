@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator
 from django.shortcuts import render,redirect
 
@@ -8,7 +8,7 @@ from core.models import User
 from django.utils.text import slugify
 from seller.models import Seller,Product,ProductImage,SubCategory,Category
 from user.models import OrderItem
-
+from decorators.decorators import role_required
 
 def seller_register(request):
         if request.method == 'POST':
@@ -67,19 +67,22 @@ def seller_login(request):
 
     return render(request, 'seller/login.html')
 
-
+@role_required("seller", login_url="/seller/login")
 def seller_dashboard(request):
     seller = Seller.objects.get(user=request.user)
     print(seller.shop_name)
     if seller.user.role=='seller':
         products = Product.objects.filter(seller=seller).order_by('id')[:3]
+        product=Product.objects.filter(seller=seller)
+        order = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
+        print(order)
     else:
         return redirect('/seller/login')
 
 
-    return render(request,'seller/sellerdashboard.html',{"seller":seller,"products":products,"count":products.count()})
+    return render(request,'seller/sellerdashboard.html',{"seller":seller,"products":products,"count":products.count(),'order':order})
 
-
+@role_required("seller", login_url="/seller/login")
 def seller_product(request):
     seller = Seller.objects.get(user=request.user)
     category=Category.objects.all()
@@ -88,6 +91,8 @@ def seller_product(request):
     if seller.user.role == 'seller':
         products = Product.objects.filter(seller=seller)
         search = request.GET.get('search')
+        best_selling=Product.objects.filter(seller=seller).order_by('stock')
+
         if search:
             products = products.filter(product_name__icontains=search)
         category_id = request.GET.get("category")
@@ -95,14 +100,14 @@ def seller_product(request):
             products = products.filter(category_id=category_id)
     else:
         return redirect('/seller/login')
-    paginator=Paginator(products,6)
+    paginator=Paginator(products,2)
     page_no=request.GET.get("page")
     page_obj=paginator.get_page(page_no)
 
 
-    return render(request,'seller/sellerproducts.html',{"seller":seller,"products":products,"page_obj":page_obj,"count":products.count(),"categories":category})
+    return render(request,'seller/sellerproducts.html',{"seller":seller,"products":products,"page_obj":page_obj,"count":products.count(),"categories":category,'bestseller':best_selling})
 
-
+@role_required("seller", login_url="/seller/login")
 def seller_editproduct(request,id,slug):
     if request.user.role!='seller':
         return redirect('/seller/login/')
@@ -125,6 +130,7 @@ def seller_editproduct(request,id,slug):
 
     return render(request,'seller/sellereditproduct.html',{"product":product,"subcategory":subcategories})
 
+@role_required("seller", login_url="/seller/login")
 def add_product(request):
 
     if request.user.role != "seller":
@@ -140,8 +146,8 @@ def add_product(request):
         price = request.POST.get("price")
         stock = request.POST.get("stock")
         subcategory_id = request.POST.get("subcategory")
-
-        images = request.FILES.getlist("images")
+        main_image = request.FILES.get("main_image")
+        additional_images = request.FILES.getlist("additional_images")
 
         product = Product.objects.create(
             product_name=product_name,
@@ -152,8 +158,13 @@ def add_product(request):
             subcategory_id=subcategory_id,
             slug=slugify(product_name)
         )
-
-        for img in images:
+        if main_image:
+            ProductImage.objects.create(
+                product=product,
+                seller=seller,
+                product_image=main_image
+            )
+        for img in additional_images:
             ProductImage.objects.create(
                 product=product,
                 seller=seller,
@@ -163,7 +174,7 @@ def add_product(request):
         return redirect("/seller/seller_dashboard")
     return render(request,'seller/selleradditem.html',{"subcategories":subcategories})
 
-
+@role_required("seller", login_url="/seller/login")
 def seller_delete_product(request,id,slug):
     if request.user.role!='seller':
         return redirect("/seller/login")
@@ -174,9 +185,28 @@ def seller_delete_product(request,id,slug):
     product.delete()
     print('product deleted')
     return redirect('/seller/seller_product')
+
+@role_required("seller", login_url="/seller/login")
 def order_products(request):
 
-    seller=Seller.objects.get(user=request.user)
 
-    order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
-    return render(request,'seller/sellorder.html', {"seller": seller,"order_item":order_items})
+    seller=Seller.objects.get(user=request.user)
+    products=Product.objects.filter(seller=seller)
+    order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product').order_by('-id')
+
+    paginator = Paginator(products, 2)
+    page_no = request.GET.get("page")
+    page_obj = paginator.get_page(page_no)
+    return render(request,'seller/sellorder.html', {"seller": seller,"order_item":order_items,'page_obj':page_obj})
+
+
+@role_required("seller", login_url="/seller/login")
+def seller_logout(request):
+    seller=request.user
+    print(seller)
+    if seller and seller.role=='seller':
+        logout(request)
+        return redirect('/seller/login')
+
+    return render(request, 'seller/login.html')
+
