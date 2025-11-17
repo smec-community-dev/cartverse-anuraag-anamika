@@ -412,6 +412,7 @@
                             </thead>
                             <tbody>
                                 <!-- Product 1 -->
+                                {%for product in products%}
                                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                                     <td class="py-4">
                                         <input type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
@@ -423,7 +424,7 @@
                                                      alt="Classic White Shirt" class="w-full h-full object-cover">
                                             </div>
                                             <div>
-                                                <p class="text-sm font-medium text-gray-800">Classic White Shirt</p>
+                                                <p class="text-sm font-medium text-gray-800">{{product.product_name}}</p>
                                                 <p class="text-xs text-gray-500">SKU: SC-WS001</p>
                                             </div>
                                         </div>
@@ -448,7 +449,7 @@
                                         </div>
                                     </td>
                                 </tr>
-
+                                {%endfor%}
                                 <!-- Product 2 -->
                                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                                     <td class="py-4">

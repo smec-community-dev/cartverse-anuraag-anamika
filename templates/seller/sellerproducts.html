@@ -116,14 +116,14 @@
                             <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
                                 JS
                             </div>
-                            <span class="text-gray-700 font-medium hidden md:block">John's Store</span>
+                            <span class="text-gray-700 font-medium hidden md:block">{{seller.user.username}}</span>
                             <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
                         </button>
                         
                         <!-- Profile Dropdown -->
                         <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
                             <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-sm font-medium text-gray-800">John's Store</p>
+                                <p class="text-sm font-medium text-gray-800">{{seller.user.username}}</p>
                                 <p class="text-sm text-gray-500">Seller Account</p>
                             </div>
                             
@@ -178,8 +178,8 @@
                             JS
                         </div>
                         <div>
-                            <h2 class="font-bold text-gray-800">John's Store</h2>
-                            <p class="text-sm text-gray-600">Fashion & Apparel</p>
+                            <h2 class="font-bold text-gray-800">{{seller.user.username}}</h2>
+
                             <div class="flex items-center mt-1">
                                 <div class="flex text-yellow-400 text-sm">
                                     <i class="fas fa-star"></i>
@@ -194,7 +194,7 @@
                     </div>
                     
                     <div class="space-y-1">
-                        <a href="sellerdashboard.html" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                        <a href="/seller/seller_dashboard/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
                             <i class="fas fa-tachometer-alt mr-3 text-gray-400"></i>
                             Dashboard
                         </a>
@@ -291,20 +291,20 @@
                         </div>
                         
                         <!-- Search & Filter -->
+                        <form action="" method="GET">
                         <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3 w-full md:w-auto">
                             <div class="relative">
-                                <input type="text" placeholder="Search products..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-full md:w-64">
+                            <input type="text" placeholder="Search products..." value="{{request.GET.search}}" name="search" class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-full md:w-64">
                                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                             </div>
                             
-                            <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                <option>All Categories</option>
-                                <option>Clothing</option>
-                                <option>Shoes</option>
-                                <option>Accessories</option>
-                                <option>Electronics</option>
+                            <select name="categories" class="px-4 py-2 border border-gray-300 rounded-md">
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.category_name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
+                        </form>
                     </div>
                     
                     <!-- Bulk Actions -->
@@ -345,6 +345,7 @@
                             </thead>
                             <tbody>
                                 <!-- Product 1 -->
+                                {%for product in products%}
                                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                                     <td class="py-4 px-4 checkbox-cell">
                                         <input type="checkbox" class="rounded focus:ring-purple-500 text-purple-600 product-checkbox">
@@ -352,12 +353,12 @@
                                     <td class="py-4 px-4">
                                         <div class="flex items-center">
                                             <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                <img src="https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" 
-                                                     alt="Classic White Shirt" class="w-full h-full object-cover">
+                                                <img src="{{product.images.first.product_image.url}}"
+                                                     alt="{{product.product_name}}" class="w-full h-full object-cover">
                                             </div>
                                             <div>
-                                                <p class="font-medium text-gray-800">Classic White Shirt</p>
-                                                <p class="text-sm text-gray-600">SKU: SHIRT-WHITE-001</p>
+                                                <p class="font-medium text-gray-800">{{product.product_name}}</p>
+                                                <p class="text-sm text-gray-600">product</p>
                                             </div>
                                         </div>
                                     </td>
@@ -365,215 +366,31 @@
                                         <span class="status-active">Active</span>
                                     </td>
                                     <td class="py-4 px-4">
-                                        <p class="text-sm text-gray-800">85 in stock</p>
+                                        <p class="text-sm text-gray-800">{{product.stock}} in stock</p>
                                         <p class="text-xs text-gray-500">Low stock alert at 10</p>
                                     </td>
                                     <td class="py-4 px-4">
-                                        <p class="font-medium text-gray-800">$49.99</p>
-                                        <p class="text-sm text-gray-500 line-through">$59.99</p>
+                                        <p class="font-medium text-gray-800">{{product.price}}</p>
+                                        <p class="text-sm text-gray-500 line-through">{{product.price}}</p>
                                     </td>
                                     <td class="py-4 px-4">
                                         <p class="text-sm text-gray-800">42 sold</p>
-                                        <p class="text-xs text-gray-500">$2,099.58 revenue</p>
+                                        <p class="text-xs text-gray-500">234000 revenue</p>
                                     </td>
                                     <td class="py-4 px-4">
                                         <div class="flex space-x-2">
-                                            <a href="edit-product.html" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            <a href="/seller/edit_product/{{product.id}}/{{product.slug}}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                                                 <i class="fas fa-edit mr-1"></i> Edit
                                             </a>
-                                            <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">
-                                                <i class="fas fa-chart-bar mr-1"></i> Stats
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                                <i class="fas fa-trash mr-1"></i> Delete
-                                            </button>
+                                            <a href="/seller/delete_product/{{product.id}}/{{product.slug}}" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                                <i class="fas fa-trash mr-1 text-red-600"></i> Delete
+                                            </a>
+
                                         </div>
                                     </td>
                                 </tr>
-                                
-                                <!-- Product 2 -->
-                                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                    <td class="py-4 px-4 checkbox-cell">
-                                        <input type="checkbox" class="rounded focus:ring-purple-500 text-purple-600 product-checkbox">
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <div class="flex items-center">
-                                            <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" 
-                                                     alt="Running Shoes" class="w-full h-full object-cover">
-                                            </div>
-                                            <div>
-                                                <p class="font-medium text-gray-800">Running Shoes</p>
-                                                <p class="text-sm text-gray-600">SKU: SHOES-BLUE-002</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <span class="status-active">Active</span>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="text-sm text-gray-800">28 in stock</p>
-                                        <p class="text-xs text-gray-500">Low stock alert at 5</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="font-medium text-gray-800">$89.99</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="text-sm text-gray-800">28 sold</p>
-                                        <p class="text-xs text-gray-500">$2,519.72 revenue</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <div class="flex space-x-2">
-                                            <a href="edit-product.html" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                <i class="fas fa-edit mr-1"></i> Edit
-                                            </a>
-                                            <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">
-                                                <i class="fas fa-chart-bar mr-1"></i> Stats
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                                <i class="fas fa-trash mr-1"></i> Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- Product 3 -->
-                                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                    <td class="py-4 px-4 checkbox-cell">
-                                        <input type="checkbox" class="rounded focus:ring-purple-500 text-purple-600 product-checkbox">
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <div class="flex items-center">
-                                            <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" 
-                                                     alt="Denim Jacket" class="w-full h-full object-cover">
-                                            </div>
-                                            <div>
-                                                <p class="font-medium text-gray-800">Denim Jacket</p>
-                                                <p class="text-sm text-gray-600">SKU: JACKET-DENIM-003</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <span class="status-active">Active</span>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="text-sm text-red-600 font-medium">8 in stock</p>
-                                        <p class="text-xs text-red-500">Low stock</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="font-medium text-gray-800">$79.99</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="text-sm text-gray-800">15 sold</p>
-                                        <p class="text-xs text-gray-500">$1,199.85 revenue</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <div class="flex space-x-2">
-                                            <a href="edit-product.html" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                <i class="fas fa-edit mr-1"></i> Edit
-                                            </a>
-                                            <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">
-                                                <i class="fas fa-chart-bar mr-1"></i> Stats
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                                <i class="fas fa-trash mr-1"></i> Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- Product 4 -->
-                                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                    <td class="py-4 px-4 checkbox-cell">
-                                        <input type="checkbox" class="rounded focus:ring-purple-500 text-purple-600 product-checkbox">
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <div class="flex items-center">
-                                            <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" 
-                                                     alt="Summer Dress" class="w-full h-full object-cover">
-                                            </div>
-                                            <div>
-                                                <p class="font-medium text-gray-800">Summer Dress</p>
-                                                <p class="text-sm text-gray-600">SKU: DRESS-FLORAL-004</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <span class="status-draft">Draft</span>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="text-sm text-gray-800">0 in stock</p>
-                                        <p class="text-xs text-gray-500">Not published</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="font-medium text-gray-800">$59.99</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="text-sm text-gray-800">0 sold</p>
-                                        <p class="text-xs text-gray-500">$0 revenue</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <div class="flex space-x-2">
-                                            <a href="edit-product.html" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                <i class="fas fa-edit mr-1"></i> Edit
-                                            </a>
-                                            <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">
-                                                <i class="fas fa-eye mr-1"></i> Publish
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                                <i class="fas fa-trash mr-1"></i> Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- Product 5 -->
-                                <tr class="hover:bg-gray-50">
-                                    <td class="py-4 px-4 checkbox-cell">
-                                        <input type="checkbox" class="rounded focus:ring-purple-500 text-purple-600 product-checkbox">
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <div class="flex items-center">
-                                            <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0 mr-3">
-                                                <img src="https://images.unsplash.com/photo-1505022610485-0249ba5b3675?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=60" 
-                                                     alt="Leather Belt" class="w-full h-full object-cover">
-                                            </div>
-                                            <div>
-                                                <p class="font-medium text-gray-800">Leather Belt</p>
-                                                <p class="text-sm text-gray-600">SKU: BELT-BROWN-005</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <span class="status-active">Active</span>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="text-sm text-red-600 font-medium">0 in stock</p>
-                                        <p class="text-xs text-red-500">Out of stock</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="font-medium text-gray-800">$29.99</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <p class="text-sm text-gray-800">23 sold</p>
-                                        <p class="text-xs text-gray-500">$689.77 revenue</p>
-                                    </td>
-                                    <td class="py-4 px-4">
-                                        <div class="flex space-x-2">
-                                            <a href="edit-product.html" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                <i class="fas fa-edit mr-1"></i> Edit
-                                            </a>
-                                            <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">
-                                                <i class="fas fa-chart-bar mr-1"></i> Stats
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800 text-sm font-medium">
-                                                <i class="fas fa-trash mr-1"></i> Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                {%endfor%}
+
                             </tbody>
                         </table>
                     </div>
@@ -581,18 +398,35 @@
                     <!-- Pagination -->
                     <div class="p-6 border-t border-gray-200 flex justify-between items-center">
                         <div class="text-sm text-gray-600">
-                            Showing 1 to 5 of 24 products
+                            Showing 1 to {{page_obj.number}} of {{page_obj.paginator.num_pages}} products
                         </div>
                         <div class="flex items-center space-x-2">
-                            <button class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-500 hover:bg-gray-50">
+                            {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}&search={{search}}&category={{selected_category}}"
+                               class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-500 hover:bg-gray-50">
                                 <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button class="w-8 h-8 flex items-center justify-center rounded-md bg-purple-600 text-white font-medium">1</button>
-                            <button class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">2</button>
-                            <button class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">3</button>
-                            <button class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-500 hover:bg-gray-50">
+                            </a>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if num == page_obj.number %}
+                                <span class="w-8 h-8 flex items-center justify-center rounded-md bg-purple-600 text-white font-medium">
+                                    {{ num }}
+                                </span>
+                                {% else %}
+                                <a href="?page={{ num }}&search={{search}}&category={{selected_category}}"
+                                   class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">
+                                    {{ num }}
+                                </a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}&search={{search}}&category={{selected_category}}"
+                               class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-500 hover:bg-gray-50">
                                 <i class="fas fa-chevron-right"></i>
-                            </button>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

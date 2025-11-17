@@ -19,10 +19,13 @@ from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
 import user.urls
+import seller.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('user/',include(user.urls.urlpatterns))
+    path('user/',include(user.urls.urlpatterns)),
+    path('seller/',include(seller.urls.urlpatterns))
+
 ]
 
 if settings.DEBUG:

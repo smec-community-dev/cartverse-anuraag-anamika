@@ -252,14 +252,12 @@
                 <div class="dashboard-card mb-8">
                     <div class="flex border-b border-gray-200 overflow-x-auto">
                         <button class="px-6 py-4 tab-active">Basic Information</button>
-                        <button class="px-6 py-4 text-gray-600 hover:text-purple-600 font-medium">Variants</button>
-                        <button class="px-6 py-4 text-gray-600 hover:text-purple-600 font-medium">SEO & Marketing</button>
-                        <button class="px-6 py-4 text-gray-600 hover:text-purple-600 font-medium">Advanced</button>
                     </div>
                     
                     <!-- Product Form -->
                     <div class="p-6">
-                        <form id="editProductForm">
+                        <form id="editProductForm" method="POST" enctype="multipart/form-data">
+                            {%csrf_token%}
                             <!-- Product Images -->
                             <div class="mb-8">
                                 <label class="block text-sm font-medium text-gray-700 mb-4">Product Images</label>
@@ -268,8 +266,8 @@
                                     <!-- Main Image -->
                                     <div class="relative">
                                         <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-                                            <img src="https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" 
-                                                 alt="Classic White Shirt" class="w-full h-full object-cover">
+                                            <img src="{{product.images.first.product_image.url}}"
+                                                 alt="{{product.product_name}}" class="w-full h-full object-cover">
                                         </div>
                                         <span class="absolute top-2 left-2 bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded">Main</span>
                                         <button type="button" class="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100">
@@ -278,26 +276,22 @@
                                     </div>
                                     
                                     <!-- Additional Images -->
-                                    <div class="relative">
-                                        <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-                                            <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" 
-                                                 alt="Classic White Shirt" class="w-full h-full object-cover">
+
+                                    {% for img in product.images.all %}
+                                        <div class="relative">
+                                            <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                                                <img src="{{ img.product_image.url }}"
+                                                     alt="{{ product.product_name }}"
+                                                     class="w-full h-full object-cover">
+                                            </div>
+
+                                            <button type="button" class="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100">
+                                                <i class="fas fa-times text-gray-600 text-xs"></i>
+                                            </button>
                                         </div>
-                                        <button type="button" class="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100">
-                                            <i class="fas fa-times text-gray-600 text-xs"></i>
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Additional Images -->
-                                    <div class="relative">
-                                        <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-                                            <img src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" 
-                                                 alt="Classic White Shirt" class="w-full h-full object-cover">
-                                        </div>
-                                        <button type="button" class="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100">
-                                            <i class="fas fa-times text-gray-600 text-xs"></i>
-                                        </button>
-                                    </div>
+                                        {% endfor %}
+
+
                                     
                                     <!-- Add Image Button -->
                                     <div class="upload-area aspect-square flex items-center justify-center cursor-pointer">
@@ -305,7 +299,7 @@
                                             <i class="fas fa-plus text-2xl text-gray-400 mb-2"></i>
                                             <p class="text-sm text-gray-600">Add Image</p>
                                         </div>
-                                        <input type="file" class="hidden" accept=".jpg,.jpeg,.png">
+                                        <input type="file" class="hidden" name="images" accept=".jpg,.jpeg,.png">
                                     </div>
                                 </div>
                             </div>
@@ -314,20 +308,17 @@
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                                 <div>
                                     <label for="editProductName" class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
-                                    <input type="text" id="editProductName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="Classic White Shirt" placeholder="Enter product name">
+                                    <input type="text" id="editProductName" name="product_name" value="{{product.product_name}}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="Classic White Shirt" placeholder="Enter product name">
                                 </div>
                                 
                                 <div>
                                     <label for="editProductCategory" class="block text-sm font-medium text-gray-700 mb-2">Product Category *</label>
-                                    <select id="editProductCategory" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                        <option value="clothing" selected>Clothing & Apparel</option>
-                                        <option value="shoes">Shoes & Footwear</option>
-                                        <option value="accessories">Accessories</option>
-                                        <option value="electronics">Electronics</option>
-                                        <option value="home">Home & Kitchen</option>
-                                        <option value="beauty">Beauty & Personal Care</option>
-                                        <option value="sports">Sports & Outdoors</option>
-                                        <option value="other">Other</option>
+                                    <select id="editProductCategory" name="subcategory" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        {%for sub in subcategory%}
+                                        <option value="{{ sub.id }}" {% if sub.id == product.subcategory.id %}selected{% endif %}>
+                                            {{ sub.sub_category_name }}
+                                        </option>
+                                        {%endfor%}
                                     </select>
                                 </div>
                             </div>
@@ -335,7 +326,7 @@
                             <!-- Product Description -->
                             <div class="mb-6">
                                 <label for="editProductDescription" class="block text-sm font-medium text-gray-700 mb-2">Product Description *</label>
-                                <textarea id="editProductDescription" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your product in detail">Premium cotton shirt with a classic fit. Perfect for both casual and formal occasions. Made from 100% organic cotton for maximum comfort and durability.</textarea>
+                                <textarea id="editProductDescription" name="description"  rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your product in detail">{{product.description}}</textarea>
                             </div>
                             
                             <!-- Pricing & Inventory -->
@@ -345,113 +336,17 @@
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                                     <div>
                                         <label for="editProductPrice" class="block text-sm font-medium text-gray-700 mb-2">Price ($) *</label>
-                                        <input type="number" id="editProductPrice" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="49.99" placeholder="0.00">
+                                        <input type="number" id="editProductPrice" name="price" step="0.01" value="{{product.price}}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0.00">
                                     </div>
-                                    
-                                    <div>
-                                        <label for="editProductComparePrice" class="block text-sm font-medium text-gray-700 mb-2">Compare at Price ($)</label>
-                                        <input type="number" id="editProductComparePrice" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="59.99" placeholder="0.00">
-                                        <p class="text-xs text-gray-500 mt-1">Show a "sale" by setting a higher compare price</p>
-                                    </div>
-                                    
+
                                     <div>
                                         <label for="editProductQuantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
-                                        <input type="number" id="editProductQuantity" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="85" placeholder="0">
+                                        <input type="number" id="editProductQuantity" name="stock" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="{{product.stock}}" placeholder="0">
                                     </div>
                                 </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label for="editProductSKU" class="block text-sm font-medium text-gray-700 mb-2">SKU</label>
-                                        <input type="text" id="editProductSKU" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="SHIRT-WHITE-001" placeholder="e.g. PROD-001">
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="editProductBarcode" class="block text-sm font-medium text-gray-700 mb-2">Barcode (ISBN, UPC, etc.)</label>
-                                        <input type="text" id="editProductBarcode" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="123456789012" placeholder="Enter barcode">
-                                    </div>
-                                </div>
+
                             </div>
-                            
-                            <!-- Product Specifications -->
-                            <div class="mb-8">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Product Specifications</h3>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                                    <div>
-                                        <label for="editProductBrand" class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                                        <input type="text" id="editProductBrand" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="FashionCo" placeholder="Enter brand name">
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="editProductMaterial" class="block text-sm font-medium text-gray-700 mb-2">Material</label>
-                                        <input type="text" id="editProductMaterial" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="100% Organic Cotton" placeholder="e.g. Cotton, Leather">
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <label for="editProductColor" class="block text-sm font-medium text-gray-700 mb-2">Color</label>
-                                        <input type="text" id="editProductColor" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="White" placeholder="e.g. Red, Blue, Black">
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="editProductWeight" class="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
-                                        <input type="number" id="editProductWeight" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="0.3" placeholder="0.5">
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="editProductDimensions" class="block text-sm font-medium text-gray-700 mb-2">Dimensions (LxWxH)</label>
-                                        <input type="text" id="editProductDimensions" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="30x20x2" placeholder="e.g. 10x5x2 inches">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Shipping -->
-                            <div class="mb-8">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Shipping</h3>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                                    <div>
-                                        <label for="editShippingWeight" class="block text-sm font-medium text-gray-700 mb-2">Weight for Shipping (kg) *</label>
-                                        <input type="number" id="editShippingWeight" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="0.35" placeholder="0.5">
-                                    </div>
-                                    
-                                    <div>
-                                        <label for="editShippingDimensions" class="block text-sm font-medium text-gray-700 mb-2">Dimensions for Shipping (LxWxH)</label>
-                                        <input type="text" id="editShippingDimensions" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="32x22x3" placeholder="e.g. 10x5x2 inches">
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-start mb-4">
-                                    <input type="checkbox" id="editFreeShipping" class="mt-1 mr-3 rounded focus:ring-purple-500 text-purple-600" checked>
-                                    <label for="editFreeShipping" class="text-sm text-gray-700">
-                                        Offer free shipping for this product
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <!-- Product Status -->
-                            <div class="mb-8">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Product Status</h3>
-                                
-                                <div class="flex space-x-6">
-                                    <div class="flex items-center">
-                                        <input type="radio" id="editStatusActive" name="editProductStatus" value="active" class="mr-2 rounded focus:ring-purple-500 text-purple-600" checked>
-                                        <label for="editStatusActive" class="text-sm text-gray-700">Active (Visible to customers)</label>
-                                    </div>
-                                    
-                                    <div class="flex items-center">
-                                        <input type="radio" id="editStatusDraft" name="editProductStatus" value="draft" class="mr-2 rounded focus:ring-purple-500 text-purple-600">
-                                        <label for="editStatusDraft" class="text-sm text-gray-700">Draft (Hidden from customers)</label>
-                                    </div>
-                                    
-                                    <div class="flex items-center">
-                                        <input type="radio" id="editStatusArchived" name="editProductStatus" value="archived" class="mr-2 rounded focus:ring-purple-500 text-purple-600">
-                                        <label for="editStatusArchived" class="text-sm text-gray-700">Archived</label>
-                                    </div>
-                                </div>
-                            </div>
+
                             
                             <!-- Form Actions -->
                             <div class="flex justify-between pt-6 border-t border-gray-200">
@@ -465,9 +360,9 @@
                                 </div>
                                 <div class="flex space-x-3">
                                     <button type="button" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
-                                        Cancel
+                                        <a href="/seller/seller_product/"> Cancel</a>
                                     </button>
-                                    <button type="button" id="saveChangesBtn" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                                    <button type="submit" id="saveChangesBtn" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
                                         Save Changes
                                     </button>
                                 </div>
@@ -475,7 +370,7 @@
                         </form>
                     </div>
                 </div>
-                
+
                 <!-- Product Performance -->
                 <div class="dashboard-card p-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-4">Product Performance</h2>
