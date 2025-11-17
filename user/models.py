@@ -2,6 +2,7 @@
 from django.db import models
 # Create your models here.
 from core.models import User
+
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customer_profile")
     address = models.TextField()
