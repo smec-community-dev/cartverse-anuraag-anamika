@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Become a Seller - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #8b5cf6;
+            background-color: #faf5ff;
+        }
+        
+        .step-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .step-active {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        
+        .step-inactive {
+            background-color: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        .step-completed {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #8b5cf6;
+            transition: width 0.5s ease;
+        }
+        
+        .seller-nav-active {
+            border-left: 4px solid #8b5cf6;
+            background-color: #f3f4f6;
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Sell</a>
+                </div>
+                
+                <!-- User Section -->
+                <div class="flex items-center space-x-6">
+                    <!-- Search -->
+                    <div class="hidden md:block relative">
+                        <input type="text" placeholder="Search products..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    
+                    <!-- Wishlist -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-heart text-lg"></i>
+                        </a>
+                        <span class="cart-count">3</span>
+                    </div>
+                    
+                    <!-- Cart -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-shopping-cart text-lg"></i>
+                        </a>
+                        <span class="cart-count">5</span>
+                    </div>
+                    
+                    <!-- User Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                JS
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">John Smith</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">John Smith</p>
+                                <p class="text-sm text-gray-500">john.smith@example.com</p>
+                            </div>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user mr-3 text-gray-400"></i>
+                                My Profile
+                            </a>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-shopping-bag mr-3 text-gray-400"></i>
+                                My Orders
+                            </a>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-heart mr-3 text-gray-400"></i>
+                                My Wishlist
+                            </a>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-purple-600 hover:bg-purple-50 font-medium">
+                                <i class="fas fa-store mr-3"></i>
+                                Seller Dashboard
+                            </a>
+                            
+                            <div class="border-t border-gray-100 my-1"></div>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                Account Settings
+                            </a>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-question-circle mr-3 text-gray-400"></i>
+                                Help & Support
+                            </a>
+                            
+                            <div class="border-t border-gray-100 my-1"></div>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Become a Seller</h1>
+            <p class="text-gray-600">Start selling on StyleCart and reach millions of customers</p>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="mb-8">
+            <div class="flex justify-between mb-2">
+                <span class="text-sm font-medium text-gray-700">Application Progress</span>
+                <span class="text-sm font-medium text-purple-600">60% Complete</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%"></div>
+            </div>
+        </div>
+        
+        <!-- Application Steps -->
+        <div class="flex mb-8 overflow-x-auto">
+            <div class="flex items-center mr-6">
+                <div class="step-indicator step-completed">
+                    <i class="fas fa-check text-xs"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700 whitespace-nowrap">Personal Info</span>
+            </div>
+            <div class="flex items-center mr-6">
+                <div class="step-indicator step-active">2</div>
+                <span class="text-sm font-medium text-gray-700 whitespace-nowrap">Shop Details</span>
+            </div>
+            <div class="flex items-center mr-6">
+                <div class="step-indicator step-inactive">3</div>
+                <span class="text-sm font-medium text-gray-600 whitespace-nowrap">Documents</span>
+            </div>
+            <div class="flex items-center">
+                <div class="step-indicator step-inactive">4</div>
+                <span class="text-sm font-medium text-gray-600 whitespace-nowrap">Review & Submit</span>
+            </div>
+        </div>
+        
+        <!-- Shop Details Form -->
+        <div class="form-card p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Shop Information</h2>
+            
+            <form id="sellerForm">
+                <!-- Shop Name -->
+                <div class="mb-6">
+                    <label for="shopName" class="block text-sm font-medium text-gray-700 mb-2">Shop Name</label>
+                    <input type="text" id="shopName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter your shop name">
+                    <p class="text-xs text-gray-500 mt-1">This will be displayed to customers</p>
+                </div>
+                
+                <!-- Shop Description -->
+                <div class="mb-6">
+                    <label for="shopDescription" class="block text-sm font-medium text-gray-700 mb-2">Shop Description</label>
+                    <textarea id="shopDescription" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your shop and what you sell"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Tell customers about your shop and products</p>
+                </div>
+                
+                <!-- Shop Category -->
+                <div class="mb-6">
+                    <label for="shopCategory" class="block text-sm font-medium text-gray-700 mb-2">Shop Category</label>
+                    <select id="shopCategory" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">Select a category</option>
+                        <option value="fashion">Fashion & Apparel</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="home">Home & Kitchen</option>
+                        <option value="beauty">Beauty & Personal Care</option>
+                        <option value="sports">Sports & Outdoors</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <!-- Shop Location -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Shop Location</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="country" class="block text-xs text-gray-600 mb-1">Country</label>
+                            <select id="country" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option value="">Select country</option>
+                                <option value="us">United States</option>
+                                <option value="uk">United Kingdom</option>
+                                <option value="ca">Canada</option>
+                                <option value="au">Australia</option>
+                                <option value="in">India</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="state" class="block text-xs text-gray-600 mb-1">State/Province</label>
+                            <input type="text" id="state" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter state">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="city" class="block text-xs text-gray-600 mb-1">City</label>
+                            <input type="text" id="city" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter city">
+                        </div>
+                        
+                        <div>
+                            <label for="zipCode" class="block text-xs text-gray-600 mb-1">ZIP/Postal Code</label>
+                            <input type="text" id="zipCode" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter ZIP code">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="address" class="block text-xs text-gray-600 mb-1">Full Address</label>
+                        <textarea id="address" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter your complete shop address"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Contact Information</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="phone" class="block text-xs text-gray-600 mb-1">Phone Number</label>
+                            <input type="tel" id="phone" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="+1 (555) 123-4567">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-xs text-gray-600 mb-1">Business Email</label>
+                            <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="business@example.com">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Document Upload -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Shop Documents</label>
+                    <p class="text-sm text-gray-600 mb-4">Upload required documents for verification</p>
+                    
+                    <!-- Business Registration -->
+                    <div class="mb-4">
+                        <label class="block text-xs text-gray-600 mb-2">Business Registration Certificate</label>
+                        <div class="upload-area p-6 text-center cursor-pointer" id="registrationUpload">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600">Drag & drop your file here or <span class="text-purple-600">browse</span></p>
+                            <p class="text-xs text-gray-500 mt-1">PDF, JPG, PNG up to 5MB</p>
+                            <input type="file" class="hidden" id="registrationFile" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                        <div id="registrationFileName" class="text-sm text-gray-700 mt-2 hidden"></div>
+                    </div>
+                    
+                    <!-- Tax ID -->
+                    <div class="mb-4">
+                        <label class="block text-xs text-gray-600 mb-2">Tax Identification Document</label>
+                        <div class="upload-area p-6 text-center cursor-pointer" id="taxUpload">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600">Drag & drop your file here or <span class="text-purple-600">browse</span></p>
+                            <p class="text-xs text-gray-500 mt-1">PDF, JPG, PNG up to 5MB</p>
+                            <input type="file" class="hidden" id="taxFile" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                        <div id="taxFileName" class="text-sm text-gray-700 mt-2 hidden"></div>
+                    </div>
+                    
+                    <!-- Additional Documents -->
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">Additional Documents (Optional)</label>
+                        <div class="upload-area p-6 text-center cursor-pointer" id="additionalUpload">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600">Drag & drop your files here or <span class="text-purple-600">browse</span></p>
+                            <p class="text-xs text-gray-500 mt-1">PDF, JPG, PNG up to 10MB total</p>
+                            <input type="file" class="hidden" id="additionalFiles" multiple accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                        <div id="additionalFileNames" class="text-sm text-gray-700 mt-2 hidden"></div>
+                    </div>
+                </div>
+                
+                <!-- Terms and Conditions -->
+                <div class="mb-6">
+                    <div class="flex items-start">
+                        <input type="checkbox" id="terms" class="mt-1 mr-3 rounded focus:ring-purple-500 text-purple-600">
+                        <label for="terms" class="text-sm text-gray-700">
+                            I agree to the <a href="#" class="text-purple-600 hover:underline">Seller Terms and Conditions</a> and <a href="#" class="text-purple-600 hover:underline">Privacy Policy</a>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex justify-between pt-4 border-t border-gray-200">
+                    <button type="button" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                        <i class="fas fa-arrow-left mr-2"></i> Back
+                    </button>
+                    <button type="button" id="submitBtn" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                        <a href="sellerdashboard.html">Continue to Dashboard </a><i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Benefits Section -->
+        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Why Sell on StyleCart?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="flex items-start">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-users text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">Reach Millions</h3>
+                        <p class="text-sm text-gray-600">Access to millions of active customers worldwide</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-tools text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">Easy Tools</h3>
+                        <p class="text-sm text-gray-600">User-friendly tools to manage your business</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-shield-alt text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">Secure Payments</h3>
+                        <p class="text-sm text-gray-600">Fast and secure payment processing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seller Dashboard Modal -->
+    <div id="dashboardModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800">Seller Dashboard</h2>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <!-- Welcome Section -->
+                <div class="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl p-6 text-white mb-8">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-2">Welcome to Your Seller Dashboard!</h2>
+                            <p class="opacity-90">Your shop "Fashion Hub" is now being reviewed. You can start setting up your store.</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                            <i class="fas fa-store text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Products</p>
+                                <p class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-box text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Orders</p>
+                                <p class="text-2xl font-bold text-gray-800">0</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fas fa-shopping-cart text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Revenue</p>
+                                <p class="text-2xl font-bold text-gray-800">$0</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <i class="fas fa-dollar-sign text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600">Store Rating</p>
+                                <p class="text-2xl font-bold text-gray-800">-</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <i class="fas fa-star text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="#" class="dashboard-card p-4 text-center hover:shadow-md">
+                            <div class="bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-plus text-purple-600"></i>
+                            </div>
+                            <p class="font-medium text-gray-800">Add Product</p>
+                        </a>
+                        
+                        <a href="#" class="dashboard-card p-4 text-center hover:shadow-md">
+                            <div class="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-edit text-blue-600"></i>
+                            </div>
+                            <p class="font-medium text-gray-800">Manage Store</p>
+                        </a>
+                        
+                        <a href="#" class="dashboard-card p-4 text-center hover:shadow-md">
+                            <div class="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-chart-line text-green-600"></i>
+                            </div>
+                            <p class="font-medium text-gray-800">View Analytics</p>
+                        </a>
+                        
+                        <a href="#" class="dashboard-card p-4 text-center hover:shadow-md">
+                            <div class="bg-yellow-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-cog text-yellow-600"></i>
+                            </div>
+                            <p class="font-medium text-gray-800">Settings</p>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Application Status -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-info-circle text-yellow-500 mt-1 mr-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-yellow-800">Application Under Review</h3>
+                            <div class="mt-2 text-sm text-yellow-700">
+                                <p>Your seller application is currently being reviewed by our team. This process usually takes 1-2 business days.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Next Steps -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Next Steps</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="bg-purple-100 p-2 rounded-lg mr-4 mt-1">
+                                <i class="fas fa-clipboard-list text-purple-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Complete Your Store Profile</h4>
+                                <p class="text-sm text-gray-600 mt-1">Add your store logo, banner, and complete your profile information.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-2 rounded-lg mr-4 mt-1">
+                                <i class="fas fa-box-open text-blue-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Add Your Products</h4>
+                                <p class="text-sm text-gray-600 mt-1">Start adding products to your store. You can add up to 50 products during the review period.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-green-100 p-2 rounded-lg mr-4 mt-1">
+                                <i class="fas fa-shipping-fast text-green-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">Set Up Shipping</h4>
+                                <p class="text-sm text-gray-600 mt-1">Configure your shipping methods, rates, and processing times.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-gray-200 flex justify-end">
+                <button id="goToDashboard" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                    Go to Full Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 202

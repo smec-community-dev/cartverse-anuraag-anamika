@@ -328,10 +328,11 @@
                         <p class="mt-2 opacity-90">Access your seller dashboard and manage your products</p>
                     </div>
 
-                    <form id="loginForm">
+                    <form id="loginForm" method="POST" >
+                        {%csrf_token%}
                         <div class="input-group">
                             <i class="input-icon fas fa-envelope"></i>
-                            <input type="email" class="form-input" placeholder="Email Address" name="email" required>
+                            <input type="text" class="form-input" placeholder="Username" name="username" required>
                         </div>
 
                         <div class="input-group">
@@ -489,22 +490,22 @@
         </div>
     </footer>
 
-    <script>
-        // Mobile menu toggle
-        document.getElementById('mobileMenuButton').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('active');
-        });
+<!--    <script>-->
+<!--        // Mobile menu toggle-->
+<!--        document.getElementById('mobileMenuButton').addEventListener('click', function() {-->
+<!--            document.getElementById('mobileMenu').classList.toggle('active');-->
+<!--        });-->
 
-        // Form submission handler
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+<!--        // Form submission handler-->
+<!--        document.getElementById('loginForm').addEventListener('submit', function(e) {-->
+<!--            e.preventDefault();-->
 
-            // In a real application, you would send the data to a server here
-            alert('Login successful! Redirecting to your seller dashboard.');
+<!--            // In a real application, you would send the data to a server here-->
+<!--            alert('Login successful! Redirecting to your seller dashboard.');-->
 
-            // Redirect to seller dashboard (in a real app)
-            // window.location.href = 'seller-dashboard.html';
-        });
-    </script>
+<!--            // Redirect to seller dashboard (in a real app)-->
+<!--            // window.location.href = 'seller-dashboard.html';-->
+<!--        });-->
+<!--    </script>-->
 </body>
 </html>

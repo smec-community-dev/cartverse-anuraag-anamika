@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item - Seller Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .seller-nav-active {
+            background-color: #f3f4f6;
+            color: #8b5cf6;
+            font-weight: 600;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            transition: all 0.3s;
+            background: #f9fafb;
+        }
+        
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #8b5cf6;
+            background-color: #faf5ff;
+        }
+        
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .step-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .step-active {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        
+        .step-inactive {
+            background-color: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        .step-completed {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #8b5cf6;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Seller Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo & Seller Badge -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Seller</span>
+                </div>
+                
+                <!-- Seller Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Products</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Orders</a>
+                </div>
+                
+                <!-- Seller Actions -->
+                <div class="flex items-center space-x-6">
+                    <!-- Add Item Button -->
+                    <button class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 font-medium flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Add Item
+                    </button>
+                    
+                    <!-- Messages -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-envelope text-lg"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Seller Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                JS
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">John's Store</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">John's Store</p>
+                                <p class="text-sm text-gray-500">Seller Account</p>
+                            </div>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-store mr-3 text-gray-400"></i>
+                                My Store
+                            </a>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user mr-3 text-gray-400"></i>
+                                Seller Profile
+                            </a>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-wallet mr-3 text-gray-400"></i>
+                                Payouts
+                            </a>
+                            
+                            <div class="border-t border-gray-100 my-1"></div>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                Settings
+                            </a>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-question-circle mr-3 text-gray-400"></i>
+                                Help & Support
+                            </a>
+                            
+                            <div class="border-t border-gray-100 my-1"></div>
+                            
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Exit Seller Mode
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Add New Product</h1>
+            <p class="text-gray-600">List a new product in your store</p>
+        </div>
+
+        
+
+        
+        <!-- Product Form -->
+        <div class="dashboard-card p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Product Information</h2>
+            
+            <form id="productForm" method="POST" enctype="multipart/form-data">
+                {%csrf_token%}
+                <!-- Product Name -->
+                <div class="mb-6">
+                    <label for="productName" class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
+                    <input type="text" name="product_name" id="productName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter product name">
+                    <p class="text-xs text-gray-500 mt-1">This will be displayed to customers</p>
+                </div>
+                
+                <!-- Product Description -->
+                <div class="mb-6">
+                    <label for="productDescription" class="block text-sm font-medium text-gray-700 mb-2">Product Description *</label>
+                    <textarea id="productDescription" name="description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe your product in detail"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Tell customers about your product features and benefits</p>
+                </div>
+
+                <!-- Product subCategory -->
+                <div class="mb-7">
+                    <label for="productsubCategory" class="block text-sm font-medium text-gray-700 mb-2">Product Sub Category *</label>
+                    <select id="productsubCategory" name="subcategory" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="">Select a sub category</option>
+                        {% for sub in subcategories %}
+                    <option value="{{ sub.id }}">{{ sub.sub_category_name }}</option>
+                {% endfor %}
+                    </select>
+                </div>
+
+                
+                <!-- Pricing -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pricing</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="productPrice" class="block text-xs text-gray-600 mb-1">Price ($) *</label>
+                            <input type="number" name="price"  id="productPrice" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0.00">
+                        </div>
+                        
+
+                    </div>
+                </div>
+                
+                <!-- Inventory -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Inventory</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        
+                        <div>
+                            <label for="productQuantity" class="block text-xs text-gray-600 mb-1">Quantity *</label>
+                            <input type="number" name="stock" id="productQuantity" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Images -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Product Images</label>
+                    <p class="text-sm text-gray-600 mb-4">Upload high-quality images of your product</p>
+                    
+                    <!-- Main Image -->
+                    <div class="mb-4">
+                        <label class="block text-xs text-gray-600 mb-2">Main Product Image *</label>
+                        <div class="upload-area p-6 text-center cursor-pointer" id="mainImageUpload">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600">Drag & drop your main image here or <span class="text-purple-600 cursor-pointer" id="browseMain">browse</span></p>
+                            <p class="text-xs text-gray-500 mt-1">JPG, PNG up to 5MB. Recommended: 800x800px</p>
+                            <input type="file" class="hidden" id="mainImageFile" name="images" accept=".jpg,.jpeg,.png">
+
+                        </div>
+                        <div id="mainImagePreview" class="mt-2 hidden">
+                            <img src="" alt="Preview" class="h-32 rounded-lg border border-gray-200">
+                            <button type="button" class="mt-2 text-red-600 text-sm hover:text-red-800">Remove</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Images -->
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-2">Additional Images (Optional)</label>
+                        <div class="upload-area p-6 text-center cursor-pointer" id="additionalImagesUpload">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-600">Drag & drop additional images here or <span class="text-purple-600 cursor-pointer" id="browseAdd">browse</span></p>
+                            <p class="text-xs text-gray-500 mt-1">JPG, PNG up to 5MB each. Max 8 images</p>
+                            <input type="file" class="hidden"  name="images" id="additionalImagesFiles" multiple accept=".jpg,.jpeg,.png">
+                        </div>
+                        <div id="additionalImagesPreview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 hidden">
+                            <img src="" alt="Preview" class="h-32 rounded-lg border border-gray-200">
+                            <button type="button" class="mt-2 text-red-600 text-sm hover:text-red-800">Remove</button>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- Form Actions -->
+                <div class="flex justify-between pt-6 border-t border-gray-200">
+                    <button type="button" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                        <a href="/seller/seller_dashboard/">Cancel</a>
+                    </button>
+                    <div class="flex space-x-3">
+                        <button type="submit" id="publishBtn" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                            Publish Product
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Quick Tips Section -->
+        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Tips for Successful Product Listings</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex items-start">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-camera text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">High-Quality Images</h3>
+                        <p class="text-sm text-gray-600">Use clear, well-lit photos from multiple angles</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-file-alt text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">Detailed Descriptions</h3>
+                        <p class="text-sm text-gray-600">Include measurements, materials, and care instructions</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-tags text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">Competitive Pricing</h3>
+                        <p class="text-sm text-gray-600">Research similar products to set competitive prices</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-shipping-fast text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">Accurate Shipping Info</h3>
+                        <p class="text-sm text-gray-600">Provide correct weight and dimensions for shipping calculations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800">Product Published Successfully!</h2>
+            </div>
+            
+            <div class="p-6">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-check text-green-600 text-2xl"></i>
+                    </div>
+                </div>
+                <p class="text-center text-gray-700 mb-2">Your product has been published and is now visible to customers.</p>
+                <p class="text-center text-sm text-gray-500">You can view it in your products list or continue adding more products.</p>
+            </div>
+            
+            <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                <button id="viewProduct" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                    View Product
+                </button>
+                <button id="addAnother" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                    Add Another
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Image Upload Functionality
+        document.getElementById('mainImageUpload').addEventListener('click', function() {
+            document.getElementById('mainImageFile').click();
+        });
+        
+        document.getElementById('mainImageFile').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('mainImagePreview');
+                    preview.querySelector('img').src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+        
+        document.getElementById('additionalImagesUpload').addEventListener('click', function() {
+            document.getElementById('additionalImagesFiles').click();
+        });
+        document.getElementById("browseMain").addEventListener("click", function (event) {
+            event.stopPropagation(); // prevent triggering parent click
+            document.getElementById("mainImageFile").click();
+        });
+
+                document.getElementById("browseAdd").addEventListener("click", function (event) {
+            event.stopPropagation(); // prevent triggering parent click
+            document.getElementById("mainImageFile").click();
+        });
+
+
+
+        
+        // Success Modal Actions
+        document.getElementById('viewProduct').addEventListener('click', function() {
+            alert('Redirecting to product page...');
+            document.getElementById('successModal').classList.add('hidden');
+        });
+        
+        document.getElementById('addAnother').addEventListener('click', function() {
+            document.getElementById('productForm').reset();
+            document.getElementById('mainImagePreview').classList.add('hidden');
+            document.getElementById('additionalImagesPreview').classList.add('hidden');
+            document.getElementById('successModal').classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            ['mainImageUpload', 'additionalImagesUpload'].forEach(uploadAreaId => {
+                const uploadArea = document.getElementById(uploadAreaId);
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            ['mainImageUpload', 'additionalImagesUpload'].forEach(uploadAreaId => {
+                const uploadArea = document.getElementById(uploadAreaId);
+                uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            ['mainImageUpload', 'additionalImagesUpload'].forEach(uploadAreaId => {
+                const uploadArea = document.getElementById(uploadAreaId);
+                uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
+            });
+        });
+    </script>
+</body>
+</html>
