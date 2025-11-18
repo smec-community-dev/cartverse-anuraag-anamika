@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator
 from django.shortcuts import render,redirect
-
+from django.db.models import Sum,F
 # Create your views here.
 from core.models import User
 # from seed import subcategories
@@ -73,7 +73,6 @@ def seller_dashboard(request):
     print(seller.shop_name)
     if seller.user.role=='seller':
         products = Product.objects.filter(seller=seller).order_by('id')[:3]
-        product=Product.objects.filter(seller=seller)
         order = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
         print(order)
     else:
@@ -85,27 +84,40 @@ def seller_dashboard(request):
 @role_required("seller", login_url="/seller/login")
 def seller_product(request):
     seller = Seller.objects.get(user=request.user)
-    category=Category.objects.all()
-    print(category)
-    print(seller.shop_name)
-    if seller.user.role == 'seller':
-        products = Product.objects.filter(seller=seller)
-        search = request.GET.get('search')
-        best_selling=Product.objects.filter(seller=seller).order_by('stock')
+    categories = Category.objects.all()
 
-        if search:
-            products = products.filter(product_name__icontains=search)
-        category_id = request.GET.get("category")
-        if category_id:
-            products = products.filter(category_id=category_id)
-    else:
+    if seller.user.role != 'seller':
         return redirect('/seller/login')
-    paginator=Paginator(products,2)
-    page_no=request.GET.get("page")
-    page_obj=paginator.get_page(page_no)
+
+    products = Product.objects.filter(seller=seller).annotate(
+        total_sold=Sum('orderitem__quantity',default=0),
+        total_stock=F('stock')-Sum('orderitem__quantity',default=0),
+        total_amount=F('price')*F('orderitem__quantity')
+    )
 
 
-    return render(request,'seller/sellerproducts.html',{"seller":seller,"products":products,"page_obj":page_obj,"count":products.count(),"categories":category,'bestseller':best_selling})
+    search = request.GET.get('search')
+    if search:
+        products = products.filter(product_name__icontains=search)
+
+    category_id = request.GET.get("category")
+    if category_id:
+        products = products.filter(category_id=category_id)
+
+    paginator = Paginator(products, 2)
+    page_no = request.GET.get("page")
+    page_obj = paginator.get_page(page_no)
+
+    bestseller = products.order_by('-total_sold')[:5]
+
+    return render(request, 'seller/sellerproducts.html', {
+        "seller": seller,
+        "page_obj": page_obj,
+        "count": products.count(),
+        "categories": categories,
+        "bestseller": bestseller
+
+    })
 
 @role_required("seller", login_url="/seller/login")
 def seller_editproduct(request,id,slug):
@@ -189,7 +201,6 @@ def seller_delete_product(request,id,slug):
 @role_required("seller", login_url="/seller/login")
 def order_products(request):
 
-
     seller=Seller.objects.get(user=request.user)
     products=Product.objects.filter(seller=seller)
     order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product').order_by('-id')
@@ -210,3 +221,10 @@ def seller_logout(request):
 
     return render(request, 'seller/login.html')
 
+
+def single_order_product(request):
+    seller = Seller.objects.get(user=request.user)
+    products = Product.objects.filter(seller=seller)
+
+
+    return render(request,'seller/orderproducts.html',{"products":products})
