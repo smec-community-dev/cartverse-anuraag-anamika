@@ -480,6 +480,28 @@
     event.stopPropagation();
     document.getElementById("additionalImagesFiles").click();
 });
+document.getElementById('additionalImagesFiles').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('additionalImagesPreview');
+    previewContainer.innerHTML = "";
+    const files = e.target.files;
+
+    if (files.length > 0) {
+        previewContainer.classList.remove('hidden');
+    }
+
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.classList.add('h-32','rounded-lg','border','border-gray-200');
+            previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+
+
 
 
 

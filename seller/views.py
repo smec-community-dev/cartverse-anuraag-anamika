@@ -1,13 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator
-from django.shortcuts import render,redirect
-from django.db.models import Sum,F
+from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
+from django.db.models import Sum,F,Q
 # Create your views here.
 from core.models import User
 # from seed import subcategories
 from django.utils.text import slugify
 from seller.models import Seller,Product,ProductImage,SubCategory,Category
-from user.models import OrderItem
+from user.models import OrderItem,Order
 from decorators.decorators import role_required
 
 def seller_register(request):
@@ -108,7 +108,7 @@ def seller_product(request):
     page_no = request.GET.get("page")
     page_obj = paginator.get_page(page_no)
 
-    bestseller = products.order_by('-total_sold')[:5]
+    bestseller = products.order_by('-total_sold')[:3]
 
     return render(request, 'seller/sellerproducts.html', {
         "seller": seller,
@@ -204,8 +204,14 @@ def order_products(request):
     seller=Seller.objects.get(user=request.user)
     products=Product.objects.filter(seller=seller)
     order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product').order_by('-id')
-
-    paginator = Paginator(products, 2)
+    search = request.GET.get('search')
+    if search:
+        order_items = order_items.filter(
+            Q(product__product_name__icontains=search) |
+            Q(order__id__icontains=search) |
+            Q(order__user__username__icontains=search)
+        )
+    paginator = Paginator(order_items, 2)
     page_no = request.GET.get("page")
     page_obj = paginator.get_page(page_no)
     return render(request,'seller/sellorder.html', {"seller": seller,"order_item":order_items,'page_obj':page_obj})
@@ -221,10 +227,38 @@ def seller_logout(request):
 
     return render(request, 'seller/login.html')
 
-
-def single_order_product(request):
+@role_required("seller", login_url="/seller/login")
+def single_order_product(request, product_slug):
     seller = Seller.objects.get(user=request.user)
-    products = Product.objects.filter(seller=seller)
 
+    product = get_object_or_404(Product, slug=product_slug, seller=seller)
 
-    return render(request,'seller/orderproducts.html',{"products":products})
+    order_items = OrderItem.objects.filter(product=product)
+
+    if not order_items.exists():
+        return HttpResponse('not found')
+
+    return render(request, 'seller/orderproducts.html', {
+        "product": product,
+        "order_item": order_items,
+    })
+
+@role_required("seller", login_url="/seller/login")
+def seller_profile(request):
+    seller = Seller.objects.get(user=request.user)
+    user = request.user
+
+    if request.method == "POST":
+        user.first_name = request.POST.get("first_name")
+        user.last_name = request.POST.get("last_name")
+        user.email = request.POST.get("email")
+        user.phone_number = request.POST.get("phone")
+        user.save()
+        seller.shop_name = request.POST.get("shop_name")
+        seller.location = request.POST.get("location")
+        seller.save()
+        print("updated")
+
+        return redirect("/seller/seller_profile/")
+
+    return render(request, "seller/sellersettings.html", {"seller": seller,"user": user})
