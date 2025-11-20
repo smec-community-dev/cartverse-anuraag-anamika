@@ -68,7 +68,7 @@ def home(request):
         cart_count = 0
     return render(request,'user/home.html',{'count':wishlist_count,'cart':cart_count})
 
-@role_required('customer','/user/login')
+
 def product_list(request):
         products=Product.objects.prefetch_related('images').all()
         search=request.GET.get('search')
@@ -147,8 +147,6 @@ def user_logout(request):
 @role_required('customer', '/user/login')
 def add_cart(request, slug):
         product = Product.objects.get(slug=slug)
-
-        # Read quantity from form
         qty = int(request.POST.get("quantity", 1))
 
         # Prevent adding more than stock
@@ -163,7 +161,6 @@ def add_cart(request, slug):
         )
 
         if not created:
-            # If cart already contains item, add new qty
             if cart_item.quantity + qty <= product.stock:
                 cart_item.quantity += qty
                 cart_item.save()
@@ -195,7 +192,6 @@ def update_quantity(request, cart_id):
             return redirect("cart")
 
         if qty < 1:
-            # If user enters less than 1, remove item
             cart_item.delete()
             messages.success(request, "Item removed from cart.")
         elif qty > cart_item.product.stock:
@@ -255,7 +251,6 @@ def place_order(request):
                 quantity=qty,
                 price=item.price
             )
-            # Reduce stock
             item.product.stock -= qty
             item.product.save()
 
@@ -266,7 +261,7 @@ def place_order(request):
     return redirect('order_success')
 
 
-# ===================== BUY NOW ===================== #
+
 @role_required('customer', '/user/login')
 def buy_now(request, slug):
     product = Product.objects.get(slug=slug)
@@ -324,6 +319,16 @@ def place_order_buy_now(request):
 
 
 @role_required('customer', '/user/login')
+def order_details(request, order_id):
+    order = Order.objects.get(id=order_id, user=request.user)
+    order_items = OrderItem.objects.filter(order=order)
+    return render(request, "user/order_details.html", {
+        "order": order,
+        "order_items": order_items
+    })
+
+
+@role_required('customer', '/user/login')
 def order_success(request):
     latest_order = Order.objects.filter(user=request.user).order_by('-order_date').first()
     return render(request, "user/order_success page.html", {"order": latest_order})
@@ -346,10 +351,8 @@ def add_address(request):
 
         if not (full_name and phone and address_line1 and city and state and pincode):
             messages.error(request, "Please fill in all required fields.")
-            return redirect("add_address")  # or reload the page
+            return redirect("add_address")
 
-        if is_default:
-            Address.objects.filter(user=request.user, is_default=True).update(is_default=False)
 
         Address.objects.create(
             user=request.user,
@@ -373,9 +376,7 @@ def add_address(request):
 
 @role_required('customer', '/user/login')
 def edit_address(request, address_id):
-    """
-    Edit an existing address for the logged-in user.
-    """
+
     address = Address.objects.get( id=address_id, user=request.user)
 
     if request.method == "POST":
@@ -388,17 +389,13 @@ def edit_address(request, address_id):
         pincode = request.POST.get("pincode")
         country = request.POST.get("country", "India")
         is_default = request.POST.get("is_default") == "on"
-
-        # Basic validation
         if not (full_name and phone and address_line1 and city and state and pincode):
             messages.error(request, "Please fill in all required fields.")
             return redirect("edit_address", address_id=address.id)
 
         if is_default:
-            # Remove default from other addresses
             Address.objects.filter(user=request.user, is_default=True).exclude(id=address.id).update(is_default=False)
 
-        # Update the address
         address.full_name = full_name
         address.phone = phone
         address.address_line1 = address_line1
@@ -411,7 +408,7 @@ def edit_address(request, address_id):
         address.save()
 
         messages.success(request, "Address updated successfully!")
-        return redirect("add_address")  # redirect back to address list
+        return redirect("add_address")
 
     return render(request, "user/address_edit.html", {"address": address})
 def delete_address(request, address_id):
@@ -421,22 +418,20 @@ def delete_address(request, address_id):
     messages.success(request, "Address deleted successfully!")
 
     return redirect("add_address")
-# def categories(request):
-#     categories = Category.objects.all().prefetch_related("subcategory_set")
-#
-#     return render(request, "user/category.html", {"x": categories})
-#
-# def subcategory_products(request, id):
-#     subcategory = SubCategory.objects.get(id=id)
-#     products = Product.objects.filter(subcategory=subcategory)
-#
-#     return render(request, "subcategory_products.html", {
-#         "subcategory": subcategory,
-#         "products": products,
-#     })
-# def category_filter(request, slug):
-#     category = Category.objects.get(slug=slug)
-#     subcats = category.subcategories.all()
-#     products = Product.objects.filter(subcategory__in=subcats).select_related("subcategory")
-#
-#     return render(request, "user/user_home.html", {"x": products,  "selected_category": category,})
+
+
+def subcategory_list(request):
+    subcategories = SubCategory.objects.all()
+    return render(request, "user/subcategory_list.html", {
+        "subcategories": subcategories
+    })
+
+def products_by_subcategory(request, sub_id):
+    subcategory = SubCategory.objects.get(id=sub_id)
+    products = Product.objects.filter(subcategory=subcategory)
+
+    return render(request, "user/products_by_subcategory.html", {
+        "subcategory": subcategory,
+        "products": products
+    })
+
