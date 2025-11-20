@@ -1,13 +1,16 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404
-from django.db.models import Sum,F,Q
+from django.db.models import Sum,F,Q,Avg,Count
 # Create your views here.
 from core.models import User
 # from seed import subcategories
 from django.utils.text import slugify
+from django.db.models.functions import TruncMonth
 from seller.models import Seller,Product,ProductImage,SubCategory,Category
-from user.models import OrderItem,Order
+from user.models import OrderItem,Order,Review,Customer
 from decorators.decorators import role_required
 
 def seller_register(request):
@@ -18,7 +21,7 @@ def seller_register(request):
             last_name = request.POST.get('last_name')
             phone = request.POST.get('phone')
             password = request.POST.get('password')
-            confirm_password = request.POST.get('check_password')  # ✔ matches HTML field
+            confirm_password = request.POST.get('check_password')
             shop_name = request.POST.get('shop_name')
             location = request.POST.get('location')
 
@@ -70,16 +73,46 @@ def seller_login(request):
 @role_required("seller", login_url="/seller/login")
 def seller_dashboard(request):
     seller = Seller.objects.get(user=request.user)
-    print(seller.shop_name)
-    if seller.user.role=='seller':
-        products = Product.objects.filter(seller=seller).order_by('id')[:3]
-        order = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
-        print(order)
-    else:
+    review=Review.objects.all()
+    if seller.user.role != 'seller':
         return redirect('/seller/login')
 
+    products = Product.objects.filter(seller=seller).order_by('-id')[:3]
 
-    return render(request,'seller/sellerdashboard.html',{"seller":seller,"products":products,"count":products.count(),'order':order})
+    order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
+
+    total_revenue = order_items.aggregate(
+        revenue=Sum(F('quantity') * F('price'))
+    )['revenue'] or 0
+
+    category_revenue = (
+        order_items
+        .values('product__subcategory__category__category_name')
+        .annotate(total_revenue=Sum(F('quantity') * F('price')))
+        .order_by('-total_revenue')
+    )
+
+    cat_labels = [entry['product__subcategory__category__category_name'] for entry in category_revenue]
+    cat_values = [float(entry['total_revenue']) for entry in category_revenue]
+
+    store_rating = Review.objects.filter(product__seller=seller).aggregate(
+        avg_rating=Avg('rating')
+    )['avg_rating'] or 0
+
+    store_rating = round(store_rating, 1)
+
+    return render(request, 'seller/sellerdashboard.html', {
+        "seller": seller,
+        "products": products,
+        "count": products.count(),
+        "order_items": order_items,
+        "order_count": order_items.count(),
+        "revenue": total_revenue,
+        "cat_labels": json.dumps(cat_labels),
+        "cat_values": json.dumps(cat_values),
+        "r_count":review,
+        "store_rating":store_rating
+    })
 
 @role_required("seller", login_url="/seller/login")
 def seller_product(request):
@@ -115,7 +148,7 @@ def seller_product(request):
         "page_obj": page_obj,
         "count": products.count(),
         "categories": categories,
-        "bestseller": bestseller
+        "bestseller": bestseller,
 
     })
 
