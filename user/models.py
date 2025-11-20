@@ -48,18 +48,28 @@ class ReviewImage(models.Model):
     def __str__(self):
         return f"Image for Review ID {self.review.id}"
 
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
+
+    full_name = models.CharField(max_length=150)
+    phone = models.CharField(max_length=15)
+    address_line1 = models.CharField(max_length=255)
+    address_line2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=10)
+    country = models.CharField(max_length=100, default="India")
+
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.full_name}, {self.address_line1}, {self.city}"
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     total_amount = models.FloatField()
 
-    address = models.ForeignKey(
-        "Address",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="orders"
-    )
+    address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
 
     order_date = models.DateField(auto_now_add=True)
     slug = models.SlugField(blank=True, null=True)
@@ -91,19 +101,4 @@ class OrderItem(models.Model):
         return f"{self.product.product_name} - {self.quantity}"
 
 
-class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
 
-    full_name = models.CharField(max_length=150)
-    phone = models.CharField(max_length=15)
-    address_line1 = models.CharField(max_length=255)
-    address_line2 = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    pincode = models.CharField(max_length=10)
-    country = models.CharField(max_length=100, default="India")
-
-    is_default = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.full_name}, {self.address_line1}, {self.city}"

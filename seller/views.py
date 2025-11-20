@@ -228,18 +228,19 @@ def seller_logout(request):
     return render(request, 'seller/login.html')
 
 @role_required("seller", login_url="/seller/login")
-def single_order_product(request, product_slug):
+def single_order_product(request,slug):
     seller = Seller.objects.get(user=request.user)
 
-    product = get_object_or_404(Product, slug=product_slug, seller=seller)
-
-    order_items = OrderItem.objects.filter(product=product)
-
+    # or_slug=Order.objects.get(slug=slug)
+    order_items = OrderItem.objects.filter(order__slug=slug,product__seller=seller)
     if not order_items.exists():
         return HttpResponse('not found')
+    order = order_items.first().order
+    product = order_items.first().product
 
     return render(request, 'seller/orderproducts.html', {
         "product": product,
+        "order":order,
         "order_item": order_items,
     })
 
