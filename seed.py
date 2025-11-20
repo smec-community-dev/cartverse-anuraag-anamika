@@ -11,7 +11,7 @@ django.setup()
 
 from core.models import User, Category, SubCategory
 from seller.models import Seller, Product, ProductImage
-from user.models import Customer, Cart, Order, OrderItem, Wishlist, Review
+from user.models import Customer, Cart, Order, OrderItem, Wishlist, Review, Address
 
 fake = Faker()
 
@@ -72,14 +72,9 @@ users = list(User.objects.all())
 # ------------------- CATEGORIES & SUBCATEGORIES -------------------
 print("Creating Categories & Subcategories...")
 for cat_name in CATEGORY_MAPPING:
-    cat, _ = Category.objects.get_or_create(
-        category_name=cat_name
-    )
+    cat, _ = Category.objects.get_or_create(category_name=cat_name)
     for sub_name in CATEGORY_MAPPING[cat_name]:
-        SubCategory.objects.get_or_create(
-            category=cat,
-            sub_category_name=sub_name
-        )
+        SubCategory.objects.get_or_create(category=cat, sub_category_name=sub_name)
 
 categories = list(Category.objects.all())
 subcategories = list(SubCategory.objects.all())
@@ -97,7 +92,7 @@ for u in seller_users:
         user=u,
         defaults={
             "shop_name": fake.company(),
-            "location": fake.address()
+            "location": fake.address(),
         }
     )
     sellers.append(seller)
@@ -114,6 +109,7 @@ for subcat in subcategories:
     for name in names:
         seller = random.choice(sellers)
         price = random.randint(300, 80000)
+
         product = Product.objects.create(
             seller=seller,
             subcategory=subcat,
@@ -121,76 +117,96 @@ for subcat in subcategories:
             slug=slugify(name),
             description=fake.paragraph(),
             price=price,
-            stock=random.randint(5, 50)
+            stock=random.randint(5, 50),
         )
+
         # Add 2-4 images
         for i in range(random.randint(2, 4)):
             img_path = f"media/products/{product.id}_{i}.jpg"
             generate_image(img_path, name)
+
             ProductImage.objects.create(
                 product=product,
                 seller=seller,
                 product_image=f"products/{product.id}_{i}.jpg"
             )
+
         products.append(product)
 
 # ------------------- CUSTOMERS -------------------
 print("Creating Customers...")
 customer_users = [u for u in users if u.role == "customer"]
+
 for u in customer_users:
     path = f"media/profiles/{u.username}.jpg"
     generate_image(path, u.username)
-    from user.models import Customer
+
     Customer.objects.get_or_create(
         user=u,
         defaults={
-            "address": fake.address()
+            "address": fake.address(),
         }
     )
 
-# ------------------- CART -------------------
+# ------------------- ADDRESS -------------------
+print("Creating Addresses...")
+addresses = {}
+
+for cu in customer_users:
+    addr = Address.objects.create(
+        user=cu,
+        full_name=fake.name(),
+        phone=fake.phone_number(),
+        address_line1=fake.street_address(),
+        address_line2=fake.secondary_address(),
+        city=fake.city(),
+        state=fake.state(),
+        pincode=fake.postcode(),
+        country="India",
+        is_default=True,
+    )
+    addresses[cu] = addr
+
+# ------------------- CART ITEMS -------------------
 print("Creating Cart Items...")
-from user.models import Cart
 for cu in customer_users:
     for _ in range(2):
         Cart.objects.create(
             user=cu,
             product=random.choice(products),
             quantity=random.randint(1, 3),
-            price=random.randint(300, 80000)
+            price=random.randint(300, 80000),
         )
 
 # ------------------- ORDERS & ORDER ITEMS -------------------
 print("Creating Orders...")
-from user.models import Order, OrderItem
 for cu in customer_users:
     order = Order.objects.create(
         user=cu,
         total_amount=random.randint(800, 20000),
-        address=fake.address()
+        address=addresses[cu],      # <-- FIXED
     )
+
     for _ in range(random.randint(1, 4)):
         OrderItem.objects.create(
             order=order,
             product=random.choice(products),
             price=random.randint(300, 80000),
             quantity=random.randint(1, 3),
-            status="Pending"
+            status="Pending",
         )
 
 # ------------------- WISHLIST -------------------
 print("Creating Wishlists...")
-from user.models import Wishlist
 for cu in customer_users:
     for _ in range(2):
         Wishlist.objects.create(
             user=cu,
-            product=random.choice(products)
+            product=random.choice(products),
         )
 
 # ------------------- REVIEWS -------------------
 print("Creating Reviews...")
-from user.models import Review
 for cu in customer_users:
     for _ in range(3):
         product = random.choice(products)
@@ -198,8 +214,7 @@ for cu in customer_users:
             user=cu,
             product=product,
             rating=random.randint(3, 5),
-            review_comment=random.choice(REVIEW_TEXTS)
+            review_comment=random.choice(REVIEW_TEXTS),
         )
 
 print("✅ Dummy Data Created Successfully!")
-

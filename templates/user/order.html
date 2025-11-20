@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color:#f5f5f5; color:#333; line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
+
+        /* Header Styles */
+        nav { background-color:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.1); position:sticky; top:0; z-index:100; }
+        .nav-container { max-width:1200px; margin:0 auto; padding:0 20px; }
+        .nav-content { display:flex; justify-content:space-between; align-items:center; padding:15px 0; }
+        .logo { display:flex; align-items:center; }
+        .logo i { font-size:24px; color:#8b5cf6; margin-right:8px; }
+        .logo span { font-size:20px; font-weight:bold; color:#1f2937; }
+        .nav-links { display:flex; gap:32px; align-items:center; }
+        .nav-links a { text-decoration:none; color:#1f2937; font-weight:500; transition: color 0.3s; }
+        .nav-links a:hover { color:#8b5cf6; }
+        .user-section { display:flex; align-items:center; gap:24px; }
+        .search-container { position:relative; }
+        .search-input { padding:10px 40px 10px 16px; border:1px solid #d1d5db; border-radius:9999px; width:256px; outline:none; transition:all 0.3s; }
+        .search-input:focus { border-color:#8b5cf6; box-shadow:0 0 0 2px rgba(139,92,246,0.2); }
+        .search-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:#9ca3af; }
+        .icon-link { color:#4b5563; text-decoration:none; position:relative; transition: color 0.3s; }
+        .icon-link:hover { color:#8b5cf6; }
+        .icon-badge { position:absolute; top:-8px; right:-8px; background-color:#8b5cf6; color:white; font-size:12px; border-radius:50%; height:20px; width:20px; display:flex; align-items:center; justify-content:center; }
+        .user-profile { display:flex; align-items:center; gap:8px; position:relative; cursor:pointer; }
+        .avatar { width:32px; height:32px; background:linear-gradient(to right, #8b5cf6, #4f46e5); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:600; }
+        .user-name { color:#4b5563; font-weight:500; }
+        .dropdown-arrow { color:#6b7280; font-size:12px; }
+        .dropdown-menu { position:absolute; top:100%; right:0; margin-top:8px; width:224px; background-color:white; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.1); border:1px solid #e5e7eb; z-index:50; display:none; }
+        .dropdown-menu.active { display:block; }
+        .dropdown-header { padding:12px 16px; border-bottom:1px solid #f3f4f6; }
+        .dropdown-name { font-size:14px; font-weight:600; color:#1f2937; }
+        .dropdown-email { font-size:12px; color:#6b7280; }
+        .dropdown-item { display:flex; align-items:center; padding:10px 16px; color:#4b5563; text-decoration:none; font-size:14px; transition: background-color 0.2s; }
+        .dropdown-item:hover { background-color:#f9fafb; }
+        .dropdown-item i { margin-right:12px; width:16px; text-align:center; color:#9ca3af; }
+        .dropdown-divider { height:1px; background-color:#f3f4f6; margin:4px 0; }
+        .dropdown-item.signout { color:#dc2626; }
+        .dropdown-item.signout:hover { background-color:#fef2f2; }
+
+        /* Main Content Styles */
+        .container { max-width:1200px; margin:0 auto; padding:20px; flex:1; }
+        h1 { color:#1f2937; margin-bottom:20px; font-size:28px; }
+        h2 { color:#1f2937; margin-bottom:15px; font-size:22px; border-bottom:1px solid #eee; padding-bottom:10px; }
+        .order-content { display:grid; grid-template-columns:2fr 1fr; gap:30px; }
+        .order-details, .order-summary, .shipping-info { background-color:#fff; border-radius:8px; padding:25px; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+        .cart-item { display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #eee; }
+        .item-info { flex:1; display:flex; align-items:center; gap:15px; }
+        .item-name { font-weight:600; font-size:18px; margin-bottom:5px; }
+        .item-stock { color:#666; font-size:14px; }
+        .item-price { font-weight:600; font-size:18px; }
+        .continue-shopping { display:inline-block; margin-top:20px; color:#3b82f6; text-decoration:none; font-weight:500; }
+        .summary-row { display:flex; justify-content:space-between; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #eee; }
+        .total-row { display:flex; justify-content:space-between; margin-top:20px; padding-top:15px; border-top:2px solid #eee; font-weight:bold; font-size:18px; }
+        .place-order-btn { background-color:#10b981; color:white; border:none; padding:15px; width:100%; border-radius:5px; font-size:18px; font-weight:600; cursor:pointer; margin-top:20px; transition: background-color 0.3s; }
+        .place-order-btn:hover { background-color:#059669; }
+
+        /* Form */
+        .form-group { margin-bottom:20px; }
+        label { display:block; margin-bottom:8px; font-weight:500; }
+        input, textarea, select { width:100%; padding:12px; border:1px solid #ddd; border-radius:5px; font-size:16px; }
+        textarea { height:100px; resize:vertical; }
+
+        /* Footer */
+        footer { background-color:#1f2937; color:white; padding:48px 0 24px; margin-top:48px; }
+        .footer-container { max-width:1200px; margin:0 auto; padding:0 20px; }
+        .footer-grid { display:grid; grid-template-columns:repeat(1,1fr); gap:32px; margin-bottom:32px; }
+        @media (min-width:768px) { .footer-grid { grid-template-columns:repeat(2,1fr); } }
+        @media (min-width:1024px) { .footer-grid { grid-template-columns:repeat(4,1fr); } }
+        .footer-company h3 { display:flex; align-items:center; margin-bottom:16px; font-size:20px; }
+        .footer-company h3 i { color:#a78bfa; margin-right:8px; }
+        .footer-company p { color:#9ca3af; margin-bottom:16px; }
+        .social-links { display:flex; gap:16px; }
+        .social-links a { color:#9ca3af; transition:color 0.3s; }
+        .social-links a:hover { color:white; }
+        .footer-section h3 { font-size:18px; font-weight:600; margin-bottom:16px; }
+        .footer-links { list-style:none; }
+        .footer-links li { margin-bottom:8px; }
+        .footer-links a { color:#9ca3af; text-decoration:none; transition:color 0.3s; }
+        .footer-links a:hover { color:white; }
+        .contact-info { list-style:none; }
+        .contact-info li { display:flex; align-items:flex-start; margin-bottom:12px; color:#9ca3af; }
+        .contact-info i { color:#a78bfa; margin-right:12px; margin-top:4px; }
+        .footer-bottom { border-top:1px solid #374151; padding-top:24px; text-align:center; color:#9ca3af; }
+        @media (max-width:768px) { .order-content { grid-template-columns:1fr; } .search-input { display:none; } .user-name { display:none; } }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-content">
+                <div class="logo"><i class="fas fa-shopping-bag"></i><span>StyleCart</span></div>
+                <div class="nav-links">
+                    <a href="{% url 'home' %}">Home</a>
+                    <a href="{% url 'user_home' %}">Shop</a>
+                    <a href="#">Categories</a>
+                    <a href="#">Deals</a>
+                </div>
+                <div class="user-section">
+                    <div class="search-container">
+                        <input type="text" placeholder="Search products..." class="search-input">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <a href="{% url 'wishlist' %}" class="icon-link"><i class="far fa-heart text-xl"></i><span class="icon-badge">3</span></a>
+                    <a href="{% url 'cart' %}" class="icon-link"><i class="fas fa-shopping-cart text-xl"></i><span class="icon-badge">2</span></a>
+                    <div class="user-profile" id="userProfile">
+                        <div class="avatar">JS</div>
+                        <span class="user-name">{{ request.user.username }}</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        <div class="dropdown-menu" id="dropdownMenu">
+                            <div class="dropdown-header">
+                                <div class="dropdown-name">{{ request.user.username }}</div>
+                                <div class="dropdown-email">{{ request.user.email }}</div>
+                            </div>
+                            <a href="#" class="dropdown-item"><i class="fas fa-user"></i>My Profile</a>
+                            <a href="#" class="dropdown-item"><i class="fas fa-shopping-bag"></i>My Orders</a>
+                            <a href="{% url 'wishlist' %}" class="dropdown-item"><i class="fas fa-heart"></i>My Wishlist</a>
+                            <a href="#" class="dropdown-item"><i class="fas fa-map-marker-alt"></i>Addresses</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item"><i class="fas fa-cog"></i>Account Settings</a>
+                            <a href="#" class="dropdown-item"><i class="fas fa-question-circle"></i>Help & Support</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'logout' %}" class="dropdown-item signout"><i class="fas fa-sign-out-alt"></i>Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Complete Your Order</h1>
+        <form method="POST" action="{% url 'place_order' %}">
+            {% csrf_token %}
+            <div class="order-content">
+                <div class="order-column">
+                    <div class="order-details">
+                        <h2>Items in your cart</h2>
+                        {% for item in cart_items %}
+                        <div class="cart-item">
+                            <div class="item-info">
+                                <div class="item-image">
+                                    <img src="{{ item.product.images.first.product_image.url }}" alt="{{ item.product.product_name }}" style="width:80px;height:80px;object-fit:cover;border-radius:5px;">
+                                </div>
+                                <div>
+                                    <div class="item-name">{{ item.product.product_name }}</div>
+                                    <div class="item-stock">Stock: {{ item.product.stock }}</div>
+                                    <div class="quantity-selector" style="margin-top:8px; display:flex; align-items:center; gap:5px;">
+                                        <label for="quantity_{{ item.id }}">Qty:</label>
+                                        <input type="number" id="quantity_{{ item.id }}" name="quantities[{{ item.id }}]" min="1" max="{{ item.product.stock }}" value="{{ item.quantity }}" style="width:60px;padding:4px;text-align:center;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item-price">₹{{ item.price|floatformat:2 }}</div>
+                        </div>
+                        {% endfor %}
+
+                        <a href="{% url 'user_home' %}" class="continue-shopping">Continue Shopping</a>
+                    </div>
+
+                    <div class="shipping-info">
+                        <h2>Shipping Information</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" value="{{ request.user.username }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Select Shipping Address</label>
+                            <select id="address" name="address_id" required>
+                                {% for addr in request.user.addresses.all %}
+                                <option value="{{ addr.id }}">
+                                    {{ addr.full_name }}, {{ addr.address_line1 }}, {{ addr.city }} {% if addr.is_default %}(Default){% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2>Order Summary</h2>
+                    <div class="summary-row">
+                        <span>Subtotal ({{ cart_items.count }} items)</span>
+                        <span>₹{{ total }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>₹0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Total</span>
+                        <span>₹{{ total }}</span>
+                    </div>
+                    <a href="{% url 'order_success' %}"><button type="submit" id="placeOrderBtn" class="place-order-btn">Place Order</button></a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-company">
+                    <h3><i class="fas fa-shopping-bag"></i>StyleCart</h3>
+                    <p>Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // User profile dropdown functionality
+        const userProfile = document.getElementById('userProfile');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        userProfile.addEventListener('click', function() { dropdownMenu.classList.toggle('active'); });
+        document.addEventListener('click', function(event) {
+            if (!userProfile.contains(event.target)) { dropdownMenu.classList.remove('active'); }
+        });
+    </script>
+</body>
+</html>

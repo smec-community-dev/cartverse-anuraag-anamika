@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="{% url 'home' %}" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
+                    <a href="{% url 'user_home' %}" class="text-gray-800 hover:text-purple-600 font-medium">shop</a>
+                    <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
+                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
+                </div>
+
+                <!-- User Section -->
+                <div class="flex items-center space-x-6">
+                    <!-- Search -->
+                    <!-- Wishlist Icon -->
+                              <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 relative">
+                <i class="far fa-heart text-xl"></i>
+                <span class="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {{ count }}
+                </span>
+            </a>
+
+
+                    <!-- Cart -->
+                    <div class="relative">
+                        <a href="cart.html" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-shopping-cart text-lg"></i>
+                        </a>
+                        <span class="cart-count">{{ cart_items.count }}</span>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                {{ request.user.first_name|first }}{{ request.user.last_name|first }}
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                                <p class="text-sm text-gray-500">{{ request.user.email }}</p>
+                            </div>
+
+                            <a href="myprofile.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user mr-3 text-gray-400"></i>
+                                My Profile
+                            </a>
+
+                            <a href="myorders.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-shopping-bag mr-3 text-gray-400"></i>
+                                My Orders
+                            </a>
+
+                            <a href="{% url 'wishlist' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-heart mr-3 text-gray-400"></i>
+                                My Wishlist
+                            </a>
+
+                            <a href="address.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-map-marker-alt mr-3 text-gray-400"></i>
+                                Addresses
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="account.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                Account Settings
+                            </a>
+
+                            <a href="support.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-question-circle mr-3 text-gray-400"></i>
+                                Help & Support
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="{% url 'logout' %}" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-grow py-12 px-4">
+        <div class="container mx-auto max-w-6xl">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Your Shopping Cart</h1>
+                <span class="text-gray-600">{{ cart_items.count }} items</span>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+
+                <!-- Cart Items -->
+                <div class="w-full lg:w-2/3">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+
+                        <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 px-6 -mx-6 -mt-6 mb-6">
+                            <h2 class="text-xl font-bold">Items in your cart</h2>
+                        </div>
+
+                        {% for item in cart_items %}
+                        <div class="border-b border-gray-200 py-6 flex flex-col sm:flex-row">
+
+                            <!-- Image -->
+
+
+
+                            <!-- Info -->
+                            <div class="sm:ml-4 flex-grow">
+                                <div class="flex flex-col sm:flex-row justify-between">
+
+                                    <!-- Product Title -->
+                                    <div class="mb-4 sm:mb-0">
+                                        <h3 class="font-semibold text-lg">{{ item.product.product_name }}</h3>
+                                        <p class="text-gray-600 text-sm">Stock: {{ item.product.stock }}</p>
+                                        <p class="text-purple-600 font-bold mt-1">₹{{ item.price }}</p>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="flex justify-between sm:flex-col sm:items-end">
+
+                                        <!-- Delete Button -->
+                                        <a href="{% url 'remove_cart' item.id %}"
+                                           class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+
+                                        <!-- Quantity Buttons -->
+                                        <div class="flex items-center mt-2">
+
+                                      <form method="POST" action="{% url 'update_quantity' item.id %}">
+    {% csrf_token %}
+    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}"
+           class="w-16 border rounded px-2 py-1 text-center">
+    <button type="submit" class="ml-2 bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700">
+        Update
+    </button>
+</form>
+
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        {% empty %}
+                        <p class="text-center text-gray-600 py-10">Your cart is empty.</p>
+                        {% endfor %}
+
+                        <!-- Continue Shopping -->
+                        <div class="mt-6">
+                            <a href="{% url 'user_home' %}" class="inline-flex items-center text-purple-600 font-medium hover:text-purple-700">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Continue Shopping
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="w-full lg:w-1/3 mt-8 lg:mt-0">
+                    <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+
+                        <h2 class="text-xl font-bold mb-4">Order Summary</h2>
+
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal ({{ cart_items.count }} items)</span>
+                                <span class="font-medium">₹{{ total }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping</span>
+                                <span class="font-medium">₹50</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tax</span>
+                                <span class="font-medium">₹25</span>
+                            </div>
+                            <div class="flex justify-between text-green-600">
+                                <span>Discount</span>
+                                <span>-₹10</span>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4 mb-4">
+                            <div class="flex justify-between text-lg font-bold">
+                                <span>Total</span>
+                                <span>₹{{ total|add:50|add:25|add:-10 }}</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'order_page' %}">
+                        <button class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 transition-all shadow-md">
+                            Proceed to Checkout
+                        </button>
+                        </a>
+                        <!-- Payment Icons -->
+                        <div class="mt-6">
+                            <h3 class="font-semibold mb-3">We Accept</h3>
+                            <div class="flex space-x-2">
+                                <i class="fab fa-cc-visa text-blue-600 text-3xl"></i>
+                                <i class="fab fa-cc-mastercard text-red-600 text-3xl"></i>
+                                <i class="fab fa-cc-amex text-blue-500 text-3xl"></i>
+                                <i class="fab fa-cc-paypal text-blue-700 text-3xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 text-sm text-gray-600">
+                            <p class="flex items-center"><i class="fas fa-shield-alt text-purple-500 mr-2"></i> Secure checkout</p>
+                            <p class="flex items-center mt-2"><i class="fas fa-truck text-purple-500 mr-2"></i> Free returns within 30 days</p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.dropdown');
+
+            dropdowns.forEach(dropdown => {
+                dropdown.addEventListener('click', function(e) {
+                    if (window.innerWidth < 768) {
+                        e.preventDefault();
+                        const menu = this.querySelector('.dropdown-menu');
+                        menu.classList.toggle('opacity-0');
+                        menu.classList.toggle('invisible');
+                        menu.classList.toggle('visible');
+                        menu.classList.toggle('opacity-100');
+                    }
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        menu.classList.add('opacity-0', 'invisible');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

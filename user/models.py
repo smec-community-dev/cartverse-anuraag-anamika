@@ -1,13 +1,17 @@
-
 from django.db import models
-# Create your models here.
 from core.models import User
+from django.utils.text import slugify
+import uuid
+
+
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customer_profile")
     address = models.TextField()
 
-    def _str_(self):
+    def __str__(self):
         return self.user.username
+
+
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey('seller.Product', on_delete=models.CASCADE)
@@ -37,12 +41,33 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.product.product_name} - {self.rating}"
 
+class ReviewImage(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to='reviews/')
+
+    def __str__(self):
+        return f"Image for Review ID {self.review.id}"
+
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     total_amount = models.FloatField()
-    address = models.CharField(max_length=255)
+
+    address = models.ForeignKey(
+        "Address",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="orders"
+    )
+
     order_date = models.DateField(auto_now_add=True)
+    slug = models.SlugField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"order-{uuid.uuid4().hex[:8]}")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Order {self.id} - {self.user.username}"
@@ -51,8 +76,8 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey("seller.Product", on_delete=models.CASCADE)
-    price = models.FloatField()
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(default=1,null=True, blank=True)   # <-- FIXED
+    price = models.FloatField(default=0)
     STATUS_CHOICES = (
         ("Pending", "Pending"),
         ("Shipped", "Shipped"),
@@ -66,4 +91,19 @@ class OrderItem(models.Model):
         return f"{self.product.product_name} - {self.quantity}"
 
 
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
 
+    full_name = models.CharField(max_length=150)
+    phone = models.CharField(max_length=15)
+    address_line1 = models.CharField(max_length=255)
+    address_line2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=10)
+    country = models.CharField(max_length=100, default="India")
+
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.full_name}, {self.address_line1}, {self.city}"
