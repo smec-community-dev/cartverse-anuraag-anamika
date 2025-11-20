@@ -11,5 +11,7 @@ urlpatterns=[
     path('order_products/',views.order_products),
     path('edit_product/<int:id>/<slug:slug>/',views.seller_editproduct),
     path('delete_product/<int:id>/<slug:slug>/',views.seller_delete_product),
-    path('logout/',views.seller_logout,name='seller_logout')
+    path('logout/',views.seller_logout,name='seller_logout'),
+    path('single_orderproduct/<slug:slug>/',views.single_order_product,name='single_order'),
+    path('seller_profile/',views.seller_profile,name='seller_profile')
 ]

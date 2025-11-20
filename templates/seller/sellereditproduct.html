@@ -179,27 +179,27 @@
                     </div>
                     
                     <div class="space-y-1">
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                        <a href="/seller/seller_dashboard" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
                             <i class="fas fa-tachometer-alt mr-3 text-gray-400"></i>
                             Dashboard
                         </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg seller-nav-active">
+                        <a href="/seller/seller_product" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg seller-nav-active">
                             <i class="fas fa-box mr-3 text-purple-600"></i>
                             Products
                         </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                        <a href="seller/order_products" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
                             <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
                             Orders
                         </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
-                            <i class="fas fa-tag mr-3 text-gray-400"></i>
-                            Discounts
-                        </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
-                            <i class="fas fa-comments mr-3 text-gray-400"></i>
-                            Reviews
-                        </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+<!--                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">-->
+<!--                            <i class="fas fa-tag mr-3 text-gray-400"></i>-->
+<!--                            Discounts-->
+<!--                        </a>-->
+<!--                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">-->
+<!--                            <i class="fas fa-comments mr-3 text-gray-400"></i>-->
+<!--                            Reviews-->
+<!--                        </a>-->
+                        <a href="/seller/seller_profile" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
                             <i class="fas fa-cog mr-3 text-gray-400"></i>
                             Settings
                         </a>
@@ -354,9 +354,9 @@
                                     <button type="button" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
                                         <i class="fas fa-eye mr-2"></i> Preview
                                     </button>
-                                    <button type="button" class="px-6 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50 font-medium">
-                                        <i class="fas fa-archive mr-2"></i> Archive
-                                    </button>
+                                    <a href="/seller/delete_product/{{product.id}}/{{product.slug}}" class="px-6 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50 font-medium">
+                                        <i class="fas fa-archive mr-2"></i> Delete
+                                    </a>
                                 </div>
                                 <div class="flex space-x-3">
                                     <button type="button" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
