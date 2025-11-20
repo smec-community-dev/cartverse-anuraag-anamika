@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-card.large {
+            grid-column: span 2;
+        }
+
+        .category-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 2rem;
+            color: white;
+        }
+
+        .subcategory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .subcategory-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .subcategory-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            border-color: #8b5cf6;
+        }
+
+        .subcategory-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+
+        .trending-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .category-count {
+            background: rgba(255, 255, 255, 0.9);
+            color: #6b7280;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(to right, #8b5cf6, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .category-nav {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            scrollbar-width: none;
+        }
+
+        .category-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-nav-item {
+            white-space: nowrap;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border-radius: 25px;
+            border: 2px solid #e5e7eb;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-nav-item:hover {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+
+        .category-nav-item.active {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <!-- text-purple-600 font-medium border-b-2 border-purple-600 -->
+                    <a href="home.html" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
+                    <a href="shop.html" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
+                    <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
+                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
+                </div>
+
+                <!-- User Section -->
+                <div class="flex items-center space-x-6">
+                    <!-- Search -->
+                    <div class="hidden md:block relative">
+                        <input type="text" placeholder="Search categories..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+
+                    <!-- Wishlist -->
+                    <div class="relative">
+                        <a href="wishlist.html" class="text-purple-600 p-2">
+                            <i class="fas fa-heart text-lg"></i>
+                        </a>
+                        <span class="cart-count">3</span>
+                    </div>
+
+                    <!-- Cart -->
+                    <div class="relative">
+                        <a href="cart.html" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-shopping-cart text-lg"></i>
+                        </a>
+                        <span class="cart-count">5</span>
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                JS
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">John Smith</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">John Smith</p>
+                                <p class="text-sm text-gray-500">john.smith@example.com</p>
+                            </div>
+
+                            <a href="myprofile.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user mr-3 text-gray-400"></i>
+                                My Profile
+                            </a>
+
+                            <a href="myorders.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-shopping-bag mr-3 text-gray-400"></i>
+                                My Orders
+                            </a>
+
+                            <a href="wishlist.html" class="flex items-center px-4 py-2 text-sm text-purple-600 hover:bg-purple-50 font-medium">
+                                <i class="fas fa-heart mr-3"></i>
+                                My Wishlist
+                            </a>
+
+                            <a href="address.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-map-marker-alt mr-3 text-gray-400"></i>
+                                Addresses
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="account.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                Account Settings
+                            </a>
+
+                            <a href="support.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-question-circle mr-3 text-gray-400"></i>
+                                Help & Support
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="home.html" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Sign Out
+                            </a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Categories Header -->
+    <section class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Browse Categories</h1>
+            <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">Discover your perfect style across our carefully curated fashion categories</p>
+            <div class="relative max-w-md mx-auto">
+                <input type="text" placeholder="Search categories..." class="w-full pl-12 pr-4 py-3 bg-white bg-opacity-20 rounded-full focus:outline-none focus:ring-2 focus:ring-white placeholder-white">
+                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-white"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Navigation -->
+    <section class="bg-white py-6 border-b">
+        <div class="container mx-auto px-4">
+            <div class="category-nav">
+                <div class="category-nav-item active">All Categories</div>
+                <div class="category-nav-item">Men's Fashion</div>
+                <div class="category-nav-item">Women's Fashion</div>
+                <div class="category-nav-item">Footwear</div>
+                <div class="category-nav-item">Accessories</div>
+                <div class="category-nav-item">Sportswear</div>
+                <div class="category-nav-item">Formal Wear</div>
+                <div class="category-nav-item">Seasonal</div>
+                <div class="category-nav-item">Luxury</div>
+                <div class="category-nav-item">Sale</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Categories Grid -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 section-title mb-8">Featured Categories</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Men's Fashion -->
+                <div class="category-card large">
+                    <div class="h-96 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')">
+                        <span class="trending-badge">Trending</span>
+                        <div class="category-overlay">
+                            <h3 class="text-2xl font-bold mb-2">Men's Fashion</h3>
+                            <p class="text-gray-200 mb-4">Contemporary styles for the modern man</p>
+                            <div class="flex items-center justify-between">
+                                <span class="category-count">248 products</span>
+                                <button class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300">
+                                    Shop Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Women's Fashion -->
+                <div class="category-card">
+                    <div class="h-96 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <span class="new-badge">New</span>
+                        <div class="category-overlay">
+                            <h3 class="text-xl font-bold mb-2">Women's Fashion</h3>
+                            <p class="text-gray-200 mb-4">Elegant and trendy collections</p>
+                            <div class="flex items-center justify-between">
+                                <span class="category-count">312 products</span>
+                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                    Explore
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footwear -->
+                <div class="category-card">
+                    <div class="h-96 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-overlay">
+                            <h3 class="text-xl font-bold mb-2">Footwear</h3>
+                            <p class="text-gray-200 mb-4">Step out in style</p>
+                            <div class="flex items-center justify-between">
+                                <span class="category-count">189 products</span>
+                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                    Explore
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Accessories -->
+                <div class="category-card">
+                    <div class="h-80 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1505022610485-0249ba5b3675?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-overlay">
+                            <h3 class="text-xl font-bold mb-2">Accessories</h3>
+                            <p class="text-gray-200 mb-4">Complete your look</p>
+                            <div class="flex items-center justify-between">
+                                <span class="category-count">156 products</span>
+                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                    Explore
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sportswear -->
+                <div class="category-card">
+                    <div class="h-80 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <span class="trending-badge">Hot</span>
+                        <div class="category-overlay">
+                            <h3 class="text-xl font-bold mb-2">Sportswear</h3>
+                            <p class="text-gray-200 mb-4">Performance and style</p>
+                            <div class="flex items-center justify-between">
+                                <span class="category-count">134 products</span>
+                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                    Explore
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formal Wear -->
+                <div class="category-card">
+                    <div class="h-80 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1594938298603-c8148c4dae35?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-overlay">
+                            <h3 class="text-xl font-bold mb-2">Formal Wear</h3>
+                            <p class="text-gray-200 mb-4">Elegance redefined</p>
+                            <div class="flex items-center justify-between">
+                                <span class="category-count">98 products</span>
+                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                    Explore
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subcategories Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 section-title mb-8">Browse by Subcategory</h2>
+
+            <!-- Men's Subcategories -->
+            <div class="mb-12">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-male text-purple-600 mr-3"></i>
+                    Men's Fashion
+                </h3>
+                <div class="subcategory-grid">
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-blue-100 text-blue-600">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">T-Shirts</h4>
+                        <p class="text-gray-600 text-sm">84 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-purple-100 text-purple-600">
+                            <i class="fas fa-vest"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Jackets</h4>
+                        <p class="text-gray-600 text-sm">45 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-green-100 text-green-600">
+                            <i class="fas fa-jeans"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Jeans</h4>
+                        <p class="text-gray-600 text-sm">67 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-yellow-100 text-yellow-600">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Shirts</h4>
+                        <p class="text-gray-600 text-sm">52 products</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Women's Subcategories -->
+            <div class="mb-12">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-female text-pink-600 mr-3"></i>
+                    Women's Fashion
+                </h3>
+                <div class="subcategory-grid">
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-pink-100 text-pink-600">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Dresses</h4>
+                        <p class="text-gray-600 text-sm">112 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-red-100 text-red-600">
+                            <i class="fas fa-vest"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Tops</h4>
+                        <p class="text-gray-600 text-sm">89 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-purple-100 text-purple-600">
+                            <i class="fas fa-skirt"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Skirts</h4>
+                        <p class="text-gray-600 text-sm">43 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-indigo-100 text-indigo-600">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Blouses</h4>
+                        <p class="text-gray-600 text-sm">68 products</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accessories Subcategories -->
+            <div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-gem text-yellow-600 mr-3"></i>
+                    Accessories
+                </h3>
+                <div class="subcategory-grid">
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-yellow-100 text-yellow-600">
+                            <i class="fas fa-ring"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Jewelry</h4>
+                        <p class="text-gray-600 text-sm">76 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-gray-100 text-gray-600">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Bags</h4>
+                        <p class="text-gray-600 text-sm">54 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-blue-100 text-blue-600">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Watches</h4>
+                        <p class="text-gray-600 text-sm">38 products</p>
+                    </div>
+                    <div class="subcategory-card">
+                        <div class="subcategory-icon bg-green-100 text-green-600">
+                            <i class="fas fa-glasses"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Sunglasses</h4>
+                        <p class="text-gray-600 text-sm">42 products</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seasonal Categories -->
+    <section class="py-12 bg-gradient-to-r from-purple-50 to-indigo-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 section-title mb-8">Seasonal Collections</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="category-card">
+                    <div class="h-64 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1441984904996-e0b51ba12791?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-overlay">
+                            <h3 class="text-lg font-bold mb-2">Summer Collection</h3>
+                            <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                Shop Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="h-64 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1516914943479-89db7d9ae7f2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-overlay">
+                            <h3 class="text-lg font-bold mb-2">Winter Wear</h3>
+                            <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                Shop Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="h-64 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-overlay">
+                            <h3 class="text-lg font-bold mb-2">Spring Fashion</h3>
+                            <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                Shop Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="h-64 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1544441893-675973e31985?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-overlay">
+                            <h3 class="text-lg font-bold mb-2">Autumn Styles</h3>
+                            <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
+                                Shop Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Categories</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Category navigation functionality
+        document.querySelectorAll('.category-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.category-nav-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Shop now button functionality
+        document.querySelectorAll('.category-card button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const categoryName = this.closest('.category-card').querySelector('h3').textContent;
+                alert(`Navigating to ${categoryName}...`);
+            });
+        });
+
+        // Subcategory card functionality
+        document.querySelectorAll('.subcategory-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const subcategoryName = this.querySelector('h4').textContent;
+                alert(`Showing products for ${subcategoryName}`);
+            });
+        });
+
+        // Search functionality
+        document.querySelector('input[placeholder="Search categories..."]').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                alert(`Searching for: ${this.value}`);
+            }
+        });
+    </script>
+</body>
+</html>
