@@ -135,7 +135,21 @@ def seller_product(request):
 
     category_id = request.GET.get("category")
     if category_id:
-        products = products.filter(category_id=category_id)
+        products = products.filter(subcategory__category_id=category_id)
+
+    tab = request.GET.get("tab", "all")
+
+    if tab == "active":
+        products = products.filter(total_stock__gt=0)
+    elif tab == "outofstock":
+        products = products.filter(total_stock__lte=0)
+
+    active_count = products.filter(total_stock__gt=0).count()
+    outofstock_count = products.filter(total_stock__lte=0).count()
+
+    # Inventory Alerts
+    low_stock = products.filter( total_stock__gt=0, stock__lte=10)
+    no_stock = products.filter( total_stock=0)
 
     paginator = Paginator(products, 2)
     page_no = request.GET.get("page")
@@ -149,7 +163,11 @@ def seller_product(request):
         "count": products.count(),
         "categories": categories,
         "bestseller": bestseller,
-
+        "active_tab":tab,
+        "active_count": active_count,
+        "outofstock": outofstock_count,
+        "low_stock": low_stock,
+        "no_stock": no_stock,
     })
 
 @role_required("seller", login_url="/seller/login")
