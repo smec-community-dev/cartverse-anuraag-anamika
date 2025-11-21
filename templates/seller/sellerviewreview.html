@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{product.product_name}} - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for analytics graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .seller-nav-active {
+            background-color: #f3f4f6;
+            color: #8b5cf6;
+            font-weight: 600;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .review-card {
+            transition: all 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .gallery-thumb {
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-thumb.active {
+            border-color: #8b5cf6;
+        }
+
+        .gallery-thumb:hover {
+            border-color: #8b5cf6;
+        }
+
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .image-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .product-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .breadcrumb {
+                font-size: 0.8rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .image-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .product-header-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .product-actions {
+                width: 100%;
+                margin-top: 1rem;
+            }
+
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Fix alignment issues */
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .review-content {
+            width: 100%;
+        }
+
+        .review-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .review-user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+        }
+
+        .performance-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .performance-good {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .performance-average {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Mobile Menu Button -->
+    <div class="lg:hidden fixed top-4 left-4 z-50">
+        <button id="mobileMenuButton" class="bg-white p-2 rounded-md shadow-md">
+            <i class="fas fa-bars text-gray-700"></i>
+        </button>
+    </div>
+
+    <!-- Seller Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo & Seller Badge -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Seller</span>
+                </div>
+
+                <!-- Desktop Seller Navigation -->
+                <div class="hidden lg:flex space-x-8 items-center">
+                    <a href="/seller/seller_dashboard" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
+                    <a href="/seller/seller_product" class="text-purple-600 font-medium">Products</a>
+                    <a href="/seller/order_products" class="text-gray-800 hover:text-purple-600 font-medium">Orders</a>
+                </div>
+
+                <!-- Seller Actions -->
+                <div class="flex items-center space-x-6">
+                    <!-- Seller Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">{{ seller.user.username|slice:":1"|upper }}
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">{{seller.user.username}}</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">{{seller.user.username}}</p>
+                                <p class="text-sm text-gray-500">Seller Account</p>
+                            </div>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-store mr-3 text-gray-400"></i>
+                                My Store
+                            </a>
+
+                            <a href="/seller/seller_profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user mr-3 text-gray-400"></i>
+                                Seller Profile
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Exit Seller Mode
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-0 z-40 bg-white lg:hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Seller</span>
+                </div>
+                <button id="closeMobileMenu" class="text-gray-500">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <a href="/seller/seller_dashboard/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="/seller/seller_product" class="block px-4 py-3 text-purple-600 font-medium bg-purple-50 rounded-lg">
+                    <i class="fas fa-box mr-3"></i>Products
+                </a>
+                <a href="/seller/order_products" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-shopping-cart mr-3"></i>Orders
+                </a>
+                <a href="/seller/seller_profile" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-cog mr-3"></i>Settings
+                </a>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        {{ seller.user.username|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">{{seller.user.username}}</p>
+                        <p class="text-sm text-gray-500">Seller Account</p>
+                    </div>
+                </div>
+                <a href="#" class="block px-4 py-2 text-red-600 font-medium hover:bg-red-50 rounded-lg">
+                    <i class="fas fa-sign-out-alt mr-3"></i>Exit Seller Mode
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Breadcrumb -->
+        <div class="mb-6 breadcrumb">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="/seller/seller_dashboard" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-purple-600">
+                            <i class="fas fa-home mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="inline-flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                        <a href="/seller/seller_product" class="ml-1 text-sm font-medium text-gray-700 hover:text-purple-600 md:ml-2">Products</a>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{product.product_name|truncatechars:30}}</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar - Enhanced with more product info -->
+            <div class="lg:w-1/4">
+                <div class="dashboard-card p-6 mb-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                            {{ seller.user.username|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-gray-800">{{seller.shop_name}}</h2>
+                            <div class="flex items-center mt-1">
+                                <div class="flex text-yellow-400 text-sm">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="text-xs text-gray-500 ml-1">(128)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <a href="/seller/seller_dashboard/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-tachometer-alt mr-3 text-gray-400"></i>
+                            Dashboard
+                        </a>
+                        <a href="/seller/seller_product" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg seller-nav-active">
+                            <i class="fas fa-box mr-3 text-purple-600"></i>
+                            Products
+                        </a>
+                        <a href="/seller/order_products" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
+                            Orders
+                        </a>
+                        <a href="/seller/seller_profile" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-cog mr-3 text-gray-400"></i>
+                            Settings
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Product Performance Summary -->
+                <div class="dashboard-card p-6 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">Product Performance</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Total Revenue</span>
+                            <span class="font-bold text-gray-800">₹{{total_revenue}}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Units Sold</span>
+                            <span class="font-bold text-gray-800">{{units_sold}}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Avg. Price</span>
+                            <span class="font-bold text-gray-800">₹{{avg_price}}</span>
+                        </div>
+                    </div>
+                </div>
+
+<!--                &lt;!&ndash; Inventory Status &ndash;&gt;-->
+<!--                <div class="dashboard-card p-6 mb-6">-->
+<!--                    <h3 class="font-semibold text-gray-800 mb-4">Inventory Status</h3>-->
+<!--                    <div class="space-y-3">-->
+<!--                        <div>-->
+<!--                            <div class="flex justify-between items-center mb-1">-->
+<!--                                <span class="text-sm text-gray-600">Current Stock</span>-->
+<!--                                <span class="text-sm font-medium text-gray-800">{{product.stock}} units</span>-->
+<!--                            </div>-->
+<!--                            <div class="w-full bg-gray-200 rounded-full h-2">-->
+<!--                                <div class="bg-green-600 h-2 rounded-full" style="width: {% widthratio product.stock 100 1 %}%"></div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="flex justify-between items-center text-sm">-->
+<!--                            <span class="text-gray-600">Restock Level</span>-->
+<!--                            <span class="font-medium text-gray-800">20 units</span>-->
+<!--                        </div>-->
+<!--                        <div class="flex justify-between items-center text-sm">-->
+<!--                            <span class="text-gray-600">Last Restock</span>-->
+<!--                            <span class="font-medium text-gray-800">15 days ago</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <a href="/seller/seller_product" class="flex items-center p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">
+                            <i class="fas fa-arrow-left mr-3"></i>
+                            Back to Products
+                        </a>
+                        <a href="/seller/add_product" class="flex items-center p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100">
+                            <i class="fas fa-plus mr-3"></i>
+                            Add New Product
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Product Content -->
+            <div class="lg:w-3/4">
+                <!-- Product Header -->
+                <div class="dashboard-card p-6 mb-6">
+                    <div class="product-header-flex flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">{{product.product_name}}</h1>
+                            <div class="flex flex-wrap items-center gap-4">
+                                <div class="flex items-center">
+                                    <div class="flex text-yellow-400 text-sm">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-600 ml-1">({{reviews.count}} reviews)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-shopping-cart text-gray-400 mr-1"></i>
+                                    <span class="text-sm text-gray-600">{{ product.stock|default:0 }} sold</span>
+                                </div>
+                                {% if product.stock > 0 %}
+                                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">In Stock</span>
+                                {% else %}
+                                <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Out of Stock</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="product-details-grid grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Product Images -->
+                    <div class="dashboard-card p-6">
+                        <div class="mb-4">
+                            <div class="bg-gray-100 rounded-lg overflow-hidden h-80 flex items-center justify-center">
+                                <img id="mainImage" src="{{product.images.first.product_image.url}}" alt="{{product.product_name}}" class="max-h-full max-w-full object-contain">
+                            </div>
+
+                            {% if product.images.count > 1 %}
+                            <div class="image-gallery">
+                                {% for image in product.images.all %}
+                                <div class="gallery-thumb {% if forloop.first %}active{% endif %}" onclick="changeImage('{{image.product_image.url}}')">
+                                    <img src="{{image.product_image.url}}" alt="{{product.product_name}}" class="w-full h-20 object-cover">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="dashboard-card p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Buy for: ₹{{product.price}}</h2>
+                        {% if product.discount_price %}
+                        <div class="flex items-center mb-4">
+                            <span class="text-lg text-gray-500 line-through mr-2">₹{{product.discount_price}}</span>
+                            <span class="bg-red-100 text-red-800 text-sm font-medium px-2 py-1 rounded">
+                                {{product.get_discount_percentage}}% OFF
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-6">
+                            <br>
+                            <h3 class="font-semibold text-gray-800 mb-4">Description</h3>
+                            <p class="text-gray-600">{{product.description}}</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500">Category</h4>
+                                <p class="text-gray-800">{{product.subcategory.category.category_name}}</p>
+                            </div>
+
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500">Brand</h4>
+                                <p class="text-gray-800">{{product.product_name}}</p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-500">Stock</h4>
+                                <p class="text-gray-800">{{product.stock}} units</p>
+                            </div>
+                            <br><br><br>
+                            <div class="col-span-1 sm:col-span-2 flex justify-start mt-4">
+    <a href="/seller/edit_product/{{product.id}}/{{product.slug}}"
+       class="px-32 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700">
+        <i class="fas fa-edit mr-2"></i>Edit Product</a>
+        </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Analytics Section -->
+                <div class="dashboard-card p-6 mt-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Revenue Analysis</h2>
+
+
+                    <!-- Monthly Revenue Chart -->
+                    <div class="dashboard-card p-4">
+                        <h3 class="font-semibold text-gray-800 mb-4">Monthly Revenue Trend</h3>
+                        <div class="chart-container">
+                            <canvas id="monthlyRevenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="dashboard-card p-6 mt-8">
+                    <div class="review-header flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Customer Reviews</h2>
+                        <div class="flex items-center">
+                            <div class="flex items-center mr-4">
+                                <div class="text-3xl font-bold text-gray-800 mr-2">{{average_rating}}</div>
+                                <div>
+                                    <div class="flex text-yellow-400 text-sm">
+                                      {% for i in "12345" %}
+                                          {% if i|add:"0" <= average_rating %}
+                                              <i class="fas fa-star"></i>
+                                          {% elif average_rating|floatformat:1 >= i|add:"-0.5" %}
+                                              <i class="fas fa-star-half-alt"></i>
+                                          {% else %}
+                                              <i class="far fa-star"></i>
+                                          {% endif %}
+                                      {% endfor %}
+                                  </div>
+                                    <div class="text-sm text-gray-600">{{reviews.count}} reviews</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews List -->
+                    <div class="review-content">
+                        <h3 class="font-semibold text-gray-800 mb-4">All Reviews ({{reviews_count}})</h3>
+
+                        {% if reviews %}
+                        <div class="space-y-6">
+                            {% for review in reviews %}
+                            <div class="review-card bg-white p-6 rounded-lg border border-gray-200">
+                                <div class="review-header-flex flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
+                                    <div class="review-user-info flex items-center mb-2 sm:mb-0">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-semibold mr-3">
+                                            {{review.user.username|slice:":1"|upper}}
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">{{review.user.username}}</p>
+                                            <p class="text-sm text-gray-500">{{review.review_date|date:"M d, Y"}}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="review-rating flex items-center">
+                                        <div class="flex text-yellow-400 text-sm mr-2">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-700">{{review.rating}}.0</span>
+                                    </div>
+                                </div>
+
+                                <h4 class="font-semibold text-gray-800 mb-2">Review</h4>
+                                <p class="text-gray-600 mb-4">{{review.review_comment}}</p>
+
+                                {% if review.images.all %}
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    {% for image in review.images.all %}
+                                    <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                                        <img src="{{image.image.url}}" alt="Review image" class="w-full h-full object-cover">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                                    <div class="flex items-center space-x-4">
+                                        <!-- Empty for now -->
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Pagination for Reviews -->
+                        {% if reviews.has_other_pages %}
+                        <div class="mt-8 flex justify-center">
+                            <div class="flex items-center space-x-2">
+                                {% if reviews.has_previous %}
+                                <a href="?page={{ reviews.previous_page_number }}" class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-500 hover:bg-gray-50">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                {% endif %}
+
+                                {% for num in reviews.paginator.page_range %}
+                                    {% if num == reviews.number %}
+                                    <span class="w-8 h-8 flex items-center justify-center rounded-md bg-purple-600 text-white font-medium">
+                                        {{ num }}
+                                    </span>
+                                    {% else %}
+                                    <a href="?page={{ num }}" class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">
+                                        {{ num }}
+                                    </a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if reviews.has_next %}
+                                <a href="?page={{ reviews.next_page_number }}" class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-300 text-gray-500 hover:bg-gray-50">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-comment-slash text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-600 mb-2">No Reviews Yet</h3>
+                            <p class="text-gray-500">This product doesn't have any reviews yet.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.add('active');
+        });
+
+        closeMobileMenu.addEventListener('click', function() {
+            mobileMenu.classList.remove('active');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Image Gallery Functionality
+        function changeImage(src) {
+            document.getElementById('mainImage').src = src;
+
+            // Update active thumbnail
+            const thumbs = document.querySelectorAll('.gallery-thumb');
+            thumbs.forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+
+            event.currentTarget.classList.add('active');
+        }
+
+        // Initialize Monthly Revenue Chart
+        const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart').getContext('2d');
+
+new Chart(monthlyRevenueCtx, {
+    type: 'line',
+    data: {
+        labels: {{ month_labels|safe }},
+        datasets: [{
+            label: 'Monthly Revenue (₹)',
+            data: {{ monthly_revenue|safe }},
+            borderColor: '#8b5cf6',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#8b5cf6',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2,
+            pointRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: value => '₹' + value
+                }
+            }
+        }
+    }
+});
+
+    </script>
+</body>
+</html>
