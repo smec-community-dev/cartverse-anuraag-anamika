@@ -16,4 +16,6 @@ urlpatterns=[
     path('seller_profile/',views.seller_profile,name='seller_profile'),
     path('seller_change_password/',views.change_password,name='change_password'),
     path('seller_delete/',views.seller_account_delete,name='seller_account_delete')
+    path('seller_profile/',views.seller_profile,name='seller_profile'),
+    path('seller_review/<int:product_id>/<slug:slug>/',views.seller_review,name='seller_review')
 ]

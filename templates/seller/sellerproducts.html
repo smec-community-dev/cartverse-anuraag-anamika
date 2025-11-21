@@ -150,7 +150,7 @@
                     <div class="relative dropdown">
                         <button class="flex items-center space-x-2 focus:outline-none">
                             <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                JS
+                                {{ seller.user.username|slice:":1"|upper }}
                             </div>
                             <span class="text-gray-700 font-medium hidden md:block">{{seller.user.username}}</span>
                             <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
@@ -218,7 +218,7 @@
             <div class="mt-8 pt-6 border-t border-gray-200">
                 <div class="flex items-center space-x-3 mb-4">
                     <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                        JS
+                        {{ seller.user.username|slice:":1"|upper }}
                     </div>
                     <div>
                         <p class="font-medium text-gray-800">{{seller.user.username}}</p>
@@ -260,7 +260,7 @@
                 <div class="dashboard-card p-6 mb-6">
                     <div class="flex items-center mb-6">
                         <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
-                            JS
+                            {{ seller.user.username|slice:":1"|upper }}
                         </div>
                         <div>
                             <h2 class="font-bold text-gray-800">{{seller.shop_name}}</h2>
@@ -442,11 +442,14 @@
                     <p class="text-sm text-gray-500 line-through">{{product.price}}</p>
                 </td>
                 <td class="py-4 px-4">
-                    <p class="text-sm text-gray-800">{{ product.total_sold|default:0 }}  sold</p>
+                    <p class="text-sm text-gray-800">{{ total_sold|default:0 }}  sold</p>
                     <p class="text-xs text-gray-500">₹{{product.total_amount|default:0}}</p>
                 </td>
                 <td class="py-4 px-4">
                     <div class="flex space-x-2">
+                        <a href="/seller/seller_review/{{product.id}}/{{product.slug}}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            <i class="fas fa-eye mr-1"></i> View
+                        </a>
                         <a href="/seller/edit_product/{{product.id}}/{{product.slug}}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                             <i class="fas fa-edit mr-1"></i> Edit
                         </a>
