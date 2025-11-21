@@ -326,6 +326,10 @@ def single_order_product(request,slug):
 def seller_profile(request):
     seller = Seller.objects.get(user=request.user)
     user = request.user
+    total_products=Product.objects.filter(seller=seller).count()
+    active_order=OrderItem.objects.filter(product__seller=seller).exclude(status__in=["Delivered", "Cancelled"]).count()
+    rating_data = Review.objects.filter(product__seller=seller).aggregate(avg=Avg("rating"))
+    store_rating = round(rating_data["avg"], 1) if rating_data["avg"] else 0
 
     if request.method == "POST":
         user.first_name = request.POST.get("first_name")
@@ -340,4 +344,42 @@ def seller_profile(request):
 
         return redirect("/seller/seller_profile/")
 
-    return render(request, "seller/sellersettings.html", {"seller": seller,"user": user})
+    return render(request, "seller/sellersettings.html", {"seller": seller,"user": user,"total_products": total_products,"active_orders": active_order,"store_rating": store_rating,})
+
+@role_required("seller", login_url="/seller/login")
+def change_password(request):
+    user = request.user
+
+    if request.method == "POST":
+        current = request.POST.get("current_password")
+        new = request.POST.get("new_password")
+        confirm = request.POST.get("confirm_password")
+
+        if not user.check_password(current):
+            return HttpResponse("Current password is wrong")
+
+        if new != confirm:
+            return HttpResponse("Passwords do not match")
+
+        user.set_password(new)
+        user.save()
+
+        return redirect("/seller/login/")
+
+    return HttpResponse("Invalid request")
+
+
+def seller_account_delete(request):
+    user=request.user
+    if request.method=='POST':
+        try:
+            seller=Seller.objects.get(user=user)
+            seller.delete()
+        except Seller.DoesNotExist:
+            pass
+        user.delete()
+        logout(request)
+        return redirect('/seller/login')
+
+
+    return redirect('/seller/seller_profile')

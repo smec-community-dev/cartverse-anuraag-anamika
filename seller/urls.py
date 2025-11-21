@@ -13,5 +13,7 @@ urlpatterns=[
     path('delete_product/<int:id>/<slug:slug>/',views.seller_delete_product),
     path('logout/',views.seller_logout,name='seller_logout'),
     path('single_orderproduct/<slug:slug>/',views.single_order_product,name='single_order'),
-    path('seller_profile/',views.seller_profile,name='seller_profile')
+    path('seller_profile/',views.seller_profile,name='seller_profile'),
+    path('seller_change_password/',views.change_password,name='change_password'),
+    path('seller_delete/',views.seller_account_delete,name='seller_account_delete')
 ]
