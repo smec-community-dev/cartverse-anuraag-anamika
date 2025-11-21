@@ -40,17 +40,6 @@
             transform: translateY(0);
         }
 
-        .tab-active {
-            border-bottom: 3px solid #8b5cf6;
-            color: #8b5cf6;
-            font-weight: 600;
-        }
-
-        .settings-tab-active {
-            background-color: #8b5cf6;
-            color: white;
-        }
-
         .password-strength-meter {
             height: 6px;
             border-radius: 3px;
@@ -81,6 +70,31 @@
             outline: none;
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
             border-color: #8b5cf6;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -220,10 +234,6 @@
                             <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
                             Orders
                         </a>
-<!--                        <a href="/seller/reviews" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">-->
-<!--                            <i class="fas fa-star mr-3 text-gray-400"></i>-->
-<!--                            Reviews-->
-<!--                        </a>-->
                         <a href="/seller/settings" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg seller-nav-active">
                             <i class="fas fa-cog mr-3 text-purple-600"></i>
                             Settings
@@ -272,380 +282,159 @@
                     </div>
                 </div>
 
-                <!-- Settings Navigation -->
-<!--                <div class="dashboard-card p-6 mb-6">-->
-<!--                    <div class="flex overflow-x-auto space-x-1">-->
-<!--                        <button class="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium settings-tab-active" data-tab="account">-->
-<!--                            <i class="fas fa-user mr-2"></i>Account-->
-<!--                        </button>-->
-<!--                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200" data-tab="security">-->
-<!--                            <i class="fas fa-shield-alt mr-2"></i>Security-->
-<!--                        </button>-->
-<!--                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200" data-tab="notifications">-->
-<!--                            <i class="fas fa-bell mr-2"></i>Notifications-->
-<!--                        </button>-->
-<!--                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200" data-tab="store">-->
-<!--                            <i class="fas fa-store mr-2"></i>Store Settings-->
-<!--                        </button>-->
-<!--                        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200" data-tab="billing">-->
-<!--                            <i class="fas fa-credit-card mr-2"></i>Billing-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!-- Profile Information -->
+                <div class="dashboard-card p-6 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-6">Profile Information</h3>
 
-                <!-- Account Settings Tab -->
-                <div id="account-tab" class="settings-tab-content">
-                    <div class="dashboard-card p-6 mb-6">
-                        <h3 class="font-semibold text-gray-800 mb-6">Profile Information</h3>
-
-                        <div class="flex flex-col md:flex-row gap-2">
-                            <!-- Profile Picture -->
-                            <div class="md:w-1/3">
-                                <div class="flex flex-col items-center">
-                                    <div class="w-32 h-32 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-3xl mb-4">
-                                        JS
-                                    </div>
-<!--                                    <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium mb-2">-->
-<!--                                        Change Photo-->
-<!--                                    </button>-->
-<!--                                    <p class="text-xs text-gray-500 text-center">JPG, GIF or PNG. Max size of 2MB.</p>-->
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <!-- Profile Picture -->
+                        <div class="md:w-1/3">
+                            <div class="flex flex-col items-center">
+                                <div class="w-32 h-32 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-3xl mb-4">
+                                    JS
                                 </div>
-                            </div>
-
-                            <!-- Profile Form -->
-                            <div class="md:w-2/3">
-                                <form method="POST" class="space-y-6">
-    {% csrf_token %}
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-            <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-            <input type="text" name="first_name" id="first_name" value="{{ user.first_name }}"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-        </div>
-
-        <div>
-            <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-            <input type="text" name="last_name" id="last_name" value="{{ user.last_name }}"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
-        </div>
-    </div>
-
-    <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-        <input type="email" name="email" id="email" value="{{ user.email }}"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md">
-    </div>
-
-    <div>
-        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-        <input type="text" name="phone" id="phone" value="{{ user.phone_number }}"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md">
-    </div>
-
-    <div>
-        <label for="shop_name" class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
-        <input type="text" name="shop_name" id="shop_name" value="{{ seller.shop_name }}"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md">
-    </div>
-
-    <div>
-        <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-        <input type="text" name="location" id="location" value="{{ seller.location }}"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md">
-    </div>
-
-    <div class="flex justify-end pt-4">
-        <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
-            Save Changes
-        </button>
-    </div>
-</form>
-
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Security Settings Tab -->
-                <div id="security-tab" class="settings-tab-content hidden">
-                    <div class="dashboard-card p-6 mb-6">
-                        <h3 class="font-semibold text-gray-800 mb-6">Change Password</h3>
+                        <!-- Profile Form -->
+                        <div class="md:w-2/3">
+                            <form method="POST" class="space-y-6">
+                                {% csrf_token %}
 
-                        <form class="space-y-6 max-w-2xl">
-                            <div>
-                                <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                                <input type="password" id="current-password" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                            </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                        <input type="text" name="first_name" id="first_name" value="{{ user.first_name }}"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
 
-                            <div>
-                                <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                                <input type="password" id="new-password" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                <div class="mt-2">
-                                    <div class="password-strength-meter password-strength-weak mb-1"></div>
-                                    <p class="text-xs text-gray-500">Password strength: <span id="password-strength-text">Weak</span></p>
+                                    <div>
+                                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                        <input type="text" name="last_name" id="last_name" value="{{ user.last_name }}"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div>
-                                <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-                                <input type="password" id="confirm-password" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                            </div>
-
-                            <div class="flex items-start mt-4">
-                                <div class="flex items-center h-5">
-                                    <input id="logout-all" type="checkbox" class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
-                                </div>
-                                <div class="ml-3 text-sm">
-                                    <label for="logout-all" class="font-medium text-gray-700">Log out of all other devices</label>
-                                    <p class="text-gray-500">This will log you out of all devices except this one.</p>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-end pt-4">
-                                <button type="button" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium mr-3">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
-                                    Update Password
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="dashboard-card p-6">
-                        <h3 class="font-semibold text-gray-800 mb-4">Two-Factor Authentication</h3>
-                        <p class="text-gray-600 mb-4">Add an extra layer of security to your account by enabling two-factor authentication.</p>
-
-                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fas fa-mobile-alt text-purple-600 text-xl mr-3"></i>
                                 <div>
-                                    <h4 class="font-medium text-gray-800">Authenticator App</h4>
-                                    <p class="text-sm text-gray-600">Use an authenticator app to get verification codes</p>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                    <input type="email" name="email" id="email" value="{{ user.email }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md">
                                 </div>
-                            </div>
-                            <button class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
-                                Enable
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Notifications Settings Tab -->
-                <div id="notifications-tab" class="settings-tab-content hidden">
-                    <div class="dashboard-card p-6">
-                        <h3 class="font-semibold text-gray-800 mb-6">Notification Preferences</h3>
-
-                        <div class="space-y-6">
-                            <div class="flex items-center justify-between">
                                 <div>
-                                    <h4 class="font-medium text-gray-800">Email Notifications</h4>
-                                    <p class="text-sm text-gray-600">Receive updates about your account via email</p>
+                                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                    <input type="text" name="phone" id="phone" value="{{ user.phone_number }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md">
                                 </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" checked>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                </label>
-                            </div>
 
-                            <div class="border-t border-gray-200 pt-6">
-                                <h4 class="font-medium text-gray-800 mb-4">Order Notifications</h4>
-
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h5 class="font-medium text-gray-800">New Orders</h5>
-                                            <p class="text-sm text-gray-600">Get notified when you receive a new order</p>
-                                        </div>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="sr-only peer" checked>
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                        </label>
-                                    </div>
-
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h5 class="font-medium text-gray-800">Order Cancellations</h5>
-                                            <p class="text-sm text-gray-600">Get notified when an order is cancelled</p>
-                                        </div>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="sr-only peer" checked>
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                        </label>
-                                    </div>
-
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h5 class="font-medium text-gray-800">Low Stock Alerts</h5>
-                                            <p class="text-sm text-gray-600">Get notified when product stock is running low</p>
-                                        </div>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="sr-only peer" checked>
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="border-t border-gray-200 pt-6">
-                                <h4 class="font-medium text-gray-800 mb-4">Review Notifications</h4>
-
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h5 class="font-medium text-gray-800">New Reviews</h5>
-                                            <p class="text-sm text-gray-600">Get notified when you receive a new review</p>
-                                        </div>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="sr-only peer" checked>
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                        </label>
-                                    </div>
-
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h5 class="font-medium text-gray-800">Review Responses</h5>
-                                            <p class="text-sm text-gray-600">Get notified when customers respond to your reviews</p>
-                                        </div>
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" class="sr-only peer">
-                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-end pt-4">
-                                <button class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
-                                    Save Preferences
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Store Settings Tab -->
-                <div id="store-tab" class="settings-tab-content hidden">
-                    <div class="dashboard-card p-6 mb-6">
-                        <h3 class="font-semibold text-gray-800 mb-6">Store Information</h3>
-
-                        <form class="space-y-6">
-                            <div>
-                                <label for="store-name" class="block text-sm font-medium text-gray-700 mb-1">Store Name</label>
-                                <input type="text" id="store-name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="John's Fashion Hub">
-                            </div>
-
-                            <div>
-                                <label for="store-description" class="block text-sm font-medium text-gray-700 mb-1">Store Description</label>
-                                <textarea id="store-description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">Welcome to John's Fashion Hub! We offer trendy and high-quality fashion items for everyone. Our mission is to provide excellent customer service and the latest styles at affordable prices.</textarea>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="store-email" class="block text-sm font-medium text-gray-700 mb-1">Store Contact Email</label>
-                                    <input type="email" id="store-email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="contact@johnsfashionhub.com">
+                                    <label for="shop_name" class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
+                                    <input type="text" name="shop_name" id="shop_name" value="{{ seller.shop_name }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md">
                                 </div>
+
                                 <div>
-                                    <label for="store-phone" class="block text-sm font-medium text-gray-700 mb-1">Store Contact Phone</label>
-                                    <input type="tel" id="store-phone" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" value="+1 (555) 123-4567">
+                                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                    <input type="text" name="location" id="location" value="{{ seller.location }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md">
                                 </div>
-                            </div>
 
-                            <div class="flex justify-end pt-4">
-                                <button type="button" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium mr-3">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
-                                    Save Store Settings
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Billing Settings Tab -->
-                <div id="billing-tab" class="settings-tab-content hidden">
-                    <div class="dashboard-card p-6 mb-6">
-                        <h3 class="font-semibold text-gray-800 mb-6">Billing Information</h3>
-
-                        <div class="space-y-6">
-                            <div class="flex justify-between items-center p-4 border border-gray-200 rounded-lg">
-                                <div>
-                                    <h4 class="font-medium text-gray-800">Current Plan</h4>
-                                    <p class="text-sm text-gray-600">Premium Seller • $29.99/month</p>
-                                </div>
-                                <button class="px-4 py-2 border border-purple-600 text-purple-600 rounded-md hover:bg-purple-50 font-medium">
-                                    Change Plan
-                                </button>
-                            </div>
-
-                            <div class="border-t border-gray-200 pt-6">
-                                <h4 class="font-medium text-gray-800 mb-4">Payment Method</h4>
-
-                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg mb-4">
-                                    <div class="flex items-center">
-                                        <i class="fab fa-cc-visa text-2xl text-blue-600 mr-3"></i>
-                                        <div>
-                                            <h5 class="font-medium text-gray-800">Visa ending in 4242</h5>
-                                            <p class="text-sm text-gray-600">Expires 12/2024</p>
-                                        </div>
-                                    </div>
-                                    <button class="text-purple-600 hover:text-purple-800 font-medium">
-                                        Edit
+                                <div class="flex justify-end pt-4">
+                                    <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                                        Save Changes
                                     </button>
                                 </div>
-
-                                <button class="flex items-center text-purple-600 hover:text-purple-800 font-medium">
-                                    <i class="fas fa-plus mr-2"></i>
-                                    Add Payment Method
-                                </button>
-                            </div>
-
-                            <div class="border-t border-gray-200 pt-6">
-                                <h4 class="font-medium text-gray-800 mb-4">Billing History</h4>
-
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-sm text-left text-gray-500">
-                                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                                            <tr>
-                                                <th scope="col" class="px-4 py-3">Date</th>
-                                                <th scope="col" class="px-4 py-3">Description</th>
-                                                <th scope="col" class="px-4 py-3">Amount</th>
-                                                <th scope="col" class="px-4 py-3">Invoice</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="bg-white border-b">
-                                                <td class="px-4 py-3">Mar 15, 2023</td>
-                                                <td class="px-4 py-3">Premium Seller Plan</td>
-                                                <td class="px-4 py-3">$29.99</td>
-                                                <td class="px-4 py-3">
-                                                    <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">Download</a>
-                                                </td>
-                                            </tr>
-                                            <tr class="bg-white border-b">
-                                                <td class="px-4 py-3">Feb 15, 2023</td>
-                                                <td class="px-4 py-3">Premium Seller Plan</td>
-                                                <td class="px-4 py-3">$29.99</td>
-                                                <td class="px-4 py-3">
-                                                    <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">Download</a>
-                                                </td>
-                                            </tr>
-                                            <tr class="bg-white">
-                                                <td class="px-4 py-3">Jan 15, 2023</td>
-                                                <td class="px-4 py-3">Premium Seller Plan</td>
-                                                <td class="px-4 py-3">$29.99</td>
-                                                <td class="px-4 py-3">
-                                                    <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">Download</a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
+                </div>
+
+                <!-- Change Password Section -->
+                <div class="dashboard-card p-6 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-6">Change Password</h3>
+
+                    <form method="POST" action="{% url 'change_password' %}" class="space-y-6 max-w-2xl">
+                        {% csrf_token %}
+
+                        <div>
+                            <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                            <input type="password" name="current_password" id="current_password"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                        </div>
+
+                        <div>
+                            <label for="new_password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                            <input type="password" name="new_password" id="new_password"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                            <div class="mt-2">
+                                <div class="password-strength-meter password-strength-weak mb-1"></div>
+                                <p class="text-xs text-gray-500">Password strength: <span id="password-strength-text">Weak</span></p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                            <input type="password" name="confirm_password" id="confirm_password"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
+                        </div>
+
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Delete Account Section -->
+                <div class="dashboard-card p-6 border border-red-200 bg-red-50">
+                    <h3 class="font-semibold text-red-800 mb-4">Delete Account</h3>
+                    <p class="text-red-700 mb-4">
+                        Once you delete your account, there is no going back. This action is permanent and will remove all your data including products, orders, and store information.
+                    </p>
+
+                    <button id="deleteAccountBtn" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium">
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-red-800">Delete Account</h3>
+            </div>
+
+            <div class="p-6">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                    </div>
+                </div>
+
+                <p class="text-gray-700 text-center mb-6">
+                    Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently removed.
+                </p>
+
+                <div class="mb-6">
+                    <label for="confirmDelete" class="block text-sm font-medium text-gray-700 mb-2">
+                        Type "DELETE" to confirm:
+                    </label>
+                    <input type="text" id="confirmDelete"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Type DELETE here">
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button id="cancelDelete" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                        Cancel
+                    </button>
+                    <button id="confirmDeleteBtn" disabled class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium disabled:bg-red-300 disabled:cursor-not-allowed">
+                        Delete Account Permanently
+                    </button>
                 </div>
             </div>
         </div>
@@ -729,33 +518,8 @@
     </footer>
 
     <script>
-        // Tab functionality
-        document.querySelectorAll('[data-tab]').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const targetTab = this.getAttribute('data-tab');
-
-                // Remove active class from all tabs
-                document.querySelectorAll('[data-tab]').forEach(t => {
-                    t.classList.remove('settings-tab-active', 'bg-purple-600', 'text-white');
-                    t.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-                });
-
-                // Add active class to clicked tab
-                this.classList.add('settings-tab-active', 'bg-purple-600', 'text-white');
-                this.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-
-                // Hide all tab contents
-                document.querySelectorAll('.settings-tab-content').forEach(content => {
-                    content.classList.add('hidden');
-                });
-
-                // Show target tab content
-                document.getElementById(`${targetTab}-tab`).classList.remove('hidden');
-            });
-        });
-
         // Password strength indicator
-        const passwordInput = document.getElementById('new-password');
+        const passwordInput = document.getElementById('new_password');
         const strengthMeter = document.querySelector('.password-strength-meter');
         const strengthText = document.getElementById('password-strength-text');
 
@@ -801,20 +565,62 @@
             });
         }
 
+        // Delete Account Modal Functionality
+        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+        const deleteAccountModal = document.getElementById('deleteAccountModal');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const confirmDeleteInput = document.getElementById('confirmDelete');
+
+        deleteAccountBtn.addEventListener('click', function() {
+            deleteAccountModal.classList.add('active');
+        });
+
+        cancelDelete.addEventListener('click', function() {
+            deleteAccountModal.classList.remove('active');
+            confirmDeleteInput.value = '';
+            confirmDeleteBtn.disabled = true;
+        });
+
+        confirmDeleteInput.addEventListener('input', function() {
+            if (this.value === 'DELETE') {
+                confirmDeleteBtn.disabled = false;
+            } else {
+                confirmDeleteBtn.disabled = true;
+            }
+        });
+
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (confirmDeleteInput.value === 'DELETE') {
+                // In a real application, you would submit a delete request to the server
+                alert('Account deletion request submitted. This action cannot be undone.');
+                deleteAccountModal.classList.remove('active');
+
+                // Redirect to home page or show confirmation
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            }
+        });
+
+        // Close modal when clicking outside
+        deleteAccountModal.addEventListener('click', function(e) {
+            if (e.target === deleteAccountModal) {
+                deleteAccountModal.classList.remove('active');
+                confirmDeleteInput.value = '';
+                confirmDeleteBtn.disabled = true;
+            }
+        });
+
         // Form submission handlers
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
 
                 // Show success message
                 alert('Settings saved successfully!');
 
                 // In a real application, you would submit the form data to the server
-            });
-        });
-
-        // Toggle switch functionality
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                // In a real application, you would save the preference to the server
-                console.log(`Toggle ${this.checked ? 'enabled' : 'disabled'}`);
             });
         });
     </script>
