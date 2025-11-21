@@ -191,7 +191,7 @@ def seller_editproduct(request,id,slug):
             ProductImage.objects.create(product=product,seller=seller,product_image=img)
         return redirect('/seller/seller_product/')
 
-    return render(request,'seller/sellereditproduct.html',{"product":product,"subcategory":subcategories})
+    return render(request,'seller/sellereditproduct.html',{"product":product,"subcategory":subcategories,"seller":seller})
 
 @role_required("seller", login_url="/seller/login")
 def add_product(request):
@@ -255,6 +255,16 @@ def order_products(request):
     seller=Seller.objects.get(user=request.user)
     products=Product.objects.filter(seller=seller)
     order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product').order_by('-id')
+    tab = request.GET.get("tab", "all")
+
+    if tab == "processing":
+        order_items = order_items.filter(status="Processing")
+    elif tab == "shipped":
+        order_items = order_items.filter(status="Shipped")
+    elif tab == "delivered":
+        order_items = order_items.filter(status="Delivered")
+    elif tab == "cancelled":
+        order_items = order_items.filter(status="Cancelled")
     search = request.GET.get('search')
     if search:
         order_items = order_items.filter(
@@ -262,10 +272,19 @@ def order_products(request):
             Q(order__id__icontains=search) |
             Q(order__user__username__icontains=search)
         )
+
+    processing_count = order_items.filter(status="Processing").count()
+    shipped_count = order_items.filter(status="Shipped").count()
+    delivered_count = order_items.filter(status="Delivered").count()
+
+    total_orders = order_items.count()
     paginator = Paginator(order_items, 2)
     page_no = request.GET.get("page")
     page_obj = paginator.get_page(page_no)
-    return render(request,'seller/sellorder.html', {"seller": seller,"order_item":order_items,'page_obj':page_obj})
+    return render(request,'seller/sellorder.html', {"seller": seller,"order_item":order_items,'page_obj':page_obj,"processing_count": processing_count,
+            "shipped_count": shipped_count,
+            "delivered_count": delivered_count,
+            "total_orders": total_orders,"active_tab":tab,"search":search or ""})
 
 
 @role_required("seller", login_url="/seller/login")
@@ -288,17 +307,29 @@ def single_order_product(request,slug):
         return HttpResponse('not found')
     order = order_items.first().order
     product = order_items.first().product
+    if request.method == "POST":
+        new_status = request.POST.get("status")
 
+        for item in order_items:
+            item.status = new_status
+            item.save()
+
+        return redirect(f"/seller/single_orderproduct/{slug}/")
     return render(request, 'seller/orderproducts.html', {
         "product": product,
         "order":order,
         "order_item": order_items,
+        "seller":seller
     })
 
 @role_required("seller", login_url="/seller/login")
 def seller_profile(request):
     seller = Seller.objects.get(user=request.user)
     user = request.user
+    total_products=Product.objects.filter(seller=seller).count()
+    active_order=OrderItem.objects.filter(product__seller=seller).exclude(status__in=["Delivered", "Cancelled"]).count()
+    rating_data = Review.objects.filter(product__seller=seller).aggregate(avg=Avg("rating"))
+    store_rating = round(rating_data["avg"], 1) if rating_data["avg"] else 0
 
     if request.method == "POST":
         user.first_name = request.POST.get("first_name")
@@ -313,74 +344,42 @@ def seller_profile(request):
 
         return redirect("/seller/seller_profile/")
 
-    return render(request, "seller/sellersettings.html", {"seller": seller,"user": user})
-
+    return render(request, "seller/sellersettings.html", {"seller": seller,"user": user,"total_products": total_products,"active_orders": active_order,"store_rating": store_rating,})
 
 @role_required("seller", login_url="/seller/login")
-def seller_review(request, product_id, slug):
-    seller = Seller.objects.get(user=request.user)
+def change_password(request):
+    user = request.user
 
-    product = get_object_or_404(
-        Product, id=product_id, slug=slug, seller=seller
-    )
+    if request.method == "POST":
+        current = request.POST.get("current_password")
+        new = request.POST.get("new_password")
+        confirm = request.POST.get("confirm_password")
 
-    review_list = Review.objects.filter(product=product).order_by("-review_date")
-    average_rating = review_list.aggregate(avg=Avg("rating"))["avg"] or 0
+        if not user.check_password(current):
+            return HttpResponse("Current password is wrong")
 
-    total_sold = OrderItem.objects.filter(
-        product=product,
-        status="Processing"
-    ).aggregate(total=Sum("quantity"))["total"] or 0
+        if new != confirm:
+            return HttpResponse("Passwords do not match")
 
-    remaining_stock = product.stock - total_sold
+        user.set_password(new)
+        user.save()
 
-    # -------------------------------
-    # 🔥 Calculate Monthly Revenue
-    # -------------------------------
-    monthly_data = (
-        OrderItem.objects.filter(product=product)
-        .annotate(month=TruncMonth("order__order_date"))  # <--- CORRECT FIELD
-        .values("month")
-        .annotate(
-            revenue=Sum(F("quantity") * F("price")),
-        )
-        .order_by("month")
-    )
+        return redirect("/seller/login/")
 
-    month_labels = [d["month"].strftime("%b") for d in monthly_data]
-    monthly_revenue = [d["revenue"] for d in monthly_data]
-    # Total revenue generated by this product
-    total_revenue = (
-                        OrderItem.objects.filter(product=product)
-                        .aggregate(total=Sum(F("quantity") * F("price")))
-                    )["total"] or 0
+    return HttpResponse("Invalid request")
 
-    # Total units sold
-    units_sold = (OrderItem.objects.filter(product=product).aggregate(total=Sum("quantity")))["total"] or 0
 
-    # Average selling price (real)
-    if units_sold > 0:
-        avg_price = total_revenue / units_sold
-    else:
-        avg_price = 0
+def seller_account_delete(request):
+    user=request.user
+    if request.method=='POST':
+        try:
+            seller=Seller.objects.get(user=user)
+            seller.delete()
+        except Seller.DoesNotExist:
+            pass
+        user.delete()
+        logout(request)
+        return redirect('/seller/login')
 
-    paginator = Paginator(review_list, 5)
-    page_num = request.GET.get("page")
-    reviews = paginator.get_page(page_num)
 
-    return render(request, "seller/sellerviewreview.html", {
-        "product": product,
-        "reviews": reviews,
-        "seller": seller,
-        "reviews_count": review_list.count(),
-        "average_rating": round(average_rating, 1),
-        "total_sold": total_sold,
-        "remaining_stock": remaining_stock,
-
-        # Pass graph data
-        "month_labels": month_labels,
-        "monthly_revenue": monthly_revenue,
-        "total_revenue": total_revenue,
-        "units_sold": units_sold,
-        "avg_price": round(avg_price, 2),
-    })
+    return redirect('/seller/seller_profile')
