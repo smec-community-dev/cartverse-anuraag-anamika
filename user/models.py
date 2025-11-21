@@ -77,7 +77,7 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(f"order-{uuid.uuid4().hex[:8]}")
-        super().save(*args, **kwargs)
+        super(Order, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"Order {self.id} - {self.user.username}"

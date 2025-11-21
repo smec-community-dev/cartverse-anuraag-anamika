@@ -255,6 +255,16 @@ def order_products(request):
     seller=Seller.objects.get(user=request.user)
     products=Product.objects.filter(seller=seller)
     order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product').order_by('-id')
+    tab = request.GET.get("tab", "all")
+
+    if tab == "processing":
+        order_items = order_items.filter(status="Processing")
+    elif tab == "shipped":
+        order_items = order_items.filter(status="Shipped")
+    elif tab == "delivered":
+        order_items = order_items.filter(status="Delivered")
+    elif tab == "cancelled":
+        order_items = order_items.filter(status="Cancelled")
     search = request.GET.get('search')
     if search:
         order_items = order_items.filter(
@@ -262,10 +272,19 @@ def order_products(request):
             Q(order__id__icontains=search) |
             Q(order__user__username__icontains=search)
         )
+
+    processing_count = order_items.filter(status="Processing").count()
+    shipped_count = order_items.filter(status="Shipped").count()
+    delivered_count = order_items.filter(status="Delivered").count()
+
+    total_orders = order_items.count()
     paginator = Paginator(order_items, 2)
     page_no = request.GET.get("page")
     page_obj = paginator.get_page(page_no)
-    return render(request,'seller/sellorder.html', {"seller": seller,"order_item":order_items,'page_obj':page_obj})
+    return render(request,'seller/sellorder.html', {"seller": seller,"order_item":order_items,'page_obj':page_obj,"processing_count": processing_count,
+            "shipped_count": shipped_count,
+            "delivered_count": delivered_count,
+            "total_orders": total_orders,"active_tab":tab,"search":search or ""})
 
 
 @role_required("seller", login_url="/seller/login")
@@ -288,11 +307,19 @@ def single_order_product(request,slug):
         return HttpResponse('not found')
     order = order_items.first().order
     product = order_items.first().product
+    if request.method == "POST":
+        new_status = request.POST.get("status")
 
+        for item in order_items:
+            item.status = new_status
+            item.save()
+
+        return redirect(f"/seller/single_orderproduct/{slug}/")
     return render(request, 'seller/orderproducts.html', {
         "product": product,
         "order":order,
         "order_item": order_items,
+        "seller":seller
     })
 
 @role_required("seller", login_url="/seller/login")
