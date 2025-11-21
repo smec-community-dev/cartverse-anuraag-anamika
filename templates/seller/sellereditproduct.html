@@ -91,7 +91,7 @@
                     <!-- Messages -->
                     <div class="relative">
                         <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
-                            <i class="fas fa-envelope text-lg"></i>
+                            <i class="fas fa-bell text-lg"></i>
                         </a>
                     </div>
                     
@@ -101,44 +101,32 @@
                             <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
                                 JS
                             </div>
-                            <span class="text-gray-700 font-medium hidden md:block">John's Store</span>
+                            <span class="text-gray-700 font-medium hidden md:block">{{seller.user.username}}</span>
                             <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
                         </button>
                         
                         <!-- Profile Dropdown -->
                         <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
                             <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-sm font-medium text-gray-800">John's Store</p>
+                                <p class="text-sm font-medium text-gray-800">{{seller.user.username}}</p>
                                 <p class="text-sm text-gray-500">Seller Account</p>
                             </div>
                             
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <a href="/seller/seller" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                 <i class="fas fa-store mr-3 text-gray-400"></i>
                                 My Store
                             </a>
                             
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <a href="/seller/seller_profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                 <i class="fas fa-user mr-3 text-gray-400"></i>
                                 Seller Profile
                             </a>
-                            
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-wallet mr-3 text-gray-400"></i>
-                                Payouts
-                            </a>
-                            
+
+
                             <div class="border-t border-gray-100 my-1"></div>
-                            
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-cog mr-3 text-gray-400"></i>
-                                Settings
-                            </a>
-                            
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-question-circle mr-3 text-gray-400"></i>
-                                Help & Support
-                            </a>
-                            
+
+
+
                             <div class="border-t border-gray-100 my-1"></div>
                             
                             <a href="#" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
@@ -163,8 +151,8 @@
                             JS
                         </div>
                         <div>
-                            <h2 class="font-bold text-gray-800">John's Store</h2>
-                            <p class="text-sm text-gray-600">Fashion & Apparel</p>
+                            <h2 class="font-bold text-gray-800">{{seller.user.username}}</h2>
+                            <p class="text-sm text-gray-600">{{seller.shop_name}}</p>
                             <div class="flex items-center mt-1">
                                 <div class="flex text-yellow-400 text-sm">
                                     <i class="fas fa-star"></i>
@@ -211,17 +199,13 @@
                     <h3 class="font-semibold text-gray-800 mb-4">Quick Actions</h3>
                     
                     <div class="space-y-3">
-                        <a href="#" class="flex items-center p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
+                        <a href="/seller/add_product" class="flex items-center p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
                             <i class="fas fa-plus mr-3"></i>
                             Add New Product
                         </a>
-                        <a href="#" class="flex items-center p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100">
+                        <a href="/seller/seller_product" class="flex items-center p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100">
                             <i class="fas fa-list mr-3"></i>
                             View All Products
-                        </a>
-                        <a href="#" class="flex items-center p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100">
-                            <i class="fas fa-chart-bar mr-3"></i>
-                            Product Analytics
                         </a>
                     </div>
                 </div>
@@ -242,9 +226,7 @@
                     </div>
                     <div class="flex items-center space-x-3">
                         <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Active</span>
-                        <div class="text-sm text-gray-600">
-                            <i class="fas fa-shopping-cart mr-1"></i> 42 sold
-                        </div>
+
                     </div>
                 </div>
                 
@@ -372,46 +354,7 @@
                 </div>
 
                 <!-- Product Performance -->
-                <div class="dashboard-card p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">Product Performance</h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                        <div class="text-center p-4 bg-blue-50 rounded-lg">
-                            <p class="text-2xl font-bold text-blue-800">42</p>
-                            <p class="text-sm text-blue-700">Units Sold</p>
-                        </div>
-                        
-                        <div class="text-center p-4 bg-green-50 rounded-lg">
-                            <p class="text-2xl font-bold text-green-800">$2,099.58</p>
-                            <p class="text-sm text-green-700">Total Revenue</p>
-                        </div>
-                        
-                        <div class="text-center p-4 bg-purple-50 rounded-lg">
-                            <p class="text-2xl font-bold text-purple-800">128</p>
-                            <p class="text-sm text-purple-700">Reviews</p>
-                        </div>
-                        
-                        <div class="text-center p-4 bg-yellow-50 rounded-lg">
-                            <div class="flex items-center justify-center">
-                                <div class="flex text-yellow-400 text-sm mr-2">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                </div>
-                                <span class="text-2xl font-bold text-yellow-800">4.7</span>
-                            </div>
-                            <p class="text-sm text-yellow-700">Average Rating</p>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center">
-                        <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">
-                            View Detailed Analytics <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>

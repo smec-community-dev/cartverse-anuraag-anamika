@@ -191,7 +191,7 @@ def seller_editproduct(request,id,slug):
             ProductImage.objects.create(product=product,seller=seller,product_image=img)
         return redirect('/seller/seller_product/')
 
-    return render(request,'seller/sellereditproduct.html',{"product":product,"subcategory":subcategories})
+    return render(request,'seller/sellereditproduct.html',{"product":product,"subcategory":subcategories,"seller":seller})
 
 @role_required("seller", login_url="/seller/login")
 def add_product(request):
