@@ -245,7 +245,7 @@ def add_product(request):
             )
 
         return redirect("/seller/seller_dashboard")
-    return render(request,'seller/selleradditem.html',{"subcategories":subcategories})
+    return render(request,'seller/selleradditem.html',{"subcategories":subcategories,'seller':seller})
 
 @role_required("seller", login_url="/seller/login")
 def seller_delete_product(request,id,slug):

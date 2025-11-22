@@ -259,7 +259,7 @@
                         </a>
                     </div>
                     <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                        JS
+                        {{ seller.user.username|slice:":1"|upper }}
                     </div>
                     <div>
                         <p class="font-medium text-gray-800">{{seller.user.username}}</p>
