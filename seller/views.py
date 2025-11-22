@@ -9,7 +9,7 @@ from core.models import User
 # from seed import subcategories
 from django.utils.text import slugify
 from django.db.models.functions import TruncMonth
-from seller.models import Seller,Product,ProductImage,SubCategory,Category
+from seller.models import Seller,Product,ProductImage,SubCategory,Category,Notification
 from user.models import OrderItem,Order,Review,Customer
 from decorators.decorators import role_required
 
@@ -313,7 +313,12 @@ def single_order_product(request,slug):
         for item in order_items:
             item.status = new_status
             item.save()
-
+        product_name = order_items.first().product.product_name
+        send_notification(
+            request.user,
+            f"{product_name} status changed to {new_status}",
+            title="Order Update"
+        )
         return redirect(f"/seller/single_orderproduct/{slug}/")
     return render(request, 'seller/orderproducts.html', {
         "product": product,
@@ -451,3 +456,34 @@ def seller_review(request, product_id, slug):
         "units_sold": units_sold,
         "avg_price": round(avg_price, 2),
     })
+
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+def send_notification(user, message, title="New Notification"):
+    # Save in DB
+    Notification.objects.create(
+        user=user,
+        title=title,
+        message=message
+    )
+
+    # Send via WebSocket
+    channel_layer = get_channel_layer()
+    group_name = f"user_{user.id}"
+
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            "type": "notify",
+            "message": message,
+            "title": title
+        }
+    )
+
+# send_notification("New user registered!")
+
+def notification_page(request):
+    seller = Seller.objects.get(user=request.user)
+    notifications = Notification.objects.filter(user=request.user).order_by("-created_at")
+    return render(request, "seller/notifications.html", {"notifications": notifications,'seller':seller})
