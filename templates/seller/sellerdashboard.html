@@ -154,7 +154,7 @@
                         <!-- Profile Dropdown -->
                         <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
                             <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-sm font-medium text-gray-800">John's Store</p>
+                                <p class="text-sm font-medium text-gray-800">{{seller.shop_name}}</p>
                                 <p class="text-sm text-gray-500">Seller Account</p>
                             </div>
 
@@ -257,13 +257,16 @@
                             <h2 class="font-bold text-gray-800">{{seller.shop_name}}</h2>
                             <div class="flex items-center mt-1">
                                 <div class="flex text-yellow-400 text-sm">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= store_rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
-                                <span class="text-xs text-gray-500 ml-1">(128)</span>
+
+                                <span class="text-xs text-gray-500 ml-1">({{ r_count.count }})</span>
                             </div>
                         </div>
                     </div>
@@ -518,7 +521,7 @@
             </td>
 
             <td class="py-4">
-                <a href="{% url 'single_order' item.product.slug %}"
+                <a href="{% url 'single_order' item.order.slug %}"
                    class="text-purple-600 hover:text-purple-800 text-sm font-medium">
                     View
                 </a>

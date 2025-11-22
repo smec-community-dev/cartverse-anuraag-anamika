@@ -13,6 +13,9 @@ from seller.models import Seller,Product,ProductImage,SubCategory,Category,Notif
 from user.models import OrderItem,Order,Review,Customer
 from decorators.decorators import role_required
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 def seller_register(request):
         if request.method == 'POST':
             username = request.POST.get('username')
@@ -150,7 +153,12 @@ def seller_product(request):
     # Inventory Alerts
     low_stock = products.filter( total_stock__gt=0, stock__lte=10)
     no_stock = products.filter( total_stock=0)
+    store_rating = Review.objects.filter(product__seller=seller).aggregate(
+        avg_rating=Avg('rating')
+    )['avg_rating'] or 0
 
+    store_rating = round(store_rating, 1)
+    review=Review.objects.all()
     paginator = Paginator(products, 2)
     page_no = request.GET.get("page")
     page_obj = paginator.get_page(page_no)
@@ -168,6 +176,8 @@ def seller_product(request):
         "outofstock": outofstock_count,
         "low_stock": low_stock,
         "no_stock": no_stock,
+        "r_count": review,
+        "store_rating": store_rating
     })
 
 @role_required("seller", login_url="/seller/login")
@@ -276,7 +286,12 @@ def order_products(request):
     processing_count = order_items.filter(status="Processing").count()
     shipped_count = order_items.filter(status="Shipped").count()
     delivered_count = order_items.filter(status="Delivered").count()
+    store_rating = Review.objects.filter(product__seller=seller).aggregate(
+        avg_rating=Avg('rating')
+    )['avg_rating'] or 0
 
+    store_rating = round(store_rating, 1)
+    review = Review.objects.all()
     total_orders = order_items.count()
     paginator = Paginator(order_items, 2)
     page_no = request.GET.get("page")
@@ -284,7 +299,8 @@ def order_products(request):
     return render(request,'seller/sellorder.html', {"seller": seller,"order_item":order_items,'page_obj':page_obj,"processing_count": processing_count,
             "shipped_count": shipped_count,
             "delivered_count": delivered_count,
-            "total_orders": total_orders,"active_tab":tab,"search":search or ""})
+            "total_orders": total_orders,"active_tab":tab,"search":search or "","r_count":review,
+        "store_rating":store_rating})
 
 
 @role_required("seller", login_url="/seller/login")
@@ -335,6 +351,7 @@ def seller_profile(request):
     active_order=OrderItem.objects.filter(product__seller=seller).exclude(status__in=["Delivered", "Cancelled"]).count()
     rating_data = Review.objects.filter(product__seller=seller).aggregate(avg=Avg("rating"))
     store_rating = round(rating_data["avg"], 1) if rating_data["avg"] else 0
+    review=Review.objects.all()
 
     if request.method == "POST":
         user.first_name = request.POST.get("first_name")
@@ -349,7 +366,7 @@ def seller_profile(request):
 
         return redirect("/seller/seller_profile/")
 
-    return render(request, "seller/sellersettings.html", {"seller": seller,"user": user,"total_products": total_products,"active_orders": active_order,"store_rating": store_rating,})
+    return render(request, "seller/sellersettings.html", {"seller": seller,"user": user,"total_products": total_products,"active_orders": active_order,"store_rating": store_rating,"r_count":review,})
 
 @role_required("seller", login_url="/seller/login")
 def change_password(request):
@@ -456,9 +473,6 @@ def seller_review(request, product_id, slug):
         "units_sold": units_sold,
         "avg_price": round(avg_price, 2),
     })
-
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 
 def send_notification(user, message, title="New Notification"):
     # Save in DB

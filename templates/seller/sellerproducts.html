@@ -293,13 +293,16 @@
                             <h2 class="font-bold text-gray-800">{{seller.shop_name}}</h2>
                             <div class="flex items-center mt-1">
                                 <div class="flex text-yellow-400 text-sm">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= store_rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
-                                <span class="text-xs text-gray-500 ml-1">(128)</span>
+
+                                <span class="text-xs text-gray-500 ml-1">({{ r_count.count }})</span>
                             </div>
                         </div>
                     </div>
