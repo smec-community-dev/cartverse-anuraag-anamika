@@ -603,12 +603,13 @@
                                 <span class="text-gray-600">+91 {{ item.order.user.phone|default:"Not provided" }}</span>
                             </div>
                         </div>
-
+                        <br><br>
                         <div class="mt-4 pt-4 border-t border-gray-200">
-                            <button class="w-full px-4 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 font-medium">
+                            <a href="mailto:{{ item.order.user.email }}"
+                               class="w-full flex items-center justify-center px-6 py-2 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 font-medium transition">
                                 <i class="fas fa-envelope mr-2"></i>
                                 Contact Customer
-                            </button>
+                            </a>
                         </div>
                     </div>
 
