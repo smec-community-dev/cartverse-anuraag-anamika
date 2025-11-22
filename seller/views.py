@@ -486,4 +486,8 @@ def send_notification(user, message, title="New Notification"):
 def notification_page(request):
     seller = Seller.objects.get(user=request.user)
     notifications = Notification.objects.filter(user=request.user).order_by("-created_at")
-    return render(request, "seller/notifications.html", {"notifications": notifications,'seller':seller})
+    unread_count = Notification.objects.filter(user=request.user, is_read=False).count()
+
+    # Mark notifications as read
+    notifications.filter(is_read=False).update(is_read=True)
+    return render(request, "seller/notifications.html", {"notifications": notifications,'seller':seller,"unread_count": unread_count})
