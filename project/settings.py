@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-import os.path
+
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 from django.conf.global_settings import MEDIA_URL, AUTH_USER_MODEL
 
@@ -22,11 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)#%q3bgivd+elm=u7$8fdhkv&27v=2ck-t9#_kvbvx%4mmo!f2'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG") == "True"
 ALLOWED_HOSTS = []
 
 
@@ -40,9 +41,36 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'seller',
-    'user'
+    'user',
+"django.contrib.sites",
+
+    # authentication
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+
+    # providers
+    "allauth.socialaccount.providers.google",
+    'seller.apps.SellerConfig',
+    'channels'
 ]
+SITE_ID = 1
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+ASGI_APPLICATION = "project.asgi.application"
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,12 +78,23 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+            "secret": os.getenv("GOOGLE_CLIENT_SECRET"),
+            "key": ""
+        }
+    }
+}
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -72,7 +111,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'project.wsgi.application'
+ASGI_APPLICATION = 'project.asgi.application'
 
 AUTH_USER_MODEL="core.User"
 # Database

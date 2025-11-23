@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - StyleCart Seller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .seller-nav-active {
+            background-color: #f3f4f6;
+            color: #8b5cf6;
+            font-weight: 600;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .password-strength-meter {
+            height: 6px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength-weak {
+            background-color: #ef4444;
+            width: 25%;
+        }
+
+        .password-strength-medium {
+            background-color: #f59e0b;
+            width: 50%;
+        }
+
+        .password-strength-strong {
+            background-color: #10b981;
+            width: 75%;
+        }
+
+        .password-strength-very-strong {
+            background-color: #059669;
+            width: 100%;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            border-color: #8b5cf6;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Seller Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo & Seller Badge -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Seller</span>
+                </div>
+
+                <!-- Seller Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="/seller/seller_dashboard" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
+                    <a href="/seller/seller_product" class="text-gray-800 hover:text-purple-600 font-medium">Products</a>
+                    <a href="/seller/order_products" class="text-gray-800 hover:text-purple-600 font-medium">Orders</a>
+                </div>
+
+                <!-- Seller Actions -->
+                <div class="flex items-center space-x-6">
+                    <!-- Notification -->
+                    <div class="relative">
+                        <a href="{% url 'notifications' %}" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-bell text-lg"></i>
+                        </a>
+                    </div>
+                    <!-- Seller Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                {{ seller.user.username|slice:":1"|upper }}
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">{{seller.user.username}}</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">{{seller.shop_name}}</p>
+                                <p class="text-sm text-gray-500">Seller Account</p>
+                            </div>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-store mr-3 text-gray-400"></i>
+                                My Store
+                            </a>
+
+                            <a href="/seller/seller_profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user mr-3 text-gray-400"></i>
+                                Seller Profile
+                            </a>
+
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="/seller/logout" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Exit Seller Mode
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Breadcrumb -->
+        <div class="mb-6">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="/seller/seller_dashboard" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-purple-600">
+                            <i class="fas fa-home mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Settings</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar -->
+            <div class="lg:w-1/4">
+                <div class="dashboard-card p-6 mb-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                            {{ seller.user.username|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-gray-800">{{seller.shop_name}}</h2>
+                            <div class="flex items-center mt-1">
+                                <div class="flex text-yellow-400 text-sm">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="text-xs text-gray-500 ml-1">(128)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <a href="/seller/seller_dashboard" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-tachometer-alt mr-3 text-gray-400"></i>
+                            Dashboard
+                        </a>
+                        <a href="/seller/seller_product" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-box mr-3 text-gray-400"></i>
+                            Products
+                        </a>
+                        <a href="/seller/order_products" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
+                            Orders
+                        </a>
+                        <a href="/seller/settings" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg seller-nav-active">
+                            <i class="fas fa-cog mr-3 text-purple-600"></i>
+                            Settings
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="dashboard-card p-6">
+                    <h3 class="font-semibold text-gray-800 mb-4">Store Stats</h3>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Total Products</span>
+                            <span class="font-bold text-gray-800">{{total_products}}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Active Orders</span>
+                            <span class="font-bold text-gray-800">{{active_orders}}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Store Rating</span>
+                            <span class="font-bold text-gray-800">{{store_rating}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Settings Content -->
+            <div class="lg:w-3/4">
+                <!-- Settings Header -->
+                <div class="dashboard-card p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                        <div class="mb-4 md:mb-0">
+                            <h1 class="text-2xl font-bold text-gray-800 mb-1">Account Settings</h1>
+                            <p class="text-gray-600">Manage your account information and preferences</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <span class="text-sm text-gray-600">All changes saved</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Information -->
+                <div class="dashboard-card p-6 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-6">Profile Information</h3>
+
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <!-- Profile Picture -->
+                        <div class="md:w-1/3">
+                            <div class="flex flex-col items-center">
+                                <div class="w-32 h-32 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-3xl mb-4">
+                                    {{ seller.user.username|slice:":1"|upper }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profile Form -->
+                        <div class="md:w-2/3">
+                            <form method="POST" class="space-y-6">
+                                {% csrf_token %}
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                        <input type="text" name="first_name" id="first_name" value="{{ user.first_name }}"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+
+                                    <div>
+                                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                        <input type="text" name="last_name" id="last_name" value="{{ user.last_name }}"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                    <input type="email" name="email" id="email" value="{{ user.email }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                                </div>
+
+                                <div>
+                                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                    <input type="text" name="phone" id="phone" value="{{ user.phone_number }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                                </div>
+
+                                <div>
+                                    <label for="shop_name" class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
+                                    <input type="text" name="shop_name" id="shop_name" value="{{ seller.shop_name }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                                </div>
+
+                                <div>
+                                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                    <input type="text" name="location" id="location" value="{{ seller.location }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                                </div>
+
+                                <div class="flex justify-end pt-4">
+                                    <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Password Section -->
+                <div class="dashboard-card p-6 mb-6">
+    <h3 class="font-semibold text-gray-800 mb-6">Change Password</h3>
+
+    <form method="POST" action="{% url 'change_password' %}" class="space-y-6 max-w-2xl">
+        {% csrf_token %}
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+            <input type="password" name="current_password"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                   required>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <input type="password" name="new_password"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                   required>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            <input type="password" name="confirm_password"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                   required>
+        </div>
+
+        <div class="flex justify-end pt-4">
+            <button type="submit"
+                    class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                Update Password
+            </button>
+        </div>
+    </form>
+</div>
+
+
+                <!-- Delete Account Section -->
+                <form action="{% url 'seller_account_delete' %}" method="POST">
+                    {% csrf_token %}
+                <button type="submit"
+                    class="w-full py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium">
+                    Delete Account
+                </button>
+            </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-red-800">Delete Account</h3>
+            </div>
+
+            <div class="p-6">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                    </div>
+                </div>
+
+                <p class="text-gray-700 text-center mb-6">
+                    Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently removed.
+                </p>
+
+                <div class="mb-6">
+                    <label for="confirmDelete" class="block text-sm font-medium text-gray-700 mb-2">
+                        Type "DELETE" to confirm:
+                    </label>
+                    <input type="text" id="confirmDelete"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Type DELETE here">
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button id="cancelDelete" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                        Cancel
+                    </button>
+                    <button id="confirmDeleteBtn" disabled class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium disabled:bg-red-300 disabled:cursor-not-allowed">
+                        Delete Account Permanently
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+
+
+        // Delete Account Modal Functionality
+        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+        const deleteAccountModal = document.getElementById('deleteAccountModal');
+        const cancelDelete = document.getElementById('cancelDelete');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const confirmDeleteInput = document.getElementById('confirmDelete');
+
+        deleteAccountBtn.addEventListener('click', function() {
+            deleteAccountModal.classList.add('active');
+        });
+
+        cancelDelete.addEventListener('click', function() {
+            deleteAccountModal.classList.remove('active');
+            confirmDeleteInput.value = '';
+            confirmDeleteBtn.disabled = true;
+        });
+
+        confirmDeleteInput.addEventListener('input', function() {
+            if (this.value === 'DELETE') {
+                confirmDeleteBtn.disabled = false;
+            } else {
+                confirmDeleteBtn.disabled = true;
+            }
+        });
+
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (confirmDeleteInput.value === 'DELETE') {
+                // In a real application, you would submit a delete request to the server
+                alert('Account deletion request submitted. This action cannot be undone.');
+                deleteAccountModal.classList.remove('active');
+
+                // Redirect to home page or show confirmation
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            }
+        });
+
+        // Close modal when clicking outside
+        deleteAccountModal.addEventListener('click', function(e) {
+            if (e.target === deleteAccountModal) {
+                deleteAccountModal.classList.remove('active');
+                confirmDeleteInput.value = '';
+                confirmDeleteBtn.disabled = true;
+            }
+        });
+
+    </script>
+</body>
+</html>

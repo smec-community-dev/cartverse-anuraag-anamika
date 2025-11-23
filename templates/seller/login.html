@@ -280,7 +280,6 @@
                     <a href="home.html" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
                     <a href="shop.html" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
                     <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
-                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
                 </div>
 
                 <!-- Icons and Mobile Menu Button -->
@@ -305,7 +304,6 @@
                     <a href="home.html" class="text-gray-800 hover:text-purple-600 font-medium py-2">Home</a>
                     <a href="shop.html" class="text-gray-800 hover:text-purple-600 font-medium py-2">Shop</a>
                     <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium py-2">Categories</a>
-                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium py-2">Deals</a>
 
                     <!-- Mobile Auth Buttons -->
                     <div class="mobile-auth-buttons">
@@ -341,7 +339,7 @@
                         </div>
 
                         <div class="forgot-password">
-                            <a href="forgot-password.html">Forgot Password?</a>
+                            <a href="/seller/seller_change_password">Forgot Password?</a>
                         </div>
 
                         <button type="submit" class="submit-btn">
@@ -352,20 +350,17 @@
                             <span>Or sign in with</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <button type="button" class="social-btn">
-                                <i class="social-icon fab fa-google google"></i>
-                                Google
-                            </button>
-
-                            <button type="button" class="social-btn">
-                                <i class="social-icon fab fa-facebook-f facebook"></i>
-                                Facebook
-                            </button>
+                        <div class="grid grid-cols-1 place-items-center">
+                            <a href="/accounts/google/login/?process=login"
+                               class="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 px-4 bg-white hover:bg-gray-100 transition">
+                                <i class="fab fa-google text-red-500 text-lg"></i>
+                                <span class="text-gray-700 font-medium">Login with Google</span>
+                            </a>
                         </div>
 
+
                         <p class="register-link">
-                            Don't have a seller account? <a href="seller-register.html">Register here</a>
+                            Don't have a seller account? <a href="/seller/register/">Register here</a>
                         </p>
                     </form>
                 </div>
