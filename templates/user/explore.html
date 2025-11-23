@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category.category_name }} - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Dropdown menu styles */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 120%;
+            background-color: white;
+            min-width: 220px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            z-index: 100;
+            padding: 0.5rem 0;
+            border: 1px solid #f3f4f6;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f9fafb;
+            color: #9333ea;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .mobile-menu.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Product card hover effects */
+        .product-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+
+        /* Image cover utility */
+        .img-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.5s ease;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="flex justify-between items-center h-14 sm:h-16">
+                <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
+                    <i class="fas fa-shopping-bag text-xl sm:text-2xl md:text-3xl text-purple-600 mr-2 sm:mr-3"></i>
+                    <span class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">StyleCart</span>
+                </a>
+
+                <div class="hidden md:flex space-x-6 lg:space-x-8 items-center">
+                    <a href="{% url 'home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">About</a>
+                </div>
+
+                <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
+
+                    <div class="relative">
+                        <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-heart text-lg sm:text-xl"></i>
+                            <span id="wishlist-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white {% if wishlist_count == 0 %} hidden {% endif %}">
+                                {{ wishlist_count }}
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="relative">
+                        <a href="{% url 'cart' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white">
+                                {{ cart_count }}
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="relative">
+                        <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs sm:text-sm md:text-base border border-purple-200">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% else %}
+                                    <i class="fas fa-user text-xs"></i>
+                                {% endif %}
+                            </div>
+                            <span class="hidden lg:block text-sm md:text-base font-medium truncate max-w-[100px] xl:max-w-[120px] responsive-text">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    Account
+                                {% endif %}
+                            </span>
+                            <i class="fas fa-chevron-down text-xs sm:text-sm ml-1"></i>
+                        </button>
+
+                        <div id="profileDropdown" class="dropdown-menu">
+                            {% if request.user.is_authenticated %}
+                                <div class="px-4 py-2 border-b border-gray-100 text-xs sm:text-sm text-gray-500">
+                                    Signed in as <strong>{{ request.user.username }}</strong>
+                                </div>
+                                <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-user w-5 mr-2"></i> My Profile</a>
+                                <a href="{% url 'order_item' %}" class="dropdown-item"><i class="fas fa-shopping-bag w-5 mr-2"></i> My Orders</a>
+                                <a href="{% url 'wishlist' %}" class="dropdown-item"><i class="fas fa-heart w-5 mr-2"></i> My Wishlist</a>
+
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item text-red-600 hover:text-red-700 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5 mr-2"></i> Logout</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="dropdown-item"><i class="fas fa-sign-in-alt w-5 mr-2"></i> Login</a>
+                                <a href="{% url 'register' %}" class="dropdown-item"><i class="fas fa-user-plus w-5 mr-2"></i> Register</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="md:hidden">
+                        <button id="mobileMenuButton" class="text-gray-700 hover:text-purple-600 focus:outline-none p-1">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobileMenu" class="mobile-menu bg-white md:hidden pb-4 shadow-inner">
+            <div class="container mx-auto px-4 pt-4 space-y-3">
+                <form action="" class="relative">
+                    <input type="text" placeholder="Search..." class="w-full bg-gray-100 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                </form>
+
+                <div class="space-y-2">
+                    <a href="{% url 'home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">About</a>
+                </div>
+
+                {% if not request.user.is_authenticated %}
+                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
+                    <a href="{% url 'login' %}" class="text-center py-2 border border-gray-300 rounded text-sm font-medium text-gray-700 responsive-text">Login</a>
+                    <a href="{% url 'register' %}" class="text-center py-2 bg-purple-600 rounded text-sm font-medium text-white responsive-text">Register</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+
+
+    </nav>
+
+<section class="relative py-20 md:py-24 bg-gray-900 text-white overflow-hidden">
+    <div class="absolute inset-0">
+        <img src="{{ category.image.url }}"
+             alt="{{ category.category_name }}"
+             class="w-full h-full object-cover opacity-90">
+    </div>
+
+    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30"></div>
+
+    <div class="container mx-auto px-4 lg:px-8 text-center relative z-10">
+        <span class="inline-block px-4 py-1.5 mb-4 text-xs font-bold tracking-widest uppercase bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+            Collection
+        </span>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight drop-shadow-lg">
+            {{ category.category_name }}
+        </h1>
+        <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto font-light leading-relaxed">
+            Explore our exclusive selection of {{ category.category_name|lower }}, designed for style and comfort.
+        </p>
+    </div>
+</section>
+
+<div class="bg-white border-b border-gray-100">
+    <div class="container mx-auto px-4 lg:px-8 py-4">
+        <nav class="flex items-center text-sm font-medium">
+            <a href="{% url 'home' %}" class="text-gray-500 hover:text-purple-600 transition-colors">
+                <i class="fas fa-home mr-1"></i> Home
+            </a>
+            <span class="mx-3 text-gray-300">/</span>
+            <a href="{% url 'category' %}" class="text-gray-500 hover:text-purple-600 transition-colors">Categories</a>
+            <span class="mx-3 text-gray-300">/</span>
+            <span class="text-purple-600 font-semibold">{{ category.category_name }}</span>
+        </nav>
+    </div>
+</div>
+
+<div class="container mx-auto px-4 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
+
+        <aside class="lg:col-span-1">
+            <div class="bg-white rounded-2xl p-6 shadow-[0_0_20px_rgba(0,0,0,0.03)] border border-gray-100 sticky top-28">
+                <h2 class="text-lg font-bold mb-5 text-gray-900 flex items-center gap-2">
+                    <i class="fas fa-layer-group text-purple-600"></i>
+                    Subcategories
+                </h2>
+                <ul class="space-y-1">
+                    {% for sub in subcategories %}
+                        <li>
+                           <a href="?subcategory={{ sub.slug }}"
+                              class="group flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-purple-50 text-gray-600 hover:text-purple-700 transition-all duration-200">
+                                <span class="font-medium text-sm">{{ sub.sub_category_name }}</span>
+                                <i class="fas fa-chevron-right text-xs opacity-0 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all text-purple-400"></i>
+                            </a>
+                        </li>
+                    {% empty %}
+                        <li class="text-gray-400 text-sm text-center py-4 italic">No subcategories found</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </aside>
+
+        <main class="lg:col-span-3">
+
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Products</h2>
+                    <p class="text-sm text-gray-500 mt-1">Showing {{ products|length }} results</p>
+                </div>
+
+            </div>
+
+            {% if products %}
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+
+                {% for p in products %}
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full border border-gray-100 product-card group overflow-hidden relative">
+
+                    <div class="relative w-full h-56 sm:h-64 bg-gray-100 overflow-hidden">
+                        {% with first_image=p.images.all|first %}
+                            {% if first_image %}
+                                <img src="{{ first_image.product_image.url }}"
+                                     class="img-cover product-img"
+                                     alt="{{ p.product_name }}">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
+                                    <i class="fas fa-image fa-3x"></i>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+
+                        <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                        <button class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-sm hover:shadow-md
+                                w-9 h-9 flex items-center justify-center wishlist-btn hover:scale-110 transition-transform duration-200 z-10"
+                                data-url="{% url 'add_wishlist' p.slug %}"
+                                data-product-id="{{ p.id }}"
+                                data-added="{% if p.id in wishlist_ids %}1{% else %}0{% endif %}">
+                            <i class="{% if p.id in wishlist_ids %}fas text-red-500{% else %}far text-gray-600{% endif %} fa-heart text-sm"></i>
+                        </button>
+
+                        {% if p.discount_price %}
+                        <span class="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide shadow-sm">
+                            Sale
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="p-4 flex flex-col flex-grow">
+
+                        <div class="text-[10px] text-gray-400 uppercase tracking-wider mb-1 font-medium truncate">
+                            {{ category.category_name }}
+                        </div>
+
+                        <h3 class="font-semibold text-base text-gray-900 truncate mb-1 group-hover:text-purple-700 transition-colors" title="{{ p.product_name }}">
+                            <a href="{% url 'single' p.slug %}">
+                                {{ p.product_name }}
+                            </a>
+                        </h3>
+
+                        <p class="text-gray-500 text-xs line-clamp-2 leading-relaxed mb-3">
+                            {{ p.description|striptags|truncatewords:12 }}
+                        </p>
+
+                        <div class="mt-auto pt-3 border-t border-gray-50">
+                            <div class="flex justify-between items-end mb-3">
+                                <div class="flex flex-col">
+                                    {% if p.discount_price %}
+                                        <span class="text-purple-700 font-bold text-lg leading-none">₹{{ p.discount_price }}</span>
+                                        <span class="text-gray-400 line-through text-xs mt-0.5">₹{{ p.price }}</span>
+                                    {% else %}
+                                        <span class="text-purple-700 font-bold text-lg leading-none">₹{{ p.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 {% if p.stock > 0 %}text-green-700 bg-green-50{% else %}text-red-600 bg-red-50{% endif %}">
+                                    {% if p.stock > 0 %} In Stock {% else %} Out of Stock {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-2">
+                                {% if p.stock > 0 %}
+                                <button class="w-full bg-gray-900 text-white py-2.5 rounded-lg text-sm font-medium
+                                    hover:bg-purple-600 transition-colors shadow-sm hover:shadow focus:ring-2 focus:ring-purple-300 focus:outline-none flex items-center justify-center gap-2 cart-btn"
+                                    data-url="{% url 'add_cart' p.slug %}"
+                                    data-added="0">
+                                    <i class="fas fa-shopping-cart text-xs"></i> Add to Cart
+                                </button>
+                                {% else %}
+                                <button disabled class="w-full bg-gray-200 text-gray-400 py-2.5 rounded-lg text-sm font-medium cursor-not-allowed">
+                                    Out of Stock
+                                </button>
+                                {% endif %}
+
+                                <a href="{% url 'single' p.slug %}" class="w-full text-center text-xs text-gray-500 hover:text-purple-600 font-medium py-1">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-24 bg-white rounded-2xl shadow-sm border border-gray-100 text-center px-4">
+                <div class="bg-purple-50 p-6 rounded-full mb-4">
+                    <i class="fas fa-box-open text-4xl text-purple-300"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">No Products Found</h3>
+                <p class="text-gray-500 mb-8 max-w-md mx-auto">We couldn't find any products in this category at the moment. Please check back later.</p>
+                <a href="{% url 'category' %}"
+                   class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-medium transition-all shadow-lg hover:shadow-purple-200">
+                    Browse All Categories
+                </a>
+            </div>
+            {% endif %}
+
+        </main>
+
+    </div>
+</div>
+
+<footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
+                <div>
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-lg sm:text-xl lg:text-2xl text-purple-500 mr-2 sm:mr-3"></i>
+                        <span class="text-lg sm:text-xl font-bold responsive-text">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 responsive-text">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="https://facebook.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-facebook-f text-sm sm:text-base"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-instagram text-sm sm:text-base"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="{% url 'home' %}" class="hover:text-purple-400 transition responsive-text">Home</a></li>
+                        <li><a href="{% url 'user_home' %}" class="hover:text-purple-400 transition responsive-text">Shop</a></li>
+                        <li><a href="{% url 'about' %}" class="hover:text-purple-400 transition responsive-text">About</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Support</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Return & Refund</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Payment Methods</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Contact</h3>
+                    <ul class="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-500 mt-1 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">123 Fashion Street,<br>New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+                <p class="text-gray-500 text-sm sm:text-base responsive-text">&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('active');
+                // Toggle icon
+                const icon = this.querySelector('i');
+                if (mobileMenu.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        }
+
+        // Profile dropdown toggle
+        const profileDropdownButton = document.getElementById('profileDropdownButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if (profileDropdownButton && profileDropdown) {
+            profileDropdownButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('active');
+            });
+        }
+
+        // Close dropdown/menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (profileDropdown && profileDropdown.classList.contains('active') &&
+                !profileDropdown.contains(event.target) &&
+                !profileDropdownButton.contains(event.target)) {
+                profileDropdown.classList.remove('active');
+            }
+
+            if (mobileMenu && mobileMenu.classList.contains('active') &&
+                !mobileMenu.contains(event.target) &&
+                !mobileMenuButton.contains(event.target)) {
+                mobileMenu.classList.remove('active');
+                const icon = mobileMenuButton.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Wishlist functionality
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Prevent clicking the product link if button is inside a link tag
+                e.preventDefault();
+
+                const url = this.dataset.url;
+                const productId = this.dataset.productId;
+                const isAdded = this.dataset.added === "1";
+
+                // Simple UI feedback immediately
+                const icon = this.querySelector('i');
+                icon.classList.add('fa-spin');
+
+                fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(() => {
+                    icon.classList.remove('fa-spin');
+                    const countElement = document.getElementById('wishlist-count');
+
+                    if (isAdded) {
+                        this.dataset.added = "0";
+                        icon.classList.remove('fas', 'text-red-500');
+                        icon.classList.add('far', 'text-gray-600');
+
+                        if (countElement) {
+                            let currentCount = parseInt(countElement.textContent) || 0;
+                            currentCount = Math.max(0, currentCount - 1);
+                            countElement.textContent = currentCount;
+                            if (currentCount === 0) countElement.classList.add('hidden');
+                        }
+                    } else {
+                        this.dataset.added = "1";
+                        icon.classList.remove('far', 'text-gray-600');
+                        icon.classList.add('fas', 'text-red-500');
+
+                        if (countElement) {
+                            let currentCount = parseInt(countElement.textContent) || 0;
+                            countElement.textContent = currentCount + 1;
+                            countElement.classList.remove('hidden');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    icon.classList.remove('fa-spin');
+                });
+            });
+        });
+
+        // Cart functionality
+        document.querySelectorAll('.cart-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const url = this.dataset.url;
+                const isAdded = this.dataset.added === "1";
+
+                if (isAdded) {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check text-xs"></i> In Cart';
+                    this.classList.add('bg-purple-700');
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.classList.remove('bg-purple-700');
+                    }, 1500);
+                    return;
+                }
+
+                // Loading state
+                const originalHTML = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> Adding...';
+
+                fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(() => {
+                    // Update cart count
+                    const countElement = document.getElementById('cart-count');
+                    if (countElement) {
+                        let currentCount = parseInt(countElement.textContent) || 0;
+                        countElement.textContent = currentCount + 1;
+                    }
+
+                    this.dataset.added = "1";
+
+                    // Success state
+                    this.classList.remove('bg-gray-900', 'hover:bg-purple-600');
+                    this.classList.add('bg-green-600', 'hover:bg-green-700');
+                    this.innerHTML = '<i class="fas fa-check text-xs"></i> Added';
+
+                    setTimeout(() => {
+                        this.classList.remove('bg-green-600', 'hover:bg-green-700');
+                        this.classList.add('bg-gray-900', 'hover:bg-purple-600');
+                        this.innerHTML = originalHTML;
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.innerHTML = '<i class="fas fa-exclamation-triangle text-xs"></i> Error';
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                    }, 2000);
+                });
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -5,50 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.product_name }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* Apply Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Improved Image Gallery Styles - FIXED */
+        .image-gallery {
+            position: relative;
+        }
+
         .image-option:checked + label img {
-            border: 3px solid #8b5cf6;
+            border: 2px solid #8b5cf6;
             opacity: 1;
+            transform: scale(1.02);
         }
+
         .image-option + label img {
-            opacity: 0.7;
-            transition: 0.2s;
+            opacity: 0.8;
+            transition: all 0.3s ease-in-out;
         }
+
         .image-option + label img:hover {
             opacity: 1;
             transform: scale(1.05);
         }
 
-        #img1:checked ~ .main-img#main1,
-        #img2:checked ~ .main-img#main2,
-        #img3:checked ~ .main-img#main3,
-        #img4:checked ~ .main-img#main4,
-        #img5:checked ~ .main-img#main5 {
-            display: block;
+        /* Fixed main image display logic */
+        .main-img {
+            display: none;
+            opacity: 0;
+            object-fit: contain;
+            transition: opacity 0.4s ease-in-out;
         }
 
-        .main-img { display: none; }
+        /* Show the main image when corresponding radio is checked */
+        #img1:checked ~ .image-container #main1,
+        #img2:checked ~ .image-container #main2,
+        #img3:checked ~ .image-container #main3,
+        #img4:checked ~ .image-container #main4,
+        #img5:checked ~ .image-container #main5 {
+            display: block;
+            opacity: 1;
+        }
 
+        /* Custom Scrollbar for Thumbnails */
         .custom-scroll::-webkit-scrollbar { height: 6px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #a78bfa;
+            border-radius: 4px;
+        }
+        .custom-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #a78bfa transparent;
+        }
 
         /* Header dropdown styles */
         .dropdown-menu {
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
+            transform: translateY(-5px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: absolute;
             right: 0;
             top: 100%;
             background-color: white;
             min-width: 200px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
             border-radius: 8px;
             z-index: 100;
             padding: 0.5rem 0;
+            border: 1px solid #f3f4f6;
         }
 
         .dropdown:hover .dropdown-menu {
@@ -58,22 +89,24 @@
         }
 
         .dropdown-item {
-            display: block;
-            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1rem;
             color: #4b5563;
             text-decoration: none;
             transition: all 0.2s;
+            font-size: 0.9rem;
         }
 
         .dropdown-item:hover {
-            background-color: #f9fafb;
-            color: #9333ea;
+            background-color: #f5f3ff;
+            color: #6d28d9;
         }
 
         .dropdown-divider {
             height: 1px;
             background-color: #e5e7eb;
-            margin: 0.5rem 0;
+            margin: 0.4rem 0;
         }
 
         /* Mobile menu toggle */
@@ -87,421 +120,555 @@
 
         /* Wishlist heart animation */
         .wishlist-btn {
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .wishlist-btn:hover:not(.active) {
+            transform: scale(1.1);
         }
 
         .wishlist-btn.active {
             color: #ef4444;
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive text utility */
+        .responsive-text {
+            font-size: clamp(0.75rem, 2vw, 1rem);
+        }
+
+        /* Tab styles */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab-button.active {
+            color: #8b5cf6;
+            border-bottom: 2px solid #8b5cf6;
+        }
+
+        /* Larger review images */
+        .review-image {
+            width: 100%;
+            height: 120px; /* Increased from 64px to 120px */
+            object-fit: cover;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .review-image:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
         }
     </style>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-50 flex flex-col min-h-screen">
 
-    <!-- Header -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
-                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+    <!-- Updated Header -->
+       <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="flex justify-between items-center h-14 sm:h-16">
+                <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
+                    <i class="fas fa-shopping-bag text-xl sm:text-2xl md:text-3xl text-purple-600 mr-2 sm:mr-3"></i>
+                    <span class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">StyleCart</span>
+                </a>
+
+                <div class="hidden md:flex space-x-6 lg:space-x-8 items-center">
+                    <a href="{% url 'home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">About</a>
                 </div>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="{% url 'home' %}" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
-                    <a href="{% url 'user_home' %}" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
-                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
-                </div>
+                <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
 
-                <!-- User Section -->
-                <div class="flex items-center space-x-6">
-                    <!-- Wishlist -->
                     <div class="relative">
-                        <a href="{% url 'wishlist' %}" class="text-purple-600 p-2">
-                            <i class="fas fa-heart text-lg"></i>
-                            {% if count > 0 %}
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1 rounded-full">
-                                {{ count }}
+                        <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-heart text-lg sm:text-xl"></i>
+                            <span id="wishlist-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white {% if wishlist_count == 0 %} hidden {% endif %}">
+                                {{ wishlist_count }}
                             </span>
-                            {% endif %}
                         </a>
                     </div>
 
-                    <!-- Cart -->
-                    <a href="{% url 'cart' %}" class="text-gray-700 hover:text-purple-600 relative">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span class="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                            {{ cart }}
-                        </span>
-                    </a>
+                    <div class="relative">
+                        <a href="{% url 'cart' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white">
+                                {{ cart_count }}
+                            </span>
+                        </a>
+                    </div>
 
-                    <!-- User Profile -->
-                    <div class="relative dropdown">
-                        <button class="flex items-center space-x-2 focus:outline-none">
-                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    <div class="relative">
+                        <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs sm:text-sm md:text-base border border-purple-200">
                                 {% if request.user.is_authenticated %}
-                                    {{ request.user.username|first|upper }}
+                                    {{ request.user.username|slice:":1"|upper }}
                                 {% else %}
-                                    <i class="fas fa-user"></i>
+                                    <i class="fas fa-user text-xs"></i>
                                 {% endif %}
                             </div>
-                            <span class="text-gray-700 font-medium hidden md:block">
+                            <span class="hidden lg:block text-sm md:text-base font-medium truncate max-w-[100px] xl:max-w-[120px] responsive-text">
                                 {% if request.user.is_authenticated %}
-                                    {{ request.user.first_name }} {{ request.user.last_name }}
+                                    {{ request.user.username }}
                                 {% else %}
                                     Account
                                 {% endif %}
                             </span>
-                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                            <i class="fas fa-chevron-down text-xs sm:text-sm ml-1"></i>
                         </button>
 
-                        <!-- Profile Dropdown -->
-                        <div class="dropdown-menu">
+                        <div id="profileDropdown" class="dropdown-menu">
                             {% if request.user.is_authenticated %}
-                                <div class="px-4 py-3 border-b border-gray-100">
-                                    <p class="text-sm font-medium text-gray-800">{{ request.user.username }}</p>
-                                    <p class="text-sm text-gray-500">{{ request.user.email }}</p>
+                                <div class="px-4 py-2 border-b border-gray-100 text-xs sm:text-sm text-gray-500">
+                                    Signed in as <strong>{{ request.user.username }}</strong>
                                 </div>
+                                <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-user w-5 mr-2"></i> My Profile</a>
+                                <a href="{% url 'order_item' %}" class="dropdown-item"><i class="fas fa-shopping-bag w-5 mr-2"></i> My Orders</a>
+                                <a href="{% url 'wishlist' %}" class="dropdown-item"><i class="fas fa-heart w-5 mr-2"></i> My Wishlist</a>
 
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-user mr-2 text-gray-400"></i>
-                                    My Profile
-                                </a>
-
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-shopping-bag mr-2 text-gray-400"></i>
-                                    My Orders
-                                </a>
-
-                                <a href="{% url 'wishlist' %}" class="dropdown-item">
-                                    <i class="fas fa-heart mr-2 text-gray-400"></i>
-                                    My Wishlist
-                                </a>
-
-                                <div class="dropdown-divider"></div>
-
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-cog mr-2 text-gray-400"></i>
-                                    Account Settings
-                                </a>
-
-                                <a href="{% url 'logout' %}" class="dropdown-item text-red-600 hover:bg-red-50">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>
-                                    Sign Out
-                                </a>
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item text-red-600 hover:text-red-700 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5 mr-2"></i> Logout</a>
                             {% else %}
-                                <a href="{% url 'login' %}" class="dropdown-item">
-                                    <i class="fas fa-sign-in-alt mr-2"></i>
-                                    Login
-                                </a>
-                                <a href="{% url 'register' %}" class="dropdown-item">
-                                    <i class="fas fa-user-plus mr-2"></i>
-                                    Register
-                                </a>
+                                <a href="{% url 'login' %}" class="dropdown-item"><i class="fas fa-sign-in-alt w-5 mr-2"></i> Login</a>
+                                <a href="{% url 'register' %}" class="dropdown-item"><i class="fas fa-user-plus w-5 mr-2"></i> Register</a>
                             {% endif %}
                         </div>
                     </div>
-                </div>
 
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden">
-                    <input type="checkbox" id="mobile-menu-toggle" class="hidden">
-                    <label for="mobile-menu-toggle" class="text-gray-700 focus:outline-none cursor-pointer">
-                        <i class="fas fa-bars text-xl"></i>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="md:hidden py-4 border-t border-gray-200">
-                <div class="flex flex-col space-y-4">
-                    <a href="{% url 'user_home' %}" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
-                    <a href="" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
-                    <a href="" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
-                    <a href="" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
-
-                    <!-- Mobile Search -->
-                    <div class="relative mt-4">
-                        <input type="text" placeholder="Search products..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <div class="md:hidden">
+                        <button id="mobileMenuButton" class="text-gray-700 hover:text-purple-600 focus:outline-none p-1">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
                     </div>
-
-                    <!-- Mobile User Menu -->
-                    {% if request.user.is_authenticated %}
-                        <div class="flex flex-col space-y-2 mt-4">
-                            <div class="px-2 py-1 border-b border-gray-200">
-                                <p class="text-sm font-medium text-gray-800">{{ request.user.username }}</p>
-                                <p class="text-sm text-gray-500">{{ request.user.email }}</p>
-                            </div>
-
-                            <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">My Profile</a>
-                            <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">My Orders</a>
-                            <a href="{% url 'wishlist' %}" class="text-gray-800 hover:text-purple-600 font-medium">My Wishlist</a>
-
-                            <div class="border-t border-gray-200 my-2"></div>
-
-                            <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Account Settings</a>
-                            <a href="{% url 'logout' %}" class="text-red-600 font-medium text-left">Sign Out</a>
-                        </div>
-                    {% else %}
-                        <div class="flex flex-col space-y-2 mt-4">
-                            <div class="px-2 py-1 border-b border-gray-200">
-                                <p class="text-sm font-medium text-gray-800">Account</p>
-                            </div>
-
-                            <a href="{% url 'login' %}" class="text-gray-800 hover:text-purple-600 font-medium">Login</a>
-                            <a href="{% url 'register' %}" class="text-gray-800 hover:text-purple-600 font-medium">Register</a>
-                        </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
+
+        <div id="mobileMenu" class="mobile-menu bg-white md:hidden pb-4 shadow-inner">
+            <div class="container mx-auto px-4 pt-4 space-y-3">
+                <form action="" class="relative">
+                    <input type="text" placeholder="Search..." class="w-full bg-gray-100 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                </form>
+
+                <div class="space-y-2">
+                    <a href="{% url 'home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">About</a>
+                </div>
+
+                {% if not request.user.is_authenticated %}
+                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
+                    <a href="{% url 'login' %}" class="text-center py-2 border border-gray-300 rounded text-sm font-medium text-gray-700 responsive-text">Login</a>
+                    <a href="{% url 'register' %}" class="text-center py-2 bg-purple-600 rounded text-sm font-medium text-white responsive-text">Register</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+
+
     </nav>
 
-    <!-- Main Content -->
-    <div class="max-w-6xl mx-auto py-10 px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-2xl shadow-lg">
-            <!-- IMAGE GALLERY -->
-            <div class="relative">
+
+
+    <!-- Compact Product Section -->
+    <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-6 rounded-2xl shadow-lg">
+            <!-- Product Images - FIXED GALLERY -->
+            <div class="relative image-gallery">
+                <!-- Radio buttons for image selection -->
                 {% for img in image %}
                     <input type="radio" name="gallery" id="img{{ forloop.counter }}" class="image-option hidden" {% if forloop.first %}checked{% endif %}>
                 {% endfor %}
 
-                {% for img in image %}
-                    <img src="{{ img.product_image.url }}"
-                         id="main{{ forloop.counter }}"
-                         class="main-img w-full h-96 object-cover rounded-xl shadow">
-                {% empty %}
-                    <div class="w-full h-96 bg-gray-200 rounded-xl flex items-center justify-center">
-                        No Image
-                    </div>
-                {% endfor %}
+                <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden shadow-md mb-4 image-container">
+                    {% for img in image %}
+                        <img src="{{ img.product_image.url }}"
+                             id="main{{ forloop.counter }}"
+                             alt="Product image {{ forloop.counter }}"
+                             class="main-img w-full h-full object-contain p-3">
+                    {% empty %}
+                        <div class="w-full h-full flex items-center justify-center text-gray-500 font-medium text-sm">
+                            <i class="fas fa-image mr-2"></i> No Image Available
+                        </div>
+                    {% endfor %}
+                </div>
 
                 {% if image.count > 1 %}
-                <div class="flex gap-3 mt-4 overflow-x-auto custom-scroll">
+                <div class="flex gap-3 mt-3 overflow-x-auto custom-scroll p-1 -mx-1">
                     {% for img in image %}
-                        <label for="img{{ forloop.counter }}" class="cursor-pointer">
+                        <label for="img{{ forloop.counter }}" class="cursor-pointer flex-shrink-0">
                             <img src="{{ img.product_image.url }}"
-                                 class="w-24 h-24 object-cover rounded-lg shadow">
+                                 alt="Thumbnail {{ forloop.counter }}"
+                                 class="w-16 h-16 object-cover rounded-lg shadow-sm border-2 border-transparent">
                         </label>
                     {% endfor %}
                 </div>
                 {% endif %}
             </div>
 
-            <!-- PRODUCT DETAILS -->
-            <div class="flex flex-col justify-center space-y-4">
-                <!-- Product Title with Wishlist -->
-                <div class="flex justify-between items-start">
-                    <h1 class="text-3xl font-bold text-gray-800">{{ product.product_name }}</h1>
+            <!-- Product Info -->
+            <div class="flex flex-col justify-start space-y-4">
 
-                    <!-- Wishlist Button -->
+
+                <div class="flex justify-between items-start">
+                    <h1 class="text-xl lg:text-2xl font-bold text-gray-900 leading-tight pr-3">
+                        {{ product.product_name }}
+                    </h1>
+
                     <form method="POST" action="{% url 'add_wishlist' product.slug %}" class="flex-shrink-0">
                         {% csrf_token %}
-                        <button type="submit" class="wishlist-btn {% if product_in_wishlist %}active{% endif %}">
+                        <button type="submit" aria-label="Add to Wishlist" class="wishlist-btn p-2 rounded-full transition-all duration-300 {% if product_in_wishlist %}active{% endif %}">
                             {% if product_in_wishlist %}
-                                <i class="fas fa-heart text-3xl text-red-600 transition"></i>
+                                <i class="fas fa-heart text-lg text-red-600"></i>
                             {% else %}
-                                <i class="far fa-heart text-3xl text-gray-500 hover:text-red-600 transition"></i>
+                                <i class="far fa-heart text-lg text-gray-400 hover:text-red-600"></i>
                             {% endif %}
                         </button>
                     </form>
                 </div>
 
-                <!-- Description -->
-                <p class="text-gray-600 leading-relaxed">{{ product.description }}</p>
 
-                <!-- Price -->
-                <p class="text-green-600 text-2xl font-bold">$ {{ product.price }}</p>
 
-                <!-- Stock and Seller -->
-                <div class="space-y-2">
-                    <p class="text-gray-700">
-                        Stock: <span class="font-semibold">{{ product.stock }}</span>
-                    </p>
-                    <p class="text-gray-700">
-                        Seller: <span class="font-semibold">{{ product.seller.shop_name }}</span>
-                    </p>
+                <p class="text-2xl font-bold text-gray-900 border-b pb-3">
+                    $ <span class="text-green-600">{{ product.price }}</span>
+                </p>
+
+                <p class="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                    {{ product.description|truncatewords:30 }}
+                </p>
+
+                <div class="grid grid-cols-2 gap-3 border-t pt-3">
+                    <div class="flex items-center">
+                        <i class="fas fa-cubes text-purple-500 mr-2 text-xs"></i>
+                        <p class="text-gray-700 font-medium text-xs">
+                            Stock: <span class="font-bold text-gray-900">{{ product.stock }}</span>
+                        </p>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-store text-purple-500 mr-2 text-xs"></i>
+                        <p class="text-gray-700 font-medium text-xs">
+                            Seller: <span class="font-bold text-gray-900">{{ product.seller.shop_name }}</span>
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Quantity and Buttons -->
-                <div class="space-y-4">
-                    <!-- ADD TO CART FORM -->
-                    <form method="POST" action="{% url 'add_cart' product.slug %}">
+                <div class="space-y-4 pt-4">
+                    <form method="POST" action="{% url 'add_cart' product.slug %}" class="space-y-3">
                         {% csrf_token %}
 
-                        <!-- Quantity Selector -->
-                        <div class="flex items-center gap-3 mb-4">
-                            <label class="font-medium text-gray-700">Quantity:</label>
+                        <div class="flex items-center gap-4">
+                            <label class="font-bold text-sm text-gray-700 flex-shrink-0">Quantity:</label>
                             {% if product.stock > 0 %}
                                 <input type="number"
                                        name="quantity"
                                        min="1"
                                        max="{{ product.stock }}"
                                        value="1"
-                                       class="w-20 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                       aria-label="Product Quantity"
+                                       class="w-16 border border-gray-300 rounded-lg px-2 py-1 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-purple-500 transition shadow-inner">
+                                <span class="text-xs text-gray-500">({{ product.stock }} available)</span>
                             {% else %}
-                                <span class="text-red-500 font-semibold">Out of Stock</span>
+                                <span class="text-sm font-bold text-red-600">Out of Stock</span>
                             {% endif %}
                         </div>
 
-                        <!-- Buttons Container -->
-                        <div class="space-y-3">
-                            <!-- ADD TO CART BUTTON -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                             {% if product.stock > 0 %}
                                 <button type="submit"
-                                        class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
-                                    Add to Cart
+                                        class="flex items-center justify-center bg-purple-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-purple-700 transition transform hover:scale-[1.01] shadow-md">
+                                    <i class="fas fa-cart-plus mr-1"></i> Add to Cart
                                 </button>
                             {% else %}
                                 <button disabled
-                                        class="w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
-                                    Out of Stock
+                                        class="flex items-center justify-center bg-gray-400 text-white py-2 rounded-lg font-bold text-sm cursor-not-allowed shadow-inner">
+                                    <i class="fas fa-exclamation-circle mr-1"></i> Out of Stock
                                 </button>
                             {% endif %}
 
-                            <!-- BUY NOW BUTTON -->
                             {% if product.stock > 0 %}
-                                <button type="button"
-                                        class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition">
-                                    Buy Now ⚡
-                                </button>
+                                <a href="{% url 'buy_now' product.slug %}"
+                                class="flex items-center justify-center bg-green-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-700 transition transform hover:scale-[1.01] shadow-md">
+                                  Buy Now <i class="fas fa-bolt ml-1"></i>
+                                </a>
                             {% endif %}
-
-                            <!-- Back to Home -->
-                            <a href="{% url 'user_home' %}"
-                               class="block w-full text-center bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition">
-                               Back to Home
-                            </a>
                         </div>
+
+                        <a href="{% url 'user_home' %}"
+                           class="block w-full text-center bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition mt-2 text-xs">
+                           <i class="fas fa-arrow-left mr-1"></i> Continue Shopping
+                        </a>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description & Reviews Section -->
+        <div class="mt-8 bg-white p-6 rounded-2xl shadow-lg">
+            <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
+                <button class="tab-button active py-3 px-6 text-sm font-bold text-purple-600 border-b-2 border-purple-600 whitespace-nowrap" data-tab="description">
+                    Description
+                </button>
+                <button class="tab-button py-3 px-6 text-sm font-medium text-gray-600 hover:text-purple-600 whitespace-nowrap" data-tab="reviews">
+                    Reviews ({{ reviews|length }})
+                </button>
+            </div>
+
+            <!-- Description Tab -->
+            <div id="description" class="tab-content active">
+                <div class="prose max-w-none text-gray-700 text-sm">
+                    <h3 class="text-lg font-bold mb-3 text-gray-800">Product Overview</h3>
+                    <p>{{ product.description }}</p>
+                    <ul class="list-disc list-inside mt-4 text-gray-600 space-y-1">
+                        <li>High-quality, durable materials</li>
+                        <li>Shipped directly from the seller's verified shop</li>
+                        <li>30-day money-back guarantee</li>
+                        <li>Fast and reliable shipping</li>
+                    </ul>
+                </div>
+            </div>
+
+
+
+            <!-- Reviews Tab -->
+            <div id="reviews" class="tab-content">
+                <div class="space-y-6">
+                    {% if reviews %}
+                        {% for review in reviews %}
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center font-semibold text-purple-600 text-xs mr-3">
+                                            {{ review.user.username|first|upper }}
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-900 text-sm">{{ review.user.username }}</h4>
+                                            <p class="text-gray-500 text-xs">{{ review.review_date|date:"F j, Y" }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-yellow-500 text-sm">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= review.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <p class="text-gray-700 leading-relaxed text-sm">{{ review.review_comment }}</p>
+
+                                {% if review.images.all %}
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                                        {% for img in review.images.all %}
+                                            <img src="{{ img.image.url }}"
+                                                 alt="Review image"
+                                                 class="review-image">
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-8">
+                            <i class="far fa-star text-3xl text-purple-300 mb-3"></i>
+                            <p class="text-gray-600 text-sm">No reviews yet. Be the first to share your experience!</p>
+                            <button class="mt-3 bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 transition text-xs">
+                                Write a Review
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gradient-to-b from-gray-900 to-black text-white pt-12 pb-6 mt-16">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <!-- Company Info -->
-                <div class="flex flex-col">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
-                        <span class="text-xl font-bold">StyleCart</span>
+    <!-- Updated Footer -->
+    <footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
+                <div>
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-lg sm:text-xl lg:text-2xl text-purple-500 mr-2 sm:mr-3"></i>
+                        <span class="text-lg sm:text-xl font-bold responsive-text">StyleCart</span>
                     </div>
-                    <p class="text-gray-400 mb-6 leading-relaxed flex-grow">Your one-stop destination for the latest fashion trends and styles. We bring you quality products with exceptional service.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-purple-400 bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center">
-                            <i class="fab fa-facebook-f"></i>
+                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 responsive-text">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="https://facebook.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-facebook-f text-sm sm:text-base"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-purple-400 bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-purple-400 bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-purple-400 bg-gray-800 w-10 h-10 rounded-full flex items-center justify-center">
-                            <i class="fab fa-pinterest"></i>
+                        <a href="https://instagram.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-instagram text-sm sm:text-base"></i>
                         </a>
                     </div>
                 </div>
 
-                <!-- Quick Links -->
-                <div class="flex flex-col">
-                    <h3 class="text-lg font-semibold mb-6 pb-2 border-b border-gray-700">Quick Links</h3>
-                    <ul class="space-y-3 flex-grow">
-                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> Home
-                        </a></li>
-                        <li><a href="" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> Shop
-                        </a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> About Us
-                        </a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> Contact
-                        </a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> FAQ
-                        </a></li>
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="{% url 'home' %}" class="hover:text-purple-400 transition responsive-text">Home</a></li>
+                        <li><a href="{% url 'user_home' %}" class="hover:text-purple-400 transition responsive-text">Shop</a></li>
+                        <li><a href="{% url 'about' %}" class="hover:text-purple-400 transition responsive-text">About</a></li>
                     </ul>
                 </div>
 
-                <!-- Customer Service -->
-                <div class="flex flex-col">
-                    <h3 class="text-lg font-semibold mb-6 pb-2 border-b border-gray-700">Customer Service</h3>
-                    <ul class="space-y-3 flex-grow">
-                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> Shipping Policy
-                        </a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> Return & Refund
-                        </a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> Size Guide
-                        </a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> Payment Methods
-                        </a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center">
-                            <i class="fas fa-chevron-right text-purple-400 text-xs mr-2"></i> Privacy Policy
-                        </a></li>
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Support</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Return & Refund</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Payment Methods</a></li>
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
-                <div class="flex flex-col">
-                    <h3 class="text-lg font-semibold mb-6 pb-2 border-b border-gray-700">Contact Us</h3>
-                    <ul class="space-y-4 flex-grow">
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Contact</h3>
+                    <ul class="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
-                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                            <i class="fas fa-map-marker-alt text-purple-500 mt-1 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">123 Fashion Street,<br>New York, NY 10001</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-phone text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                            <i class="fas fa-phone text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">+1 (555) 123-4567</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">info@stylecart.com</span>
-                        </li>
-                        <li class="mt-6">
-                            <h4 class="text-sm font-semibold mb-2 text-gray-300">Subscribe to our newsletter</h4>
-                            <div class="flex">
-                                <input type="email" placeholder="Your email" class="px-3 py-2 bg-gray-800 text-white rounded-l-lg focus:outline-none focus:ring-1 focus:ring-purple-500 w-full">
-                                <button class="bg-purple-600 hover:bg-purple-700 px-4 rounded-r-lg transition">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
+                            <i class="fas fa-envelope text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">info@stylecart.com</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400 text-sm mb-4 md:mb-0">&copy; 2023 StyleCart. All rights reserved.</p>
-                <div class="flex space-x-4">
-                    <img src="https://cdn.jsdelivr.net/gh/Simple-icons/simple-icons@develop/icons/visa.svg" class="h-6" alt="Visa">
-                    <img src="https://cdn.jsdelivr.net/gh/Simple-icons/simple-icons@develop/icons/mastercard.svg" class="h-6" alt="Mastercard">
-                    <img src="https://cdn.jsdelivr.net/gh/Simple-icons/simple-icons@develop/icons/paypal.svg" class="h-6" alt="PayPal">
-                    <img src="https://cdn.jsdelivr.net/gh/Simple-icons/simple-icons@develop/icons/applepay.svg" class="h-6" alt="Apple Pay">
-                </div>
+            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+                <p class="text-gray-500 text-sm sm:text-base responsive-text">&copy; 2023 StyleCart. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Wishlist button functionality
+        // Tab functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    button.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Wishlist button functionality
             const wishlistBtn = document.querySelector('.wishlist-btn');
-            if (wishlistBtn) {
-                wishlistBtn.addEventListener('click', function() {
+            const wishlistIcon = wishlistBtn?.querySelector('i');
+
+            if (wishlistBtn && wishlistIcon) {
+                wishlistBtn.addEventListener('click', function(e) {
+                    // Prevent form submission for visual testing
+                    e.preventDefault();
+
+                    // Toggle the active class
                     this.classList.toggle('active');
+
+                    // Toggle between regular and solid heart icon
+                    if (this.classList.contains('active')) {
+                        wishlistIcon.classList.remove('far', 'text-gray-400');
+                        wishlistIcon.classList.add('fas', 'text-red-600');
+                    } else {
+                        wishlistIcon.classList.remove('fas', 'text-red-600');
+                        wishlistIcon.classList.add('far', 'text-gray-400');
+                    }
+
+                    // Actually submit the form after a brief delay for visual feedback
+                    setTimeout(() => {
+                        this.closest('form').submit();
+                    }, 300);
+                });
+            }
+
+            // Image Gallery functionality - FIXED
+            function initializeImageGallery() {
+                const imageOptions = document.querySelectorAll('.image-option');
+                const mainImages = document.querySelectorAll('.main-img');
+
+                // Show first image by default
+                if (mainImages.length > 0) {
+                    mainImages[0].style.display = 'block';
+                    mainImages[0].style.opacity = '1';
+                }
+
+                imageOptions.forEach(option => {
+                    option.addEventListener('change', function() {
+                        // Hide all main images
+                        mainImages.forEach(img => {
+                            img.style.display = 'none';
+                            img.style.opacity = '0';
+                        });
+
+                        // Show selected image
+                        const mainId = this.id.replace('img', 'main');
+                        const selectedImage = document.getElementById(mainId);
+                        if (selectedImage) {
+                            selectedImage.style.display = 'block';
+                            setTimeout(() => {
+                                selectedImage.style.opacity = '1';
+                            }, 10);
+                        }
+                    });
+                });
+            }
+
+            // Initialize image gallery
+            initializeImageGallery();
+
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Profile dropdown functionality
+            const profileDropdownButton = document.getElementById('profileDropdownButton');
+            const profileDropdown = document.getElementById('profileDropdown');
+
+            if (profileDropdownButton && profileDropdown) {
+                profileDropdownButton.addEventListener('click', function() {
+                    profileDropdown.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                        profileDropdown.classList.add('hidden');
+                    }
                 });
             }
         });

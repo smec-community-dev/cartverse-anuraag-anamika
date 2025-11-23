@@ -3,72 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wishlist - StyleCart</title>
+    <title>About - StyleCart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Dropdown transition styles */
-        .dropdown-menu {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            width: 14rem;
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            z-index: 50;
-            margin-top: 0.5rem;
+        .gradient-bg {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         }
 
-        .dropdown-menu.active {
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-member-card {
+            transition: all 0.3s ease;
+        }
+
+        .team-member-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-in.visible {
             opacity: 1;
-            visibility: visible;
             transform: translateY(0);
         }
+        /* Dropdown Menu */
+    .dropdown-menu {
+        position: absolute;
+        right: 0;
+        margin-top: 10px;
+        width: 180px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        display: none; /* IMPORTANT */
+        z-index: 999;
+    }
 
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            color: #374151;
-            transition: background-color 0.2s;
-        }
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 14px;
+        font-size: 14px;
+        color: #555;
+        transition: background 0.2s;
+    }
 
-        .dropdown-item:hover {
-            background-color: #f9fafb;
-        }
+    .dropdown-item:hover {
+        background: #f3e8ff;
+        color: #7e22ce;
+    }
 
-        .mobile-menu {
-            display: none;
-        }
-
-        .mobile-menu.active {
-            display: block;
-        }
-
-        .tab-active {
-            border-bottom: 3px solid #8b5cf6;
-            color: #8b5cf6;
-            font-weight: 600;
-        }
-
-        /* Line Clamp Utility */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+    /* Show dropdown */
+    .dropdown-open {
+        display: block !important;
+    }
     </style>
 </head>
-<body class="bg-gray-50 flex flex-col min-h-screen">
-   <nav class="bg-white shadow-md sticky top-0 z-40">
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
         <div class="container mx-auto px-3 sm:px-4">
             <div class="flex justify-between items-center h-14 sm:h-16">
                 <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
@@ -171,116 +177,157 @@
                 {% endif %}
             </div>
         </div>
-
-
-
     </nav>
 
 
-    <div class="container mx-auto px-3 sm:px-4 py-8 max-w-7xl flex-grow">
-        <div class="mb-8 text-center sm:text-left">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">My Wishlist</h1>
-            <p class="text-gray-600 text-sm sm:text-base">Your saved items for later</p>
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">About StyleCart</h1>
+            <p class="text-xl max-w-2xl mx-auto">Your one-stop destination for the latest fashion trends and styles</p>
         </div>
+    </section>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-            <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
-                <button class="px-6 py-4 tab-active whitespace-nowrap">All Items</button>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <!-- Our Story -->
+        <section class="mb-16 fade-in">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Our Story</h2>
+                <p class="text-lg text-gray-600 mb-6">
+                    Founded in 2023, StyleCart was born from a passion for fashion and a desire to make the latest trends accessible to everyone.
+                    We believe that fashion should be fun, expressive, and available to all, regardless of budget or location.
+                </p>
+                <p class="text-lg text-gray-600">
+                    Our platform connects fashion lovers with carefully curated collections from both established brands and emerging designers.
+                    We're committed to providing an exceptional shopping experience with quality products, competitive prices, and outstanding customer service.
+                </p>
             </div>
+        </section>
 
-            {% if x %}
-            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
-                {% for w in x %}
-                <div class="bg-white rounded-lg shadow-sm hover:shadow-lg transition duration-300 flex flex-col h-full border border-gray-100 group">
-
-                    <div class="relative w-full h-40 sm:h-44 md:h-48 lg:h-56 xl:h-64 bg-gray-200 overflow-hidden rounded-t-lg flex-shrink-0">
-                        <img src="{{ w.product.images.first.product_image.url }}"
-                             class="w-full h-full object-cover transition group-hover:scale-105 duration-500"
-                             alt="{{ w.product.product_name }}">
-
-                        <a href="{% url 'remove_wishlist' w.product.slug %}"
-                           class="absolute top-2 sm:top-3 right-2 sm:right-3 bg-white p-1.5 sm:p-2 rounded-full shadow-md w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-red-50 transition-colors"
-                           title="Remove from Wishlist">
-                            <i class="fas fa-heart text-red-500 text-xs sm:text-sm"></i>
-                        </a>
-
-                        {% if w.product.original_price %}
-                            <span class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-red-500 text-white px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-bold uppercase">Sale</span>
-                        {% endif %}
+        <!-- Our Mission & Vision -->
+        <section class="mb-16 fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-bullseye text-purple-600 text-2xl"></i>
                     </div>
-
-                    <div class="p-2 sm:p-3 lg:p-4 flex flex-col flex-grow">
-                        <div class="mb-2 sm:mb-3">
-                            <h3 class="font-semibold text-xs sm:text-sm lg:text-base text-gray-800 truncate" title="{{ w.product.product_name }}">
-                                {{ w.product.product_name }}
-                            </h3>
-                            <p class="text-gray-500 text-[10px] sm:text-xs line-clamp-2 mt-1 sm:mt-2 leading-relaxed">
-                                {{ w.product.description|striptags|default:"No description available" }}
-                            </p>
-                        </div>
-
-                        <div class="mt-auto">
-                            <div class="flex justify-between items-center pt-2 sm:pt-3 border-t border-gray-50">
-                                <div class="flex items-baseline space-x-1 sm:space-x-2">
-                                    <span class="text-purple-700 font-bold text-xs sm:text-sm lg:text-base">₹{{ w.product.price }}</span>
-                                    {% if w.product.original_price %}
-                                        <span class="text-gray-400 line-through text-[10px] sm:text-xs">₹{{ w.product.original_price }}</span>
-                                    {% endif %}
-                                </div>
-                                <span class="text-[10px] sm:text-xs font-medium {{ w.product.stock|yesno:'text-green-600,text-red-500' }}">
-                                    {% if w.product.stock > 0 %} In Stock {% else %} Out of Stock {% endif %}
-                                </span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-2 sm:gap-3 mt-2 sm:mt-3 lg:mt-4">
-                                <a href="{% url 'single' w.product.slug %}" class="w-full block">
-                                    <button class="w-full bg-gray-100 text-gray-700 py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold hover:bg-gray-200 transition">
-                                        View Details
-                                    </button>
-                                </a>
-
-                                {% if w.product.stock > 0 %}
-                                <a href="{% url 'add_cart' w.product.slug %}" class="w-full block">
-                                    <button class="w-full bg-gray-900 text-white py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold hover:bg-purple-600 transition flex items-center justify-center gap-1 sm:gap-2">
-                                        <i class="fas fa-shopping-cart text-[10px] sm:text-xs"></i> Add to Cart
-                                    </button>
-                                </a>
-                                {% else %}
-                                <button disabled class="w-full bg-gray-300 text-white py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold cursor-not-allowed">
-                                    Out of Stock
-                                </button>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Our Mission</h3>
+                    <p class="text-gray-600">
+                        To democratize fashion by making the latest trends accessible to everyone while supporting designers and creators in building sustainable businesses.
+                    </p>
                 </div>
-                {% endfor %}
+
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-eye text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Our Vision</h3>
+                    <p class="text-gray-600">
+                        To become the world's most inclusive fashion platform where creativity thrives and every style finds its perfect match.
+                    </p>
+                </div>
             </div>
-            {% else %}
-            <div class="text-center py-12">
-                <div class="mb-6">
-                    <i class="fas fa-heart text-gray-300 text-6xl mb-4"></i>
+        </section>
+
+        <!-- Key Features -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Why Choose StyleCart</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tags text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Curated Collections</h3>
+                    <p class="text-gray-600">
+                        Discover handpicked fashion items that match current trends and your personal style.
+                    </p>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Your wishlist is empty</h3>
-                <p class="text-gray-600 mb-6">Start adding items you love to your wishlist</p>
-                <a href="{% url 'user_home' %}"
-                   class="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors font-medium">
-                    <i class="fas fa-shopping-bag"></i>
-                    Start Shopping
+
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shipping-fast text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">Fast Delivery</h3>
+                    <p class="text-gray-600">
+                        Get your fashion finds delivered quickly with our reliable shipping partners.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">24/7 Support</h3>
+                    <p class="text-gray-600">
+                        Our customer service team is always ready to help with any questions or concerns.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Meet Our Team</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Team Member 1 -->
+                <div class="team-member-card bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div class="w-24 h-24 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                        JD
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-1">Jane Doe</h3>
+                    <p class="text-purple-600 mb-3">Founder & CEO</p>
+                    <p class="text-gray-600 text-sm">
+                        With a background in fashion design and e-commerce, Jane leads our vision to make fashion accessible to all.
+                    </p>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="team-member-card bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div class="w-24 h-24 bg-gradient-to-r from-blue-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                        JS
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-1">John Smith</h3>
+                    <p class="text-purple-600 mb-3">Head of Technology</p>
+                    <p class="text-gray-600 text-sm">
+                        John ensures our platform runs smoothly and provides the best shopping experience for our customers.
+                    </p>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="team-member-card bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center">
+                    <div class="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                        AJ
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-1">Alex Johnson</h3>
+                    <p class="text-purple-600 mb-3">Creative Director</p>
+                    <p class="text-gray-600 text-sm">
+                        Alex curates our collections and ensures every item meets our quality and style standards.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact CTA -->
+        <section class="fade-in">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-8 text-center max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Have Questions?</h2>
+                <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    We're here to help! Reach out to our friendly team with any questions about our products, services, or your shopping experience.
+                </p>
+                <a href="{% url 'contact' %}" class="inline-block bg-purple-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-purple-700 transition duration-300">
+                    Contact Us
                 </a>
             </div>
-            {% endif %}
-        </div>
+        </section>
+    </main>
 
-        {% if x.has_next %}
-        <div class="text-center mt-8">
-            <button class="bg-white text-purple-600 border border-purple-600 px-8 py-3 rounded-lg hover:bg-purple-50 transition-colors font-medium">
-                Load More
-            </button>
-        </div>
-        {% endif %}
-    </div>
-
+    <!-- Footer -->
     <footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
         <div class="container mx-auto px-3 sm:px-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
@@ -344,35 +391,37 @@
     </footer>
 
     <script>
+        // Fade-in animation on scroll
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile Menu Toggle
-            const mobileMenuButton = document.getElementById('mobileMenuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
+            const fadeElements = document.querySelectorAll('.fade-in');
 
-            if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('active');
-                });
-            }
-
-            // Profile Dropdown Toggle
-            const profileButton = document.getElementById('profileDropdownButton');
-            const profileDropdown = document.getElementById('profileDropdown');
-
-            if (profileButton && profileDropdown) {
-                profileButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    profileDropdown.classList.toggle('active');
-                });
-
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!profileButton.contains(e.target) && !profileDropdown.contains(e.target)) {
-                        profileDropdown.classList.remove('active');
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
                     }
                 });
-            }
+            }, { threshold: 0.1 });
+
+            fadeElements.forEach(element => {
+                fadeObserver.observe(element);
+            });
         });
+         // Toggle profile dropdown
+    document.getElementById("profileDropdownButton").addEventListener("click", function () {
+        const menu = document.getElementById("profileDropdown");
+        menu.classList.toggle("dropdown-open");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function (e) {
+        const button = document.getElementById("profileDropdownButton");
+        const menu = document.getElementById("profileDropdown");
+
+        if (!button.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.remove("dropdown-open");
+        }
+    });
     </script>
 </body>
 </html>

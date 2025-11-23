@@ -4,233 +4,490 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color:#f5f5f5; color:#333; line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
+        /* Apply Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
 
-        /* Header Styles */
-        nav { background-color:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.1); position:sticky; top:0; z-index:100; }
-        .nav-container { max-width:1200px; margin:0 auto; padding:0 20px; }
-        .nav-content { display:flex; justify-content:space-between; align-items:center; padding:15px 0; }
-        .logo { display:flex; align-items:center; }
-        .logo i { font-size:24px; color:#8b5cf6; margin-right:8px; }
-        .logo span { font-size:20px; font-weight:bold; color:#1f2937; }
-        .nav-links { display:flex; gap:32px; align-items:center; }
-        .nav-links a { text-decoration:none; color:#1f2937; font-weight:500; transition: color 0.3s; }
-        .nav-links a:hover { color:#8b5cf6; }
-        .user-section { display:flex; align-items:center; gap:24px; }
-        .search-container { position:relative; }
-        .search-input { padding:10px 40px 10px 16px; border:1px solid #d1d5db; border-radius:9999px; width:256px; outline:none; transition:all 0.3s; }
-        .search-input:focus { border-color:#8b5cf6; box-shadow:0 0 0 2px rgba(139,92,246,0.2); }
-        .search-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:#9ca3af; }
-        .icon-link { color:#4b5563; text-decoration:none; position:relative; transition: color 0.3s; }
-        .icon-link:hover { color:#8b5cf6; }
-        .icon-badge { position:absolute; top:-8px; right:-8px; background-color:#8b5cf6; color:white; font-size:12px; border-radius:50%; height:20px; width:20px; display:flex; align-items:center; justify-content:center; }
-        .user-profile { display:flex; align-items:center; gap:8px; position:relative; cursor:pointer; }
-        .avatar { width:32px; height:32px; background:linear-gradient(to right, #8b5cf6, #4f46e5); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:600; }
-        .user-name { color:#4b5563; font-weight:500; }
-        .dropdown-arrow { color:#6b7280; font-size:12px; }
-        .dropdown-menu { position:absolute; top:100%; right:0; margin-top:8px; width:224px; background-color:white; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.1); border:1px solid #e5e7eb; z-index:50; display:none; }
-        .dropdown-menu.active { display:block; }
-        .dropdown-header { padding:12px 16px; border-bottom:1px solid #f3f4f6; }
-        .dropdown-name { font-size:14px; font-weight:600; color:#1f2937; }
-        .dropdown-email { font-size:12px; color:#6b7280; }
-        .dropdown-item { display:flex; align-items:center; padding:10px 16px; color:#4b5563; text-decoration:none; font-size:14px; transition: background-color 0.2s; }
-        .dropdown-item:hover { background-color:#f9fafb; }
-        .dropdown-item i { margin-right:12px; width:16px; text-align:center; color:#9ca3af; }
-        .dropdown-divider { height:1px; background-color:#f3f4f6; margin:4px 0; }
-        .dropdown-item.signout { color:#dc2626; }
-        .dropdown-item.signout:hover { background-color:#fef2f2; }
+        /* Header dropdown styles */
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-5px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-radius: 8px;
+            z-index: 100;
+            padding: 0.5rem 0;
+            border: 1px solid #f3f4f6;
+        }
 
-        /* Main Content Styles */
-        .container { max-width:1200px; margin:0 auto; padding:20px; flex:1; }
-        h1 { color:#1f2937; margin-bottom:20px; font-size:28px; }
-        h2 { color:#1f2937; margin-bottom:15px; font-size:22px; border-bottom:1px solid #eee; padding-bottom:10px; }
-        .order-content { display:grid; grid-template-columns:2fr 1fr; gap:30px; }
-        .order-details, .order-summary, .shipping-info { background-color:#fff; border-radius:8px; padding:25px; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
-        .cart-item { display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #eee; }
-        .item-info { flex:1; display:flex; align-items:center; gap:15px; }
-        .item-name { font-weight:600; font-size:18px; margin-bottom:5px; }
-        .item-stock { color:#666; font-size:14px; }
-        .item-price { font-weight:600; font-size:18px; }
-        .continue-shopping { display:inline-block; margin-top:20px; color:#3b82f6; text-decoration:none; font-weight:500; }
-        .summary-row { display:flex; justify-content:space-between; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #eee; }
-        .total-row { display:flex; justify-content:space-between; margin-top:20px; padding-top:15px; border-top:2px solid #eee; font-weight:bold; font-size:18px; }
-        .place-order-btn { background-color:#10b981; color:white; border:none; padding:15px; width:100%; border-radius:5px; font-size:18px; font-weight:600; cursor:pointer; margin-top:20px; transition: background-color 0.3s; }
-        .place-order-btn:hover { background-color:#059669; }
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
 
-        /* Form */
-        .form-group { margin-bottom:20px; }
-        label { display:block; margin-bottom:8px; font-weight:500; }
-        input, textarea, select { width:100%; padding:12px; border:1px solid #ddd; border-radius:5px; font-size:16px; }
-        textarea { height:100px; resize:vertical; }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1rem;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
 
-        /* Footer */
-        footer { background-color:#1f2937; color:white; padding:48px 0 24px; margin-top:48px; }
-        .footer-container { max-width:1200px; margin:0 auto; padding:0 20px; }
-        .footer-grid { display:grid; grid-template-columns:repeat(1,1fr); gap:32px; margin-bottom:32px; }
-        @media (min-width:768px) { .footer-grid { grid-template-columns:repeat(2,1fr); } }
-        @media (min-width:1024px) { .footer-grid { grid-template-columns:repeat(4,1fr); } }
-        .footer-company h3 { display:flex; align-items:center; margin-bottom:16px; font-size:20px; }
-        .footer-company h3 i { color:#a78bfa; margin-right:8px; }
-        .footer-company p { color:#9ca3af; margin-bottom:16px; }
-        .social-links { display:flex; gap:16px; }
-        .social-links a { color:#9ca3af; transition:color 0.3s; }
-        .social-links a:hover { color:white; }
-        .footer-section h3 { font-size:18px; font-weight:600; margin-bottom:16px; }
-        .footer-links { list-style:none; }
-        .footer-links li { margin-bottom:8px; }
-        .footer-links a { color:#9ca3af; text-decoration:none; transition:color 0.3s; }
-        .footer-links a:hover { color:white; }
-        .contact-info { list-style:none; }
-        .contact-info li { display:flex; align-items:flex-start; margin-bottom:12px; color:#9ca3af; }
-        .contact-info i { color:#a78bfa; margin-right:12px; margin-top:4px; }
-        .footer-bottom { border-top:1px solid #374151; padding-top:24px; text-align:center; color:#9ca3af; }
-        @media (max-width:768px) { .order-content { grid-template-columns:1fr; } .search-input { display:none; } .user-name { display:none; } }
+        .dropdown-item:hover {
+            background-color: #f5f3ff;
+            color: #6d28d9;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 0.4rem 0;
+        }
+
+        /* Mobile menu toggle */
+        #mobile-menu {
+            display: none;
+        }
+
+        #mobile-menu-toggle:checked ~ #mobile-menu {
+            display: block;
+        }
+
+        /* Responsive text utility */
+        .responsive-text {
+            font-size: clamp(0.75rem, 2vw, 1rem);
+        }
+
+        /* Order page specific styles */
+        .order-item {
+            transition: all 0.3s ease;
+        }
+
+        .order-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .quantity-input {
+            width: 70px;
+            text-align: center;
+        }
+
+        .place-order-btn {
+            transition: all 0.3s ease;
+        }
+
+        .place-order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
     </style>
 </head>
-<body>
-    <!-- Header -->
-    <nav>
-        <div class="nav-container">
-            <div class="nav-content">
-                <div class="logo"><i class="fas fa-shopping-bag"></i><span>StyleCart</span></div>
-                <div class="nav-links">
-                    <a href="{% url 'home' %}">Home</a>
-                    <a href="{% url 'user_home' %}">Shop</a>
-                    <a href="#">Categories</a>
-                    <a href="#">Deals</a>
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- Updated Header -->
+      <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="flex justify-between items-center h-14 sm:h-16">
+                <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
+                    <i class="fas fa-shopping-bag text-xl sm:text-2xl md:text-3xl text-purple-600 mr-2 sm:mr-3"></i>
+                    <span class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">StyleCart</span>
+                </a>
+
+                <div class="hidden md:flex space-x-6 lg:space-x-8 items-center">
+                    <a href="{% url 'home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">About</a>
                 </div>
-                <div class="user-section">
-                    <div class="search-container">
-                        <input type="text" placeholder="Search products..." class="search-input">
-                        <i class="fas fa-search search-icon"></i>
+
+                <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
+
+                    <div class="relative">
+                        <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-heart text-lg sm:text-xl"></i>
+                            <span id="wishlist-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white {% if wishlist_count == 0 %} hidden {% endif %}">
+                                {{ wishlist_count }}
+                            </span>
+                        </a>
                     </div>
-                    <a href="{% url 'wishlist' %}" class="icon-link"><i class="far fa-heart text-xl"></i><span class="icon-badge">3</span></a>
-                    <a href="{% url 'cart' %}" class="icon-link"><i class="fas fa-shopping-cart text-xl"></i><span class="icon-badge">2</span></a>
-                    <div class="user-profile" id="userProfile">
-                        <div class="avatar">JS</div>
-                        <span class="user-name">{{ request.user.username }}</span>
-                        <i class="fas fa-chevron-down dropdown-arrow"></i>
-                        <div class="dropdown-menu" id="dropdownMenu">
-                            <div class="dropdown-header">
-                                <div class="dropdown-name">{{ request.user.username }}</div>
-                                <div class="dropdown-email">{{ request.user.email }}</div>
+
+                    <div class="relative">
+                        <a href="{% url 'cart' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white">
+                                {{ cart_count }}
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="relative">
+                        <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs sm:text-sm md:text-base border border-purple-200">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% else %}
+                                    <i class="fas fa-user text-xs"></i>
+                                {% endif %}
                             </div>
-                            <a href="#" class="dropdown-item"><i class="fas fa-user"></i>My Profile</a>
-                            <a href="#" class="dropdown-item"><i class="fas fa-shopping-bag"></i>My Orders</a>
-                            <a href="{% url 'wishlist' %}" class="dropdown-item"><i class="fas fa-heart"></i>My Wishlist</a>
-                            <a href="#" class="dropdown-item"><i class="fas fa-map-marker-alt"></i>Addresses</a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item"><i class="fas fa-cog"></i>Account Settings</a>
-                            <a href="#" class="dropdown-item"><i class="fas fa-question-circle"></i>Help & Support</a>
-                            <div class="dropdown-divider"></div>
-                            <a href="{% url 'logout' %}" class="dropdown-item signout"><i class="fas fa-sign-out-alt"></i>Sign Out</a>
+                            <span class="hidden lg:block text-sm md:text-base font-medium truncate max-w-[100px] xl:max-w-[120px] responsive-text">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    Account
+                                {% endif %}
+                            </span>
+                            <i class="fas fa-chevron-down text-xs sm:text-sm ml-1"></i>
+                        </button>
+
+                        <div id="profileDropdown" class="dropdown-menu">
+                            {% if request.user.is_authenticated %}
+                                <div class="px-4 py-2 border-b border-gray-100 text-xs sm:text-sm text-gray-500">
+                                    Signed in as <strong>{{ request.user.username }}</strong>
+                                </div>
+                                <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-user w-5 mr-2"></i> My Profile</a>
+                                <a href="{% url 'order_item' %}" class="dropdown-item"><i class="fas fa-shopping-bag w-5 mr-2"></i> My Orders</a>
+                                <a href="{% url 'wishlist' %}" class="dropdown-item"><i class="fas fa-heart w-5 mr-2"></i> My Wishlist</a>
+
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item text-red-600 hover:text-red-700 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5 mr-2"></i> Logout</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="dropdown-item"><i class="fas fa-sign-in-alt w-5 mr-2"></i> Login</a>
+                                <a href="{% url 'register' %}" class="dropdown-item"><i class="fas fa-user-plus w-5 mr-2"></i> Register</a>
+                            {% endif %}
                         </div>
+                    </div>
+
+                    <div class="md:hidden">
+                        <button id="mobileMenuButton" class="text-gray-700 hover:text-purple-600 focus:outline-none p-1">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div id="mobileMenu" class="mobile-menu bg-white md:hidden pb-4 shadow-inner">
+            <div class="container mx-auto px-4 pt-4 space-y-3">
+                <form action="" class="relative">
+                    <input type="text" placeholder="Search..." class="w-full bg-gray-100 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                </form>
+
+                <div class="space-y-2">
+                    <a href="{% url 'home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">About</a>
+                </div>
+
+                {% if not request.user.is_authenticated %}
+                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
+                    <a href="{% url 'login' %}" class="text-center py-2 border border-gray-300 rounded text-sm font-medium text-gray-700 responsive-text">Login</a>
+                    <a href="{% url 'register' %}" class="text-center py-2 bg-purple-600 rounded text-sm font-medium text-white responsive-text">Register</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+
+
     </nav>
 
+
+
     <!-- Main Content -->
-    <div class="container">
-        <h1>Complete Your Order</h1>
-        <form method="POST" action="{% url 'place_order' %}">
+    <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow">
+        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Complete Your Order</h1>
+
+        <!-- ⭐ FORM ACTION BASED ON CHECKOUT TYPE -->
+        {% if checkout_type == "buynow" %}
+            <form method="POST" action="{% url 'place_order_buy_now' %}">
+        {% else %}
+            <form method="POST" action="{% url 'place_order' %}">
+        {% endif %}
             {% csrf_token %}
-            <div class="order-content">
-                <div class="order-column">
-                    <div class="order-details">
-                        <h2>Items in your cart</h2>
-                        {% for item in cart_items %}
-                        <div class="cart-item">
-                            <div class="item-info">
-                                <div class="item-image">
-                                    <img src="{{ item.product.images.first.product_image.url }}" alt="{{ item.product.product_name }}" style="width:80px;height:80px;object-fit:cover;border-radius:5px;">
-                                </div>
-                                <div>
-                                    <div class="item-name">{{ item.product.product_name }}</div>
-                                    <div class="item-stock">Stock: {{ item.product.stock }}</div>
-                                    <div class="quantity-selector" style="margin-top:8px; display:flex; align-items:center; gap:5px;">
-                                        <label for="quantity_{{ item.id }}">Qty:</label>
-                                        <input type="number" id="quantity_{{ item.id }}" name="quantities[{{ item.id }}]" min="1" max="{{ item.product.stock }}" value="{{ item.quantity }}" style="width:60px;padding:4px;text-align:center;">
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- ⭐ PRODUCT SECTION (Cart or BuyNow) -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 order-item">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Items</h2>
+
+                        {% if checkout_type == "cart" %}
+                            <!-- CART ITEMS -->
+                            {% for item in cart_items %}
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-b-0">
+                                <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
+                                    <img src="{{ item.product.images.first.product_image.url }}"
+                                         class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
+                                    <div class="flex-1">
+                                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ item.product.product_name }}</h3>
+                                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ item.product.stock }}</p>
+
+                                        <div class="flex items-center mt-2">
+                                            <label for="quantity_{{ item.id }}" class="text-xs sm:text-sm font-medium text-gray-700 mr-2">Qty:</label>
+                                            <input type="number"
+                                                   id="quantity_{{ item.id }}"
+                                                   name="quantities[{{ item.id }}]"
+                                                   min="1" max="{{ item.product.stock }}"
+                                                   value="{{ item.quantity }}"
+                                                   class="quantity-input border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500">
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="font-bold text-gray-900 text-base sm:text-lg">₹{{ item.price }}</div>
                             </div>
-                            <div class="item-price">₹{{ item.price|floatformat:2 }}</div>
-                        </div>
-                        {% endfor %}
+                            {% endfor %}
+                        {% endif %}
 
-                        <a href="{% url 'user_home' %}" class="continue-shopping">Continue Shopping</a>
+                        {% if checkout_type == "buynow" %}
+                            <!-- BUY NOW PRODUCT ONLY -->
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
+                                <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
+                                    <img src="{{ product.images.first.product_image.url }}"
+                                         class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
+                                    <div class="flex-1">
+                                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ product.product_name }}</h3>
+                                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ product.stock }}</p>
+                                    </div>
+                                </div>
+                                <div class="font-bold text-gray-900 text-base sm:text-lg">₹{{ product.price }}</div>
+                                <!-- hidden quantity (always 1) -->
+                                <input type="hidden" name="quantity" value="1">
+                            </div>
+                        {% endif %}
+
+                        <a href="{% url 'user_home' %}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium mt-4 text-sm">
+                            <i class="fas fa-arrow-left mr-2"></i> Continue Shopping
+                        </a>
                     </div>
 
-                    <div class="shipping-info">
-                        <h2>Shipping Information</h2>
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" value="{{ request.user.username }}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="address">Select Shipping Address</label>
-                            <select id="address" name="address_id" required>
-                                {% for addr in request.user.addresses.all %}
-                                <option value="{{ addr.id }}">
-                                    {{ addr.full_name }}, {{ addr.address_line1 }}, {{ addr.city }} {% if addr.is_default %}(Default){% endif %}
-                                </option>
-                                {% endfor %}
-                            </select>
+                    <!-- SHIPPING -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Shipping Information</h2>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                <input type="text" value="{{ request.user.username }}" readonly
+                                       class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Select Shipping Address</label>
+                                <select id="address" name="address_id" required
+                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500">
+                                    {% for addr in request.user.addresses.all %}
+                                    <option value="{{ addr.id }}">
+                                        {{ addr.full_name }}, {{ addr.address_line1 }}, {{ addr.city }} {% if addr.is_default %}(Default){% endif %}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Order Summary -->
-                <div class="order-summary">
-                    <h2>Order Summary</h2>
-                    <div class="summary-row">
-                        <span>Subtotal ({{ cart_items.count }} items)</span>
-                        <span>₹{{ total }}</span>
+                <!-- ⭐ ORDER SUMMARY -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm p-6 sticky top-24">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Summary</h2>
+
+                        <div class="space-y-3">
+                            {% if checkout_type == "cart" %}
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Subtotal ({{ cart_items.count }} items)</span>
+                                <span class="font-medium text-gray-900">₹{{ total }}</span>
+                            </div>
+                            {% else %}
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Subtotal (1 item)</span>
+                                <span class="font-medium text-gray-900">₹{{ product.price }}</span>
+                            </div>
+                            {% endif %}
+
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Shipping</span>
+                                <span class="font-medium text-green-600">FREE</span>
+                            </div>
+
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Tax</span>
+                                <span class="font-medium text-gray-900">₹0</span>
+                            </div>
+
+                            <div class="border-t border-gray-200 pt-3 mt-3">
+                                <div class="flex justify-between text-base font-bold">
+                                    <span class="text-gray-900">Total</span>
+                                    {% if checkout_type == "cart" %}
+                                        <span class="text-gray-900">₹{{ total }}</span>
+                                    {% else %}
+                                        <span class="text-gray-900">₹{{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg mt-6 place-order-btn transition-all duration-300">
+                            <i class="fas fa-lock mr-2"></i> Place Order
+                        </button>
+
+                        <p class="text-xs text-gray-500 text-center mt-3">
+                            <i class="fas fa-shield-alt mr-1"></i> Your payment is secure and encrypted
+                        </p>
                     </div>
-                    <div class="summary-row">
-                        <span>Shipping</span>
-                        <span>₹0</span>
-                    </div>
-                    <div class="total-row">
-                        <span>Total</span>
-                        <span>₹{{ total }}</span>
-                    </div>
-                    <a href="{% url 'order_success' %}"><button type="submit" id="placeOrderBtn" class="place-order-btn">Place Order</button></a>
                 </div>
             </div>
         </form>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-company">
-                    <h3><i class="fas fa-shopping-bag"></i>StyleCart</h3>
-                    <p>Your one-stop destination for the latest fashion trends and styles.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-pinterest"></i></a>
+    <!-- Updated Footer -->
+    <footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
+                <div>
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-lg sm:text-xl lg:text-2xl text-purple-500 mr-2 sm:mr-3"></i>
+                        <span class="text-lg sm:text-xl font-bold responsive-text">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 responsive-text">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="https://facebook.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-facebook-f text-sm sm:text-base"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-instagram text-sm sm:text-base"></i>
+                        </a>
                     </div>
                 </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="{% url 'home' %}" class="hover:text-purple-400 transition responsive-text">Home</a></li>
+                        <li><a href="{% url 'user_home' %}" class="hover:text-purple-400 transition responsive-text">Shop</a></li>
+                        <li><a href="{% url 'about' %}" class="hover:text-purple-400 transition responsive-text">About</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Support</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Return & Refund</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Payment Methods</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Contact</h3>
+                    <ul class="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-500 mt-1 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">123 Fashion Street,<br>New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+                <p class="text-gray-500 text-sm sm:text-base responsive-text">&copy; 2023 StyleCart. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // User profile dropdown functionality
-        const userProfile = document.getElementById('userProfile');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        userProfile.addEventListener('click', function() { dropdownMenu.classList.toggle('active'); });
-        document.addEventListener('click', function(event) {
-            if (!userProfile.contains(event.target)) { dropdownMenu.classList.remove('active'); }
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Profile dropdown functionality
+        const profileDropdownButton = document.getElementById('profileDropdownButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        if (profileDropdownButton && profileDropdown) {
+            profileDropdownButton.addEventListener('click', function() {
+                profileDropdown.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Quantity validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInputs = document.querySelectorAll('input[type="number"]');
+
+            quantityInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const max = parseInt(this.getAttribute('max'));
+                    const min = parseInt(this.getAttribute('min'));
+                    let value = parseInt(this.value);
+
+                    if (isNaN(value) || value < min) {
+                        this.value = min;
+                    } else if (value > max) {
+                        this.value = max;
+                        alert(`Maximum available stock is ${max}`);
+                    }
+                });
+            });
         });
+
+        // Form submission enhancement
+        const orderForm = document.querySelector('form');
+        if (orderForm) {
+            orderForm.addEventListener('submit', function(e) {
+                const placeOrderBtn = this.querySelector('.place-order-btn');
+                const originalText = placeOrderBtn.innerHTML;
+
+                // Show loading state
+                placeOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+                placeOrderBtn.disabled = true;
+
+                // Re-enable after 3 seconds if still on page (fallback)
+                setTimeout(() => {
+                    if (placeOrderBtn.disabled) {
+                        placeOrderBtn.innerHTML = originalText;
+                        placeOrderBtn.disabled = false;
+                    }
+                }, 3000);
+            });
+        }
     </script>
 </body>
 </html>

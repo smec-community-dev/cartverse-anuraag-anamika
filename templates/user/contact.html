@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        }
+
+        .contact-card {
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form-input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            width: 200px;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 50;
+            overflow: hidden;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #4b5563;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f9fafb;
+            color: #7c3aed;
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .responsive-text {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Navigation -->
+ <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="flex justify-between items-center h-14 sm:h-16">
+                <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
+                    <i class="fas fa-shopping-bag text-xl sm:text-2xl md:text-3xl text-purple-600 mr-2 sm:mr-3"></i>
+                    <span class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">StyleCart</span>
+                </a>
+
+                <div class="hidden md:flex space-x-6 lg:space-x-8 items-center">
+                    <a href="{% url 'home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">About</a>
+                </div>
+
+                <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
+
+                    <div class="relative">
+                        <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-heart text-lg sm:text-xl"></i>
+                            <span id="wishlist-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white {% if wishlist_count == 0 %} hidden {% endif %}">
+                                {{ wishlist_count }}
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="relative">
+                        <a href="{% url 'cart' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white">
+                                {{ cart_count }}
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="relative">
+                        <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs sm:text-sm md:text-base border border-purple-200">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% else %}
+                                    <i class="fas fa-user text-xs"></i>
+                                {% endif %}
+                            </div>
+                            <span class="hidden lg:block text-sm md:text-base font-medium truncate max-w-[100px] xl:max-w-[120px] responsive-text">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    Account
+                                {% endif %}
+                            </span>
+                            <i class="fas fa-chevron-down text-xs sm:text-sm ml-1"></i>
+                        </button>
+
+                        <div id="profileDropdown" class="dropdown-menu">
+                            {% if request.user.is_authenticated %}
+                                <div class="px-4 py-2 border-b border-gray-100 text-xs sm:text-sm text-gray-500">
+                                    Signed in as <strong>{{ request.user.username }}</strong>
+                                </div>
+                                <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-user w-5 mr-2"></i> My Profile</a>
+                                <a href="{% url 'order_item' %}" class="dropdown-item"><i class="fas fa-shopping-bag w-5 mr-2"></i> My Orders</a>
+                                <a href="{% url 'wishlist' %}" class="dropdown-item"><i class="fas fa-heart w-5 mr-2"></i> My Wishlist</a>
+
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item text-red-600 hover:text-red-700 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5 mr-2"></i> Logout</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="dropdown-item"><i class="fas fa-sign-in-alt w-5 mr-2"></i> Login</a>
+                                <a href="{% url 'register' %}" class="dropdown-item"><i class="fas fa-user-plus w-5 mr-2"></i> Register</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="md:hidden">
+                        <button id="mobileMenuButton" class="text-gray-700 hover:text-purple-600 focus:outline-none p-1">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobileMenu" class="mobile-menu bg-white md:hidden pb-4 shadow-inner">
+            <div class="container mx-auto px-4 pt-4 space-y-3">
+                <form action="" class="relative">
+                    <input type="text" placeholder="Search..." class="w-full bg-gray-100 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                </form>
+
+                <div class="space-y-2">
+                    <a href="{% url 'home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">About</a>
+                </div>
+
+                {% if not request.user.is_authenticated %}
+                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
+                    <a href="{% url 'login' %}" class="text-center py-2 border border-gray-300 rounded text-sm font-medium text-gray-700 responsive-text">Login</a>
+                    <a href="{% url 'register' %}" class="text-center py-2 bg-purple-600 rounded text-sm font-medium text-white responsive-text">Register</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Contact StyleCart</h1>
+            <p class="text-xl max-w-2xl mx-auto">We're here to help with any questions about our products or services</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12 flex-grow">
+        <!-- Contact Form & Info -->
+        <section class="mb-16 fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Contact Form -->
+                <div class="lg:col-span-2 bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Send Us a Message</h2>
+                    <form id="contactForm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="firstName" class="block text-gray-700 mb-2">First Name</label>
+                                <input type="text" id="firstName" name="firstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-purple-500" required>
+                            </div>
+                            <div>
+                                <label for="lastName" class="block text-gray-700 mb-2">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-purple-500" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="email" class="block text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-purple-500" required>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="subject" class="block text-gray-700 mb-2">Subject</label>
+                            <select id="subject" name="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-purple-500" required>
+                                <option value="" disabled selected>Select a subject</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="order">Order Issue</option>
+                                <option value="return">Return & Refund</option>
+                                <option value="shipping">Shipping Question</option>
+                                <option value="product">Product Information</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="message" class="block text-gray-700 mb-2">Message</label>
+                            <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-purple-500" required></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full bg-purple-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-purple-700 transition duration-300">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="space-y-6">
+                    <!-- Contact Card 1 -->
+                    <div class="contact-card bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-map-marker-alt text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Visit Our Store</h3>
+                        <p class="text-gray-600">
+                            123 Fashion Street<br>
+                            New York, NY 10001
+                        </p>
+                        <p class="text-gray-500 text-sm mt-2">Mon-Sat: 10AM-8PM, Sun: 12PM-6PM</p>
+                    </div>
+
+                    <!-- Contact Card 2 -->
+                    <div class="contact-card bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-phone text-blue-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Call Us</h3>
+                        <p class="text-gray-600">+1 (555) 123-4567</p>
+                        <p class="text-gray-500 text-sm mt-2">Mon-Fri: 9AM-6PM EST</p>
+                    </div>
+
+                    <!-- Contact Card 3 -->
+                    <div class="contact-card bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-envelope text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Email Us</h3>
+                        <p class="text-gray-600">info@stylecart.com</p>
+                        <p class="text-gray-500 text-sm mt-2">We'll respond within 24 hours</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Frequently Asked Questions</h2>
+
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                    <!-- FAQ Item 1 -->
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 transition duration-200">
+                            <span class="text-lg font-medium text-gray-800">What is your return policy?</span>
+                            <i class="fas fa-chevron-down text-purple-600"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                We offer a 30-day return policy for all items in their original condition with tags attached.
+                                Return shipping is free for US customers. Please contact our support team to initiate a return.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 2 -->
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 transition duration-200">
+                            <span class="text-lg font-medium text-gray-800">How long does shipping take?</span>
+                            <i class="fas fa-chevron-down text-purple-600"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Standard shipping takes 3-5 business days within the US. We also offer expedited shipping options
+                                (2-day and overnight) at checkout. International shipping times vary by destination.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 3 -->
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 transition duration-200">
+                            <span class="text-lg font-medium text-gray-800">Do you offer international shipping?</span>
+                            <i class="fas fa-chevron-down text-purple-600"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Yes, we ship to over 50 countries worldwide. International shipping costs and delivery times
+                                vary by location and will be calculated at checkout.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 4 -->
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 transition duration-200">
+                            <span class="text-lg font-medium text-gray-800">How can I track my order?</span>
+                            <i class="fas fa-chevron-down text-purple-600"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Once your order ships, you'll receive a tracking number via email. You can also track your order
+                                by logging into your account on our website and viewing your order history.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 5 -->
+                    <div>
+                        <button class="faq-question w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 transition duration-200">
+                            <span class="text-lg font-medium text-gray-800">What payment methods do you accept?</span>
+                            <i class="fas fa-chevron-down text-purple-600"></i>
+                        </button>
+                        <div class="faq-answer hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                We accept all major credit cards (Visa, MasterCard, American Express, Discover), PayPal,
+                                Apple Pay, and Google Pay. All payments are processed securely through encrypted channels.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+
+        <!-- Newsletter Section -->
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
+                <div>
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-lg sm:text-xl lg:text-2xl text-purple-500 mr-2 sm:mr-3"></i>
+                        <span class="text-lg sm:text-xl font-bold responsive-text">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 responsive-text">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="https://facebook.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-facebook-f text-sm sm:text-base"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-instagram text-sm sm:text-base"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="/" class="hover:text-purple-400 transition responsive-text">Home</a></li>
+                        <li><a href="/shop" class="hover:text-purple-400 transition responsive-text">Shop</a></li>
+                        <li><a href="/about" class="hover:text-purple-400 transition responsive-text">About</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Support</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Return & Refund</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Payment Methods</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Contact</h3>
+                    <ul class="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-500 mt-1 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">123 Fashion Street,<br>New York, NY 10001</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+                <p class="text-gray-500 text-sm sm:text-base responsive-text">&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Fade-in animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            fadeElements.forEach(element => {
+                fadeObserver.observe(element);
+            });
+
+            // FAQ accordion functionality
+            const faqQuestions = document.querySelectorAll('.faq-question');
+
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const answer = question.nextElementSibling;
+                    const icon = question.querySelector('i');
+
+                    // Toggle answer visibility
+                    answer.classList.toggle('hidden');
+
+                    // Rotate icon
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                });
+            });
+
+            // Form submission handling
+            const contactForm = document.getElementById('contactForm');
+
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // In a real implementation, you would send the form data to a server
+                // For this example, we'll just show an alert
+                alert('Thank you for your message! We will get back to you soon.');
+                contactForm.reset();
+            });
+
+            // Profile dropdown functionality
+            const profileDropdownButton = document.getElementById('profileDropdownButton');
+            const profileDropdown = document.getElementById('profileDropdown');
+
+            profileDropdownButton.addEventListener('click', function() {
+                profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    profileDropdown.style.display = 'none';
+                }
+            });
+
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.style.display = mobileMenu.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+    </script>
+</body>
+</html>

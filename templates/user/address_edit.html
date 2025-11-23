@@ -14,57 +14,148 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
+        /* Dropdown Menu */
+    .dropdown-menu {
+        position: absolute;
+        right: 0;
+        margin-top: 10px;
+        width: 180px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        display: none; /* IMPORTANT */
+        z-index: 999;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 14px;
+        font-size: 14px;
+        color: #555;
+        transition: background 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background: #f3e8ff;
+        color: #7e22ce;
+    }
+
+    /* Show dropdown */
+    .dropdown-open {
+        display: block !important;
+    }
     </style>
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
-                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="flex justify-between items-center h-14 sm:h-16">
+                <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
+                    <i class="fas fa-shopping-bag text-xl sm:text-2xl md:text-3xl text-purple-600 mr-2 sm:mr-3"></i>
+                    <span class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">StyleCart</span>
+                </a>
+
+                <div class="hidden md:flex space-x-6 lg:space-x-8 items-center">
+                    <a href="{% url 'home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">About</a>
                 </div>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="{% url 'home' %}" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
-                    <a href="{% url 'user_home' %}" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
-                    <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
-                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
-                </div>
+                <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
 
-                <!-- User Section -->
-                <div class="flex items-center space-x-6">
-                    <!-- Wishlist Icon -->
-                    <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 relative">
-                        <i class="far fa-heart text-xl"></i>
-                        <span class="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                            3
-                        </span>
-                    </a>
-
-                    <!-- Cart -->
                     <div class="relative">
-                        <a href="cart.html" class="text-gray-700 hover:text-purple-600 p-2">
-                            <i class="fas fa-shopping-cart text-lg"></i>
+                        <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-heart text-lg sm:text-xl"></i>
+                            <span id="wishlist-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white {% if wishlist_count == 0 %} hidden {% endif %}">
+                                {{ wishlist_count }}
+                            </span>
                         </a>
-                        <span class="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">2</span>
                     </div>
 
-                    <!-- User Profile -->
                     <div class="relative">
-                        <a href="" class="flex items-center space-x-2 focus:outline-none">
-                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                JS
-                            </div>
-                            <span class="text-gray-700 font-medium hidden md:block">John Smith</span>
+                        <a href="{% url 'cart' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white">
+                                {{ cart_count }}
+                            </span>
                         </a>
+                    </div>
+
+                    <div class="relative">
+                        <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs sm:text-sm md:text-base border border-purple-200">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% else %}
+                                    <i class="fas fa-user text-xs"></i>
+                                {% endif %}
+                            </div>
+                            <span class="hidden lg:block text-sm md:text-base font-medium truncate max-w-[100px] xl:max-w-[120px] responsive-text">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    Account
+                                {% endif %}
+                            </span>
+                            <i class="fas fa-chevron-down text-xs sm:text-sm ml-1"></i>
+                        </button>
+
+                        <div id="profileDropdown" class="dropdown-menu">
+                            {% if request.user.is_authenticated %}
+                                <div class="px-4 py-2 border-b border-gray-100 text-xs sm:text-sm text-gray-500">
+                                    Signed in as <strong>{{ request.user.username }}</strong>
+                                </div>
+                                <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-user w-5 mr-2"></i> My Profile</a>
+                                <a href="{% url 'order_item' %}" class="dropdown-item"><i class="fas fa-shopping-bag w-5 mr-2"></i> My Orders</a>
+                                <a href="{% url 'wishlist' %}" class="dropdown-item"><i class="fas fa-heart w-5 mr-2"></i> My Wishlist</a>
+
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item text-red-600 hover:text-red-700 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5 mr-2"></i> Logout</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="dropdown-item"><i class="fas fa-sign-in-alt w-5 mr-2"></i> Login</a>
+                                <a href="{% url 'register' %}" class="dropdown-item"><i class="fas fa-user-plus w-5 mr-2"></i> Register</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="md:hidden">
+                        <button id="mobileMenuButton" class="text-gray-700 hover:text-purple-600 focus:outline-none p-1">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div id="mobileMenu" class="mobile-menu bg-white md:hidden pb-4 shadow-inner">
+            <div class="container mx-auto px-4 pt-4 space-y-3">
+                <form action="" class="relative">
+                    <input type="text" placeholder="Search..." class="w-full bg-gray-100 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                </form>
+
+                <div class="space-y-2">
+                    <a href="{% url 'home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">About</a>
+                </div>
+
+                {% if not request.user.is_authenticated %}
+                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
+                    <a href="{% url 'login' %}" class="text-center py-2 border border-gray-300 rounded text-sm font-medium text-gray-700 responsive-text">Login</a>
+                    <a href="{% url 'register' %}" class="text-center py-2 bg-purple-600 rounded text-sm font-medium text-white responsive-text">Register</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </nav>
+
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8 flex-grow">
@@ -228,80 +319,84 @@
         </div>
     </div>
 
-    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-auto">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <!-- Company Info -->
+   <footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
                 <div>
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
-                        <span class="text-xl font-bold">StyleCart</span>
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-lg sm:text-xl lg:text-2xl text-purple-500 mr-2 sm:mr-3"></i>
+                        <span class="text-lg sm:text-xl font-bold responsive-text">StyleCart</span>
                     </div>
-                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                            <i class="fab fa-facebook-f"></i>
+                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 responsive-text">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="https://facebook.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-facebook-f text-sm sm:text-base"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                            <i class="fab fa-pinterest"></i>
+                        <a href="https://instagram.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-instagram text-sm sm:text-base"></i>
                         </a>
                     </div>
                 </div>
 
-                <!-- Quick Links -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
-                        <li><a href="/shop/" class="text-gray-400 hover:text-white transition-colors">Shop</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="{% url 'home' %}" class="hover:text-purple-400 transition responsive-text">Home</a></li>
+                        <li><a href="{% url 'user_home' %}" class="hover:text-purple-400 transition responsive-text">Shop</a></li>
+                        <li><a href="{% url 'about' %}" class="hover:text-purple-400 transition responsive-text">About</a></li>
                     </ul>
                 </div>
 
-                <!-- Customer Service -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Return & Refund</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Size Guide</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Payment Methods</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Support</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Return & Refund</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Payment Methods</a></li>
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-                    <ul class="space-y-2">
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Contact</h3>
+                    <ul class="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
-                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                            <i class="fas fa-map-marker-alt text-purple-500 mt-1 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">123 Fashion Street,<br>New York, NY 10001</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-phone text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                            <i class="fas fa-phone text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">+1 (555) 123-4567</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">info@stylecart.com</span>
+                            <i class="fas fa-envelope text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">info@stylecart.com</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
-                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+                <p class="text-gray-500 text-sm sm:text-base responsive-text">&copy; 2023 StyleCart. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+<script>
+     // Toggle profile dropdown
+    document.getElementById("profileDropdownButton").addEventListener("click", function () {
+        const menu = document.getElementById("profileDropdown");
+        menu.classList.toggle("dropdown-open");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function (e) {
+        const button = document.getElementById("profileDropdownButton");
+        const menu = document.getElementById("profileDropdown");
+
+        if (!button.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.remove("dropdown-open");
+        }
+    });
+</script>
 </body>
 </html>

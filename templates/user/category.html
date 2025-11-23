@@ -5,19 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categories - StyleCart</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Apply Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Dropdown menu */
         .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
             opacity: 0;
             visibility: hidden;
             transform: translateY(-10px);
             transition: all 0.3s ease;
+            z-index: 100;
         }
-
         .dropdown:hover .dropdown-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #4b5563;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8fafc;
+            color: #8b5cf6;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 0.5rem 0;
         }
 
         .cart-count {
@@ -35,120 +69,6 @@
             justify-content: center;
         }
 
-        .category-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .category-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        }
-
-        .category-card.large {
-            grid-column: span 2;
-        }
-
-        .category-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 2rem;
-            color: white;
-        }
-
-        .subcategory-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .subcategory-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            border: 1px solid #e5e7eb;
-        }
-
-        .subcategory-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-            border-color: #8b5cf6;
-        }
-
-        .subcategory-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 1.5rem;
-        }
-
-        .trending-badge {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            z-index: 10;
-        }
-
-        .new-badge {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            z-index: 10;
-        }
-
-        .category-count {
-            background: rgba(255, 255, 255, 0.9);
-            color: #6b7280;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .section-title {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 2rem;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 50%;
-            height: 3px;
-            background: linear-gradient(to right, #8b5cf6, #7c3aed);
-            border-radius: 2px;
-        }
-
         .category-nav {
             display: flex;
             overflow-x: auto;
@@ -157,11 +77,9 @@
             margin-bottom: 2rem;
             scrollbar-width: none;
         }
-
         .category-nav::-webkit-scrollbar {
             display: none;
         }
-
         .category-nav-item {
             white-space: nowrap;
             padding: 0.75rem 1.5rem;
@@ -172,549 +90,489 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
         .category-nav-item:hover {
             border-color: #8b5cf6;
             color: #8b5cf6;
         }
-
         .category-nav-item.active {
             background: #8b5cf6;
             color: white;
             border-color: #8b5cf6;
         }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .product-card img {
+            border-radius: 8px;
+            width: 100%;
+            object-fit: cover;
+        }
+        .product-name {
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        .product-price {
+            color: #8b5cf6;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .user-avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #8b5cf6;
+            color: white;
+            font-weight: bold;
+        }
+
+        .mobile-menu {
+            display: none;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        /* Responsive text utility */
+        .responsive-text {
+            font-size: clamp(0.75rem, 2vw, 1rem);
+        }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
-                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- Updated Header -->
+
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="flex justify-between items-center h-14 sm:h-16">
+                <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
+                    <i class="fas fa-shopping-bag text-xl sm:text-2xl md:text-3xl text-purple-600 mr-2 sm:mr-3"></i>
+                    <span class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">StyleCart</span>
+                </a>
+
+                <div class="hidden md:flex space-x-6 lg:space-x-8 items-center">
+                    <a href="{% url 'home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">About</a>
                 </div>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex space-x-8 items-center">
-                    <!-- text-purple-600 font-medium border-b-2 border-purple-600 -->
-                    <a href="home.html" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
-                    <a href="shop.html" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
-                    <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
-                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
-                </div>
+                <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
 
-                <!-- User Section -->
-                <div class="flex items-center space-x-6">
-                    <!-- Search -->
-                    <div class="hidden md:block relative">
-                        <input type="text" placeholder="Search categories..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
-
-                    <!-- Wishlist -->
                     <div class="relative">
-                        <a href="wishlist.html" class="text-purple-600 p-2">
-                            <i class="fas fa-heart text-lg"></i>
+                        <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-heart text-lg sm:text-xl"></i>
+                            <span id="wishlist-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white {% if wishlist_count == 0 %} hidden {% endif %}">
+                                {{ wishlist_count }}
+                            </span>
                         </a>
-                        <span class="cart-count">3</span>
                     </div>
 
-                    <!-- Cart -->
                     <div class="relative">
-                        <a href="cart.html" class="text-gray-700 hover:text-purple-600 p-2">
-                            <i class="fas fa-shopping-cart text-lg"></i>
+                        <a href="{% url 'cart' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
+                            <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center border border-white">
+                                {{ cart_count }}
+                            </span>
                         </a>
-                        <span class="cart-count">5</span>
                     </div>
 
-                    <!-- User Profile -->
-                    <div class="relative dropdown">
-                        <button class="flex items-center space-x-2 focus:outline-none">
-                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                                JS
+                    <div class="relative">
+                        <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs sm:text-sm md:text-base border border-purple-200">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username|slice:":1"|upper }}
+                                {% else %}
+                                    <i class="fas fa-user text-xs"></i>
+                                {% endif %}
                             </div>
-                            <span class="text-gray-700 font-medium hidden md:block">John Smith</span>
-                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                            <span class="hidden lg:block text-sm md:text-base font-medium truncate max-w-[100px] xl:max-w-[120px] responsive-text">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    Account
+                                {% endif %}
+                            </span>
+                            <i class="fas fa-chevron-down text-xs sm:text-sm ml-1"></i>
                         </button>
 
-                        <!-- Profile Dropdown -->
-                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
-                            <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-sm font-medium text-gray-800">John Smith</p>
-                                <p class="text-sm text-gray-500">john.smith@example.com</p>
-                            </div>
+                        <div id="profileDropdown" class="dropdown-menu">
+                            {% if request.user.is_authenticated %}
+                                <div class="px-4 py-2 border-b border-gray-100 text-xs sm:text-sm text-gray-500">
+                                    Signed in as <strong>{{ request.user.username }}</strong>
+                                </div>
+                                <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-user w-5 mr-2"></i> My Profile</a>
+                                <a href="{% url 'order_item' %}" class="dropdown-item"><i class="fas fa-shopping-bag w-5 mr-2"></i> My Orders</a>
+                                <a href="{% url 'wishlist' %}" class="dropdown-item"><i class="fas fa-heart w-5 mr-2"></i> My Wishlist</a>
 
-                            <a href="myprofile.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-user mr-3 text-gray-400"></i>
-                                My Profile
-                            </a>
-
-                            <a href="myorders.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-shopping-bag mr-3 text-gray-400"></i>
-                                My Orders
-                            </a>
-
-                            <a href="wishlist.html" class="flex items-center px-4 py-2 text-sm text-purple-600 hover:bg-purple-50 font-medium">
-                                <i class="fas fa-heart mr-3"></i>
-                                My Wishlist
-                            </a>
-
-                            <a href="address.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-map-marker-alt mr-3 text-gray-400"></i>
-                                Addresses
-                            </a>
-
-                            <div class="border-t border-gray-100 my-1"></div>
-
-                            <a href="account.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-cog mr-3 text-gray-400"></i>
-                                Account Settings
-                            </a>
-
-                            <a href="support.html" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-question-circle mr-3 text-gray-400"></i>
-                                Help & Support
-                            </a>
-
-                            <div class="border-t border-gray-100 my-1"></div>
-
-                            <a href="home.html" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                <i class="fas fa-sign-out-alt mr-3"></i>
-                                Sign Out
-                            </a>
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item text-red-600 hover:text-red-700 hover:bg-red-50"><i class="fas fa-sign-out-alt w-5 mr-2"></i> Logout</a>
+                            {% else %}
+                                <a href="{% url 'login' %}" class="dropdown-item"><i class="fas fa-sign-in-alt w-5 mr-2"></i> Login</a>
+                                <a href="{% url 'register' %}" class="dropdown-item"><i class="fas fa-user-plus w-5 mr-2"></i> Register</a>
+                            {% endif %}
                         </div>
+                    </div>
+
+                    <div class="md:hidden">
+                        <button id="mobileMenuButton" class="text-gray-700 hover:text-purple-600 focus:outline-none p-1">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div id="mobileMenu" class="mobile-menu bg-white md:hidden pb-4 shadow-inner">
+            <div class="container mx-auto px-4 pt-4 space-y-3">
+                <form action="" class="relative">
+                    <input type="text" placeholder="Search..." class="w-full bg-gray-100 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                </form>
+
+                <div class="space-y-2">
+                    <a href="{% url 'home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="block px-3 py-2 text-gray-700 font-medium text-base hover:bg-purple-50 hover:text-purple-600 rounded responsive-text">About</a>
+                </div>
+
+                {% if not request.user.is_authenticated %}
+                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
+                    <a href="{% url 'login' %}" class="text-center py-2 border border-gray-300 rounded text-sm font-medium text-gray-700 responsive-text">Login</a>
+                    <a href="{% url 'register' %}" class="text-center py-2 bg-purple-600 rounded text-sm font-medium text-white responsive-text">Register</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+
+
     </nav>
+<!-- Categories Header -->
+<section class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-12 md:py-16">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 responsive-text">Browse Categories</h1>
+        <p class="text-lg md:text-xl mb-8 opacity-90 max-w-2xl mx-auto responsive-text">Discover your perfect style across our carefully curated fashion categories</p>
 
-    <!-- Categories Header -->
-    <section class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-16">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Browse Categories</h1>
-            <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">Discover your perfect style across our carefully curated fashion categories</p>
-            <div class="relative max-w-md mx-auto">
-                <input type="text" placeholder="Search categories..." class="w-full pl-12 pr-4 py-3 bg-white bg-opacity-20 rounded-full focus:outline-none focus:ring-2 focus:ring-white placeholder-white">
-                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-white"></i>
-            </div>
+        <!-- Search Form with Category Context -->
+        <div class="relative max-w-md mx-auto">
+            <form method="get" action="{% url 'category' %}" class="flex items-center w-full">
+                <!-- Hidden field to preserve selected category -->
+                {% if selected_sub %}
+                    <input type="hidden" name="subcategory" value="{{ selected_sub.slug }}">
+                {% endif %}
+
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="search" placeholder="Search categories..."
+                       value="{{ request.GET.search|default:'' }}"
+                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full
+                              bg-white text-gray-800 responsive-text
+                              focus:outline-none focus:ring-2 focus:ring-purple-500
+                              focus:border-transparent placeholder-gray-400">
+
+                <button type="submit" class="ml-2 px-4 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition responsive-text">
+                    Search
+                </button>
+            </form>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Categories Navigation -->
-    <section class="bg-white py-6 border-b">
-        <div class="container mx-auto px-4">
-            <div class="category-nav">
-                <div class="category-nav-item active">All Categories</div>
-                <div class="category-nav-item">Men's Fashion</div>
-                <div class="category-nav-item">Women's Fashion</div>
-                <div class="category-nav-item">Footwear</div>
-                <div class="category-nav-item">Accessories</div>
-                <div class="category-nav-item">Sportswear</div>
-                <div class="category-nav-item">Formal Wear</div>
-                <div class="category-nav-item">Seasonal</div>
-                <div class="category-nav-item">Luxury</div>
-                <div class="category-nav-item">Sale</div>
-            </div>
+<!-- Categories Navigation -->
+<div class="container mx-auto px-4">
+    <div class="category-nav">
+        <div class="category-nav-item {% if not selected_sub %}active{% endif %}">
+            <a href="{% url 'category' %}" class="responsive-text">All Categories</a>
         </div>
-    </section>
+        {% for sub in subcategories %}
+            <div class="category-nav-item {% if selected_sub == sub %}active{% endif %}">
+                <a href="{% url 'subcategory' sub.slug %}" class="responsive-text">{{ sub.sub_category_name }}</a>
+            </div>
+        {% endfor %}
+    </div>
 
-    <!-- Main Categories Grid -->
-    <section class="py-12 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-gray-800 section-title mb-8">Featured Categories</h2>
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
+        {% for p in products %}
+        <div class="product-card bg-white rounded-lg shadow-sm hover:shadow-lg transition duration-300 flex flex-col h-full border border-gray-100 group">
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <!-- Men's Fashion -->
-                <div class="category-card large">
-                    <div class="h-96 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')">
-                        <span class="trending-badge">Trending</span>
-                        <div class="category-overlay">
-                            <h3 class="text-2xl font-bold mb-2">Men's Fashion</h3>
-                            <p class="text-gray-200 mb-4">Contemporary styles for the modern man</p>
-                            <div class="flex items-center justify-between">
-                                <span class="category-count">248 products</span>
-                                <button class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300">
-                                    Shop Now
-                                </button>
-                            </div>
+            <div class="relative w-full h-40 sm:h-44 md:h-48 lg:h-56 xl:h-64 bg-gray-200 overflow-hidden rounded-t-lg flex-shrink-0">
+                {% with first_image=p.images.all|first %}
+                    {% if first_image %}
+                        <img src="{{ first_image.product_image.url }}"
+                             class="w-full h-full object-cover transition group-hover:scale-105 duration-500"
+                             alt="{{ p.product_name }}">
+                    {% else %}
+                        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span class="text-gray-500 text-sm">No Image</span>
                         </div>
-                    </div>
-                </div>
+                    {% endif %}
+                {% endwith %}
 
-                <!-- Women's Fashion -->
-                <div class="category-card">
-                    <div class="h-96 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <span class="new-badge">New</span>
-                        <div class="category-overlay">
-                            <h3 class="text-xl font-bold mb-2">Women's Fashion</h3>
-                            <p class="text-gray-200 mb-4">Elegant and trendy collections</p>
-                            <div class="flex items-center justify-between">
-                                <span class="category-count">312 products</span>
-                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                    Explore
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <button class="wishlist-btn absolute top-2 sm:top-3 right-2 sm:right-3 bg-white p-1.5 sm:p-2 rounded-full shadow-md w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-red-50 transition-colors"
+                        onclick="toggleWishlist(this, '{{ p.id }}')"
+                        title="Add to Wishlist">
+                    <i class="far fa-heart text-gray-600 text-xs sm:text-sm"></i>
+                </button>
 
-                <!-- Footwear -->
-                <div class="category-card">
-                    <div class="h-96 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <div class="category-overlay">
-                            <h3 class="text-xl font-bold mb-2">Footwear</h3>
-                            <p class="text-gray-200 mb-4">Step out in style</p>
-                            <div class="flex items-center justify-between">
-                                <span class="category-count">189 products</span>
-                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                    Explore
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% if p.discount_price %}
+                    <span class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-red-500 text-white px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-bold uppercase responsive-text">Sale</span>
+                {% endif %}
             </div>
 
-            <!-- Second Row -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Accessories -->
-                <div class="category-card">
-                    <div class="h-80 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1505022610485-0249ba5b3675?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <div class="category-overlay">
-                            <h3 class="text-xl font-bold mb-2">Accessories</h3>
-                            <p class="text-gray-200 mb-4">Complete your look</p>
-                            <div class="flex items-center justify-between">
-                                <span class="category-count">156 products</span>
-                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                    Explore
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            <div class="p-2 sm:p-3 lg:p-4 flex flex-col flex-grow">
+                <div class="mb-2 sm:mb-3">
+                    <h3 class="font-semibold text-xs sm:text-sm lg:text-base text-gray-800 truncate responsive-text" title="{{ p.product_name }}">
+                        {{ p.product_name }}
+                    </h3>
+                    <p class="text-gray-500 text-[10px] sm:text-xs line-clamp-2 mt-1 sm:mt-2 leading-relaxed responsive-text">
+                        {{ p.description|striptags|default:"No description available" }}
+                    </p>
                 </div>
 
-                <!-- Sportswear -->
-                <div class="category-card">
-                    <div class="h-80 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <span class="trending-badge">Hot</span>
-                        <div class="category-overlay">
-                            <h3 class="text-xl font-bold mb-2">Sportswear</h3>
-                            <p class="text-gray-200 mb-4">Performance and style</p>
-                            <div class="flex items-center justify-between">
-                                <span class="category-count">134 products</span>
-                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                    Explore
-                                </button>
-                            </div>
+                <div class="mt-auto">
+                    <div class="flex justify-between items-center pt-2 sm:pt-3 border-t border-gray-50">
+                        <div class="flex items-baseline space-x-1 sm:space-x-2">
+                            <span class="text-purple-700 font-bold text-xs sm:text-sm lg:text-base responsive-text">₹{{ p.discount_price|default:p.price }}</span>
+                            {% if p.discount_price %}
+                                <span class="text-gray-400 line-through text-[10px] sm:text-xs responsive-text">₹{{ p.price }}</span>
+                            {% endif %}
                         </div>
+                        <span class="text-[10px] sm:text-xs font-medium {{ p.stock|yesno:'text-green-600,text-red-500' }} responsive-text">
+                            {% if p.stock > 0 %} In Stock {% else %} Out of Stock {% endif %}
+                        </span>
                     </div>
-                </div>
 
-                <!-- Formal Wear -->
-                <div class="category-card">
-                    <div class="h-80 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1594938298603-c8148c4dae35?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <div class="category-overlay">
-                            <h3 class="text-xl font-bold mb-2">Formal Wear</h3>
-                            <p class="text-gray-200 mb-4">Elegance redefined</p>
-                            <div class="flex items-center justify-between">
-                                <span class="category-count">98 products</span>
-                                <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                    Explore
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Subcategories Section -->
-    <section class="py-12 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-gray-800 section-title mb-8">Browse by Subcategory</h2>
-
-            <!-- Men's Subcategories -->
-            <div class="mb-12">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                    <i class="fas fa-male text-purple-600 mr-3"></i>
-                    Men's Fashion
-                </h3>
-                <div class="subcategory-grid">
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-blue-100 text-blue-600">
-                            <i class="fas fa-tshirt"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">T-Shirts</h4>
-                        <p class="text-gray-600 text-sm">84 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-purple-100 text-purple-600">
-                            <i class="fas fa-vest"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Jackets</h4>
-                        <p class="text-gray-600 text-sm">45 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-green-100 text-green-600">
-                            <i class="fas fa-jeans"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Jeans</h4>
-                        <p class="text-gray-600 text-sm">67 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-yellow-100 text-yellow-600">
-                            <i class="fas fa-tshirt"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Shirts</h4>
-                        <p class="text-gray-600 text-sm">52 products</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Women's Subcategories -->
-            <div class="mb-12">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                    <i class="fas fa-female text-pink-600 mr-3"></i>
-                    Women's Fashion
-                </h3>
-                <div class="subcategory-grid">
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-pink-100 text-pink-600">
-                            <i class="fas fa-tshirt"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Dresses</h4>
-                        <p class="text-gray-600 text-sm">112 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-red-100 text-red-600">
-                            <i class="fas fa-vest"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Tops</h4>
-                        <p class="text-gray-600 text-sm">89 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-purple-100 text-purple-600">
-                            <i class="fas fa-skirt"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Skirts</h4>
-                        <p class="text-gray-600 text-sm">43 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-indigo-100 text-indigo-600">
-                            <i class="fas fa-tshirt"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Blouses</h4>
-                        <p class="text-gray-600 text-sm">68 products</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Accessories Subcategories -->
-            <div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                    <i class="fas fa-gem text-yellow-600 mr-3"></i>
-                    Accessories
-                </h3>
-                <div class="subcategory-grid">
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-yellow-100 text-yellow-600">
-                            <i class="fas fa-ring"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Jewelry</h4>
-                        <p class="text-gray-600 text-sm">76 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-gray-100 text-gray-600">
-                            <i class="fas fa-briefcase"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Bags</h4>
-                        <p class="text-gray-600 text-sm">54 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-blue-100 text-blue-600">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Watches</h4>
-                        <p class="text-gray-600 text-sm">38 products</p>
-                    </div>
-                    <div class="subcategory-card">
-                        <div class="subcategory-icon bg-green-100 text-green-600">
-                            <i class="fas fa-glasses"></i>
-                        </div>
-                        <h4 class="font-semibold text-gray-800 mb-2">Sunglasses</h4>
-                        <p class="text-gray-600 text-sm">42 products</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Seasonal Categories -->
-    <section class="py-12 bg-gradient-to-r from-purple-50 to-indigo-50">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-gray-800 section-title mb-8">Seasonal Collections</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="category-card">
-                    <div class="h-64 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1441984904996-e0b51ba12791?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <div class="category-overlay">
-                            <h3 class="text-lg font-bold mb-2">Summer Collection</h3>
-                            <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                Shop Now
+                    <div class="grid grid-cols-1 gap-2 sm:gap-3 mt-2 sm:mt-3 lg:mt-4">
+                        <a href="{% url 'single' p.slug %}" class="w-full block">
+                            <button class="w-full bg-gray-100 text-gray-700 py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold hover:bg-gray-200 transition responsive-text">
+                                View Details
                             </button>
-                        </div>
-                    </div>
-                </div>
+                        </a>
 
-                <div class="category-card">
-                    <div class="h-64 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1516914943479-89db7d9ae7f2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <div class="category-overlay">
-                            <h3 class="text-lg font-bold mb-2">Winter Wear</h3>
-                            <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                Shop Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="category-card">
-                    <div class="h-64 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <div class="category-overlay">
-                            <h3 class="text-lg font-bold mb-2">Spring Fashion</h3>
-                            <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                Shop Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="category-card">
-                    <div class="h-64 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1544441893-675973e31985?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
-                        <div class="category-overlay">
-                            <h3 class="text-lg font-bold mb-2">Autumn Styles</h3>
-                            <button class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition duration-300 text-sm">
-                                Shop Now
-                            </button>
-                        </div>
+                        {% if p.stock > 0 %}
+                        <button class="w-full bg-gray-900 text-white py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold hover:bg-purple-600 transition flex items-center justify-center gap-1 sm:gap-2 add-to-cart-btn responsive-text"
+                                onclick="addToCart('{{ p.id }}')">
+                            <i class="fas fa-shopping-cart text-[10px] sm:text-xs"></i> Add to Cart
+                        </button>
+                        {% else %}
+                        <button disabled class="w-full bg-gray-300 text-white py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold cursor-not-allowed responsive-text">
+                            Out of Stock
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="col-span-full text-center py-12">
+        <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2 responsive-text">No products found</h3>
+        <p class="text-gray-500 responsive-text">Try adjusting your search or filter criteria</p>
+    </div>
+    {% endif %}
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white pt-12 pb-6">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <!-- Company Info -->
+   <!-- Pagination -->
+<div class="mt-8 flex justify-center space-x-2">
+    {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if selected_sub %}&subcategory={{ selected_sub.slug }}{% endif %}"
+           class="px-3 py-1 border rounded hover:bg-purple-600 hover:text-white responsive-text">&laquo; Prev</a>
+    {% endif %}
+
+    {% for num in products.paginator.page_range %}
+        {% if products.number == num %}
+            <span class="px-3 py-1 border rounded bg-purple-600 text-white responsive-text">{{ num }}</span>
+        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+            <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if selected_sub %}&subcategory={{ selected_sub.slug }}{% endif %}"
+               class="px-3 py-1 border rounded hover:bg-purple-600 hover:text-white responsive-text">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if selected_sub %}&subcategory={{ selected_sub.slug }}{% endif %}"
+           class="px-3 py-1 border rounded hover:bg-purple-600 hover:text-white responsive-text">Next &raquo;</a>
+    {% endif %}
+</div>
+</div>
+<br>
+<br>
+
+<!-- Updated Footer -->
+
+<footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
+        <div class="container mx-auto px-3 sm:px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
                 <div>
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
-                        <span class="text-xl font-bold">StyleCart</span>
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-lg sm:text-xl lg:text-2xl text-purple-500 mr-2 sm:mr-3"></i>
+                        <span class="text-lg sm:text-xl font-bold responsive-text">StyleCart</span>
                     </div>
-                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-facebook-f"></i>
+                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 responsive-text">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="https://facebook.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-facebook-f text-sm sm:text-base"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-pinterest"></i>
+                        <a href="https://instagram.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
+                            <i class="fab fa-instagram text-sm sm:text-base"></i>
                         </a>
                     </div>
                 </div>
 
-                <!-- Quick Links -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Categories</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="{% url 'home' %}" class="hover:text-purple-400 transition responsive-text">Home</a></li>
+                        <li><a href="{% url 'user_home' %}" class="hover:text-purple-400 transition responsive-text">Shop</a></li>
+                        <li><a href="{% url 'about' %}" class="hover:text-purple-400 transition responsive-text">About</a></li>
                     </ul>
                 </div>
 
-                <!-- Customer Service -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Support</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Return & Refund</a></li>
+                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Payment Methods</a></li>
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-                    <ul class="space-y-2">
+                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Contact</h3>
+                    <ul class="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
-                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
+                            <i class="fas fa-map-marker-alt text-purple-500 mt-1 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">123 Fashion Street,<br>New York, NY 10001</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-phone text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                            <i class="fas fa-phone text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">+1 (555) 123-4567</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">info@stylecart.com</span>
+                            <i class="fas fa-envelope text-purple-500 mr-2 sm:mr-3 w-4"></i>
+                            <span class="responsive-text">info@stylecart.com</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
-                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+                <p class="text-gray-500 text-sm sm:text-base responsive-text">&copy; 2023 StyleCart. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script>
-        // Category navigation functionality
-        document.querySelectorAll('.category-nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.category-nav-item').forEach(i => {
-                    i.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
 
-        // Shop now button functionality
-        document.querySelectorAll('.category-card button').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const categoryName = this.closest('.category-card').querySelector('h3').textContent;
-                alert(`Navigating to ${categoryName}...`);
-            });
-        });
+<script>
+    // Mobile menu toggle
+    document.getElementById('mobileMenuButton').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('active');
+    });
 
-        // Subcategory card functionality
-        document.querySelectorAll('.subcategory-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const subcategoryName = this.querySelector('h4').textContent;
-                alert(`Showing products for ${subcategoryName}`);
-            });
-        });
+    // Wishlist functionality
+    function toggleWishlist(button, productId) {
+        const icon = button.querySelector('i');
+        button.classList.toggle('active');
 
-        // Search functionality
-        document.querySelector('input[placeholder="Search categories..."]').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                alert(`Searching for: ${this.value}`);
+        if (button.classList.contains('active')) {
+            icon.classList.remove('far', 'fa-heart');
+            icon.classList.add('fas', 'fa-heart', 'text-red-500');
+            // Update wishlist count
+            updateWishlistCount(1);
+        } else {
+            icon.classList.remove('fas', 'fa-heart', 'text-red-500');
+            icon.classList.add('far', 'fa-heart');
+            // Update wishlist count
+            updateWishlistCount(-1);
+        }
+
+        // Here you would typically make an AJAX call to your backend
+        console.log('Toggled wishlist for product:', productId);
+    }
+
+    // Update wishlist count
+    function updateWishlistCount(change) {
+        const wishlistCountElement = document.getElementById('wishlist-count');
+        if (wishlistCountElement) {
+            let currentCount = parseInt(wishlistCountElement.textContent) || 0;
+            currentCount += change;
+            wishlistCountElement.textContent = currentCount;
+
+            // Show/hide the count badge
+            if (currentCount <= 0) {
+                wishlistCountElement.style.display = 'none';
+            } else {
+                wishlistCountElement.style.display = 'flex';
             }
-        });
-    </script>
+        }
+    }
+
+    // Add to cart functionality
+    function addToCart(productId) {
+        // Update cart count
+        updateCartCount(1);
+
+        // Here you would typically make an AJAX call to your backend
+        console.log('Added to cart:', productId);
+
+        // Optional: Show a success message or animation
+        const button = event.target.closest('.add-to-cart-btn');
+        if (button) {
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check text-[10px] sm:text-xs"></i> Added!';
+            button.classList.remove('bg-gray-900', 'hover:bg-purple-600');
+            button.classList.add('bg-green-600', 'hover:bg-green-700');
+
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('bg-green-600', 'hover:bg-green-700');
+                button.classList.add('bg-gray-900', 'hover:bg-purple-600');
+            }, 2000);
+        }
+    }
+
+    // Update cart count
+    function updateCartCount(change) {
+        const cartCountElement = document.getElementById('cart-count');
+        if (cartCountElement) {
+            let currentCount = parseInt(cartCountElement.textContent) || 0;
+            currentCount += change;
+            cartCountElement.textContent = currentCount;
+        }
+    }
+</script>
 </body>
 </html>

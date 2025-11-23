@@ -3,85 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Successful | CartVerse</title>
+    <title>Order Successful | StyleCart</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         @keyframes pop {
             0% { transform: scale(0.5); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
 
-<div class="flex justify-center items-center min-h-screen">
-    <div class="bg-white shadow-xl rounded-xl p-10 w-full max-w-2xl">
+<div class="flex justify-center items-center min-h-screen py-8">
+    <div class="bg-white shadow-lg rounded-xl p-6 w-full max-w-md mx-4" style="animation: fadeIn 0.6s ease;">
 
         <!-- Success Icon -->
-        <div class="flex justify-center mb-6">
-            <div class="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center text-4xl font-bold"
+        <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold"
                  style="animation: pop 0.5s ease;">
-                ✓
+                <i class="fas fa-check"></i>
             </div>
         </div>
 
         <!-- Success Message -->
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Order Placed Successfully!</h1>
-        <p class="text-center text-gray-600 mb-8">
-            Thank you for shopping with us. Your order has been confirmed.
+        <h1 class="text-xl font-bold text-center text-gray-800 mb-2">Order Confirmed!</h1>
+        <p class="text-center text-gray-600 text-sm mb-6">
+            Thank you for your purchase. Your order is being processed.
         </p>
 
         <!-- Order Details Card -->
-        <div class="bg-gray-50 p-6 rounded-lg border mb-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">Order Details</h2>
+        <div class="bg-gray-50 p-4 rounded-lg border mb-5 text-sm">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="font-semibold text-gray-800">Order Summary</h2>
+                <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">#{{ order.id }}</span>
+            </div>
 
-            <p><span class="font-semibold">Order ID:</span> {{ order.id }}</p>
-            <p><span class="font-semibold">Order Date:</span> {{ order.order_date }}</p>
-            <p><span class="font-semibold">Total Amount:</span> ₹{{ order.total_amount }}</p>
+            <div class="space-y-2 text-xs">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Date:</span>
+                    <span class="font-medium">{{ order.order_date|date:"M d, Y" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Total:</span>
+                    <span class="font-bold text-green-600">₹{{ order.total_amount }}</span>
+                </div>
+            </div>
 
-            <hr class="my-4">
-
-            <h3 class="text-lg font-semibold mb-2 text-gray-800">Shipping Address</h3>
-            <p class="text-gray-700">
-                {{ order.address.full_name }}<br>
-                {{ order.address.address_line1 }}<br>
-                {% if order.address.address_line2 %}
-                {{ order.address.address_line2 }}<br>
-                {% endif %}
-                {{ order.address.city }}, {{ order.address.state }} - {{ order.address.pincode }}<br>
-                {{ order.address.country }}<br>
-                Phone: {{ order.address.phone }}
-            </p>
-
-            <hr class="my-4">
+            <!-- Shipping Address -->
+            <div class="mt-4 pt-3 border-t border-gray-200">
+                <h3 class="font-semibold text-gray-800 text-xs mb-2">SHIPPING TO</h3>
+                <p class="text-xs text-gray-700">
+                    {{ order.address.full_name }}<br>
+                    {{ order.address.address_line1 }}<br>
+                    {% if order.address.address_line2 %}
+                    {{ order.address.address_line2 }}<br>
+                    {% endif %}
+                    {{ order.address.city }}, {{ order.address.pincode }}
+                </p>
+            </div>
 
             <!-- Ordered Items -->
-            <h3 class="text-lg font-semibold mb-3">Items</h3>
-
-            {% for item in order.orderitem_set.all %}
-            <div class="flex justify-between bg-white p-3 rounded-md border mb-2">
-                <p>{{ item.product.product_name }} (x{{ item.quantity }})</p>
-                <p>₹{{ item.price }}</p>
+            <div class="mt-4 pt-3 border-t border-gray-200">
+                <h3 class="font-semibold text-gray-800 text-xs mb-2">ITEMS ({{ order.orderitem_set.all|length }})</h3>
+                <div class="space-y-2 max-h-24 overflow-y-auto">
+                    {% for item in order.orderitem_set.all %}
+                    <div class="flex justify-between text-xs bg-white p-2 rounded border">
+                        <span class="truncate mr-2">{{ item.product.product_name }}</span>
+                        <div class="flex items-center space-x-2 flex-shrink-0">
+                            <span class="text-gray-500 text-xs">x{{ item.quantity }}</span>
+                            <span class="font-medium">₹{{ item.price }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-            {% endfor %}
         </div>
 
         <!-- Buttons -->
-        <div class="flex gap-4">
+        <div class="flex flex-col sm:flex-row gap-3">
             <a href="{% url 'user_home' %}"
-               class="w-1/2 text-center bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
-                Continue Shopping
+               class="flex-1 text-center bg-purple-600 text-white py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition text-sm flex items-center justify-center gap-2">
+                <i class="fas fa-shopping-bag text-xs"></i>
+                Shop More
             </a>
 
-            <a href="}"
-               class="w-1/2 text-center bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition">
-                View Orders
+            <a href="{% url 'order_item' %}"
+               class="flex-1 text-center bg-gray-200 text-gray-800 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition text-sm flex items-center justify-center gap-2">
+                <i class="fas fa-clipboard-list text-xs"></i>
+                My Orders
             </a>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="mt-4 text-center">
+            <p class="text-xs text-gray-500">
+                Confirmation email sent to your registered email address
+            </p>
         </div>
 
     </div>
 </div>
+
+<script>
+    // Add some interactive effects
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('a');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-1px)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
 
 </body>
 </html>

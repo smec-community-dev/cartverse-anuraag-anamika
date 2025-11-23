@@ -3,71 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wishlist - StyleCart</title>
+    <title>Order History | StyleCart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* Dropdown transition styles */
+        /* Custom Styles from the first block */
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-shipped { background-color: #dbeafe; color: #1e40af; }
+        .status-delivered { background-color: #d1fae5; color: #065f46; }
+        .status-cancelled { background-color: #fecaca; color: #991b1b; }
+
+        .order-card { transition: all 0.3s ease; }
+        .order-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+
+        /* Custom Styles for Nav/Footer */
+        .responsive-text { /* Optional utility for text scaling, though not strictly required with existing classes */ }
+
         .dropdown-menu {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
             position: absolute;
             right: 0;
             top: 100%;
-            width: 14rem;
+            margin-top: 0.5rem;
+            width: 12rem; /* Adjusted for better responsiveness */
             background-color: white;
             border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             z-index: 50;
-            margin-top: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out, visibility 0.2s;
         }
 
-        .dropdown-menu.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
+        /* Simulating the "hidden" state for the dropdown - assuming JS will toggle a class like 'open' */
+        /* To make it work in static HTML, we'll keep it hidden by default */
+        /* .dropdown-menu.open { opacity: 1; visibility: visible; transform: translateY(0); } */
 
         .dropdown-item {
             display: flex;
             align-items: center;
             padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            color: #374151;
-            transition: background-color 0.2s;
+            font-size: 0.875rem; /* text-sm */
+            color: #4b5563; /* text-gray-700 */
+            transition: background-color 0.15s ease, color 0.15s ease;
         }
 
         .dropdown-item:hover {
-            background-color: #f9fafb;
+            background-color: #f3f4f6; /* hover:bg-gray-100 */
+            color: #6d28d9; /* hover:text-purple-700 */
         }
 
         .mobile-menu {
-            display: none;
+             max-height: 0;
+             overflow: hidden;
+             transition: max-height 0.3s ease-out;
         }
+        .dropdown-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
 
-        .mobile-menu.active {
-            display: block;
-        }
 
-        .tab-active {
-            border-bottom: 3px solid #8b5cf6;
-            color: #8b5cf6;
-            font-weight: 600;
-        }
+        /* Assuming JS will toggle a class like 'open' */
+        /* .mobile-menu.open { max-height: 500px; } */
 
-        /* Line Clamp Utility */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+        /* Keeping dropdowns hidden as no JS is provided to open them */
     </style>
 </head>
-<body class="bg-gray-50 flex flex-col min-h-screen">
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
    <nav class="bg-white shadow-md sticky top-0 z-40">
         <div class="container mx-auto px-3 sm:px-4">
             <div class="flex justify-between items-center h-14 sm:h-16">
@@ -176,110 +185,151 @@
 
     </nav>
 
+    <main class="container mx-auto px-4 py-8 flex-grow">
 
-    <div class="container mx-auto px-3 sm:px-4 py-8 max-w-7xl flex-grow">
-        <div class="mb-8 text-center sm:text-left">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">My Wishlist</h1>
-            <p class="text-gray-600 text-sm sm:text-base">Your saved items for later</p>
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Your Orders</h1>
+            <p class="text-gray-600">View and manage all your orders</p>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-            <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
-                <button class="px-6 py-4 tab-active whitespace-nowrap">All Items</button>
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="flex flex-wrap gap-2">
+
+                <a href="?status="
+                   class="px-4 py-2 rounded-lg font-medium
+                   {% if not selected_status %}bg-purple-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+                    All
+                </a>
+
+                <a href="?status=Pending"
+                   class="px-4 py-2 rounded-lg font-medium
+                   {% if selected_status == 'Pending' %}bg-purple-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+                    Pending
+                </a>
+
+                <a href="?status=Shipped"
+                   class="px-4 py-2 rounded-lg font-medium
+                   {% if selected_status == 'Shipped' %}bg-purple-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+                    Shipped
+                </a>
+
+                <a href="?status=Delivered"
+                   class="px-4 py-2 rounded-lg font-medium
+                   {% if selected_status == 'Delivered' %}bg-purple-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+                    Delivered
+                </a>
+
+                <a href="?status=Cancelled"
+                   class="px-4 py-2 rounded-lg font-medium
+                   {% if selected_status == 'Cancelled' %}bg-purple-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %}">
+                    Cancelled
+                </a>
+
             </div>
+        </div>
 
-            {% if x %}
-            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
-                {% for w in x %}
-                <div class="bg-white rounded-lg shadow-sm hover:shadow-lg transition duration-300 flex flex-col h-full border border-gray-100 group">
+        <div class="space-y-6">
+            {% if orders %}
+                {% for order in orders %}
+                <div class="bg-white rounded-xl shadow order-card">
 
-                    <div class="relative w-full h-40 sm:h-44 md:h-48 lg:h-56 xl:h-64 bg-gray-200 overflow-hidden rounded-t-lg flex-shrink-0">
-                        <img src="{{ w.product.images.first.product_image.url }}"
-                             class="w-full h-full object-cover transition group-hover:scale-105 duration-500"
-                             alt="{{ w.product.product_name }}">
-
-                        <a href="{% url 'remove_wishlist' w.product.slug %}"
-                           class="absolute top-2 sm:top-3 right-2 sm:right-3 bg-white p-1.5 sm:p-2 rounded-full shadow-md w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 flex items-center justify-center hover:bg-red-50 transition-colors"
-                           title="Remove from Wishlist">
-                            <i class="fas fa-heart text-red-500 text-xs sm:text-sm"></i>
-                        </a>
-
-                        {% if w.product.original_price %}
-                            <span class="absolute top-2 sm:top-3 left-2 sm:left-3 bg-red-500 text-white px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-bold uppercase">Sale</span>
-                        {% endif %}
-                    </div>
-
-                    <div class="p-2 sm:p-3 lg:p-4 flex flex-col flex-grow">
-                        <div class="mb-2 sm:mb-3">
-                            <h3 class="font-semibold text-xs sm:text-sm lg:text-base text-gray-800 truncate" title="{{ w.product.product_name }}">
-                                {{ w.product.product_name }}
-                            </h3>
-                            <p class="text-gray-500 text-[10px] sm:text-xs line-clamp-2 mt-1 sm:mt-2 leading-relaxed">
-                                {{ w.product.description|striptags|default:"No description available" }}
-                            </p>
+                    <div class="p-6 border-b flex justify-between items-center flex-wrap gap-4">
+                        <div>
+                            <p class="text-gray-500 text-sm">Order Date</p>
+                            <p class="font-medium">{{ order.order_date }}</p>
                         </div>
 
-                        <div class="mt-auto">
-                            <div class="flex justify-between items-center pt-2 sm:pt-3 border-t border-gray-50">
-                                <div class="flex items-baseline space-x-1 sm:space-x-2">
-                                    <span class="text-purple-700 font-bold text-xs sm:text-sm lg:text-base">₹{{ w.product.price }}</span>
-                                    {% if w.product.original_price %}
-                                        <span class="text-gray-400 line-through text-[10px] sm:text-xs">₹{{ w.product.original_price }}</span>
+                        <div>
+                            <p class="text-gray-500 text-sm">Total</p>
+                            <p class="font-medium">₹{{ order.total_amount }}</p>
+                        </div>
+
+                        <div>
+                            <p class="text-gray-500 text-sm">Order #</p>
+                            <p class="font-medium">{{ order.slug }}</p>
+                        </div>
+
+                        <div>
+                            {% with s=order.items.0.status %}
+                                <span class="status-badge
+                                    {% if order.status == 'Pending' %}status-pending{% endif %}
+                                    {% if order.status == 'Shipped' %}status-shipped{% endif %}
+                                    {% if order.status == 'Delivered' %}status-delivered{% endif %}
+                                    {% if order.status == 'Cancelled' %}status-cancelled{% endif %}
+                                ">
+                                    {{ order.status }}
+                                </span>
+                            {% endwith %}
+                        </div>
+                    </div>
+
+                    <div class="p-6 flex flex-col md:flex-row">
+
+                        <div class="md:w-3/4">
+                            <h3 class="font-semibold text-lg mb-4">Items</h3>
+
+                            {% for item in order.items %}
+                            <div class="flex mb-4 pb-4 {% if not forloop.last %}border-b{% endif %}">
+                                <div class="w-16 h-16 mr-4 flex-shrink-0">
+                                    {% if item.product.images.first %}
+                                        <img src="{{ item.product.images.first.product_image.url }}"
+                                             class="w-full h-full object-cover rounded-lg"
+                                             alt="{{ item.product.product_name }}">
+                                    {% else %}
+                                        <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-box text-gray-400"></i>
+                                        </div>
                                     {% endif %}
                                 </div>
-                                <span class="text-[10px] sm:text-xs font-medium {{ w.product.stock|yesno:'text-green-600,text-red-500' }}">
-                                    {% if w.product.stock > 0 %} In Stock {% else %} Out of Stock {% endif %}
-                                </span>
-                            </div>
 
-                            <div class="grid grid-cols-1 gap-2 sm:gap-3 mt-2 sm:mt-3 lg:mt-4">
-                                <a href="{% url 'single' w.product.slug %}" class="w-full block">
-                                    <button class="w-full bg-gray-100 text-gray-700 py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold hover:bg-gray-200 transition">
-                                        View Details
-                                    </button>
-                                </a>
-
-                                {% if w.product.stock > 0 %}
-                                <a href="{% url 'add_cart' w.product.slug %}" class="w-full block">
-                                    <button class="w-full bg-gray-900 text-white py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold hover:bg-purple-600 transition flex items-center justify-center gap-1 sm:gap-2">
-                                        <i class="fas fa-shopping-cart text-[10px] sm:text-xs"></i> Add to Cart
-                                    </button>
-                                </a>
-                                {% else %}
-                                <button disabled class="w-full bg-gray-300 text-white py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold cursor-not-allowed">
-                                    Out of Stock
-                                </button>
-                                {% endif %}
+                                <div>
+                                    <p class="font-medium">{{ item.product.product_name }}</p>
+                                    <p class="text-sm text-gray-600">Qty: {{ item.quantity }}</p>
+                                    <p class="font-medium text-gray-800">₹{{ item.price }}</p>
+                                </div>
                             </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="md:w-1/4 md:pl-6 md:border-l mt-6 md:mt-0">
+                            <h3 class="font-semibold text-lg mb-4">Actions</h3>
+
+                            {% with s=order.status %}
+                            {% if order.status == "Delivered" %}
+                            {% for item in order.orderitem_set.all %}
+                                <a href="{% url 'add_review' item.product.id %}"
+                                   class="block bg-purple-600 text-white py-2 rounded-lg mb-2 text-center hover:bg-purple-700 transition">
+                                   Write Review
+                                </a>
+                            {% endfor %}
+
+                            {% elif order.status == "Shipped" %}
+
+                            <a href="{% url 'view_detail' order.id %}" class="block bg-gray-200 text-gray-800 py-2 rounded-lg text-center hover:bg-gray-300 transition">View Details</a>
+
+                            {% elif order.status == "Pending" %}
+                            <a href='{% url "cancel_order" order.id  %}' class="block bg-red-600 text-white py-2 rounded-lg mb-2 text-center hover:bg-red-700 transition">Cancel Order</a>
+                            <a href="{% url 'view_detail' order.id %}" class="block bg-gray-200 text-gray-800 py-2 rounded-lg text-center hover:bg-gray-300 transition">View Details</a>
+
+                            {% else %}
+                            <a href="{% url 'view_detail' order.id %}" class="block bg-gray-200 text-gray-800 py-2 rounded-lg text-center hover:bg-gray-300 transition">View Details</a>
+                            {% endif %}
+
+                            {% endwith %}
                         </div>
                     </div>
+
                 </div>
                 {% endfor %}
-            </div>
             {% else %}
-            <div class="text-center py-12">
-                <div class="mb-6">
-                    <i class="fas fa-heart text-gray-300 text-6xl mb-4"></i>
+                <div class="bg-white rounded-xl shadow p-8 text-center">
+                    <h3 class="text-xl font-semibold">No Orders Found</h3>
+                    <p class="text-gray-600">You have not placed any orders yet.</p>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Your wishlist is empty</h3>
-                <p class="text-gray-600 mb-6">Start adding items you love to your wishlist</p>
-                <a href="{% url 'user_home' %}"
-                   class="inline-flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors font-medium">
-                    <i class="fas fa-shopping-bag"></i>
-                    Start Shopping
-                </a>
-            </div>
             {% endif %}
         </div>
 
-        {% if x.has_next %}
-        <div class="text-center mt-8">
-            <button class="bg-white text-purple-600 border border-purple-600 px-8 py-3 rounded-lg hover:bg-purple-50 transition-colors font-medium">
-                Load More
-            </button>
-        </div>
-        {% endif %}
-    </div>
+    </main>
 
     <footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
         <div class="container mx-auto px-3 sm:px-4">
@@ -342,37 +392,33 @@
             </div>
         </div>
     </footer>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mobile Menu Toggle
-            const mobileMenuButton = document.getElementById('mobileMenuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
+    const profileBtn = document.getElementById("profileDropdownButton");
+    const profileMenu = document.getElementById("profileDropdown");
 
-            if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('active');
-                });
-            }
+    profileBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        profileMenu.classList.toggle("open");
+    });
 
-            // Profile Dropdown Toggle
-            const profileButton = document.getElementById('profileDropdownButton');
-            const profileDropdown = document.getElementById('profileDropdown');
+    // close when clicking outside
+    document.addEventListener("click", () => {
+        profileMenu.classList.remove("open");
+    });
 
-            if (profileButton && profileDropdown) {
-                profileButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    profileDropdown.classList.toggle('active');
-                });
+    // Mobile Menu
+    const mobileBtn = document.getElementById("mobileMenuButton");
+    const mobileMenu = document.getElementById("mobileMenu");
 
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!profileButton.contains(e.target) && !profileDropdown.contains(e.target)) {
-                        profileDropdown.classList.remove('active');
-                    }
-                });
-            }
-        });
-    </script>
+    mobileBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("open");
+        mobileMenu.style.maxHeight = mobileMenu.classList.contains("open") ? "500px" : "0px";
+    });
+
+});
+</script>
+
 </body>
 </html>
