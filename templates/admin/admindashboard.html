@@ -69,6 +69,56 @@
             display: none;
         }
 
+        .admin-nav-active {
+            background-color: #f3f4f6;
+            color: #8b5cf6;
+            font-weight: 600;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Chart container responsive */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 position: fixed;
@@ -104,257 +154,332 @@
                 display: block;
             }
         }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 200px;
+            }
+        }
     </style>
 </head>
-<body class="flex">
-    <!-- Sidebar -->
-    <div class="sidebar fixed h-screen overflow-y-auto">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-10">
+<body class="bg-gray-50">
+    <!-- Admin Navigation Header -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo & Admin Badge -->
                 <div class="flex items-center">
-                    <i class="fas fa-shopping-bag text-2xl text-white mr-3"></i>
-                    <span class="text-xl font-bold text-white">StyleCart</span>
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin</span>
                 </div>
-                <button class="text-white lg:hidden" id="closeSidebar">
-                    <i class="fas fa-times"></i>
+
+                <!-- Desktop Admin Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" class="text-purple-600 hover:text-gray-800 font-medium">Dashboard</a>
+                    <a href="/core/users" class="text-gray-800 hover:text-purple-600 font-medium">Users</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Products</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Orders</a>
+                    <a href="#" class="text-gray-800 hover:text-purple-600 font-medium">Sellers</a>
+                </div>
+
+                <!-- Admin Actions -->
+                <div class="flex items-center space-x-6">
+                    <!-- Notification -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                3
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- Admin Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                A
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">Admin User</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">Administrator</p>
+                                <p class="text-sm text-gray-500">Admin Account</p>
+                            </div>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user-shield mr-3 text-gray-400"></i>
+                                Admin Profile
+                            </a>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                Settings
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="/admin/logout/" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-0 z-30 bg-white md:hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin</span>
+                </div>
+                <button id="closeMobileMenu" class="text-gray-500">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
 
-            <div class="mb-8 flex items-center space-x-3 bg-white bg-opacity-10 p-3 rounded-lg">
-                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                    <i class="fas fa-user text-purple-600 text-xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-white font-semibold">Admin User</h3>
-                    <p class="text-white text-opacity-70 text-sm">Administrator</p>
-                </div>
+            <div class="space-y-4">
+                <a href="#" class="block px-4 py-3 text-purple-600 font-medium bg-purple-50 rounded-lg">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="/core/users/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-users mr-3"></i>Users
+                </a>
+                <a href="#" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-box mr-3"></i>Products
+                </a>
+                <a href="#" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-shopping-cart mr-3"></i>Orders
+                </a>
+                <a href="#" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-store mr-3"></i>Sellers
+                </a>
+                <a href="#" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-cog mr-3"></i>Settings
+                </a>
             </div>
 
-            <nav class="space-y-2">
-                <a href="#" class="menu-item active flex items-center p-3 text-white">
-                    <i class="fas fa-chart-pie mr-3"></i>
-                    <span>Dashboard</span>
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center space-x-3 mb-4">
+                    <!-- Notification -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                3
+                            </span>
+                        </a>
+                    </div>
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        A
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">Admin User</p>
+                        <p class="text-sm text-gray-500">Administrator</p>
+                    </div>
+                </div>
+                <a href="/admin/logout/" class="block px-4 py-2 text-red-600 font-medium hover:bg-red-50 rounded-lg">
+                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
                 </a>
-                <a href="#" class="menu-item flex items-center p-3 text-white text-opacity-80">
-                    <i class="fas fa-shopping-cart mr-3"></i>
-                    <span>Orders</span>
-                    <span class="ml-auto bg-white bg-opacity-20 text-xs px-2 py-1 rounded-full">24</span>
-                </a>
-                <a href="#" class="menu-item flex items-center p-3 text-white text-opacity-80">
-                    <i class="fas fa-box mr-3"></i>
-                    <span>Products</span>
-                </a>
-                <a href="#" class="menu-item flex items-center p-3 text-white text-opacity-80">
-                    <i class="fas fa-users mr-3"></i>
-                    <span>Customers</span>
-                </a>
-                <a href="#" class="menu-item flex items-center p-3 text-white text-opacity-80">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    <span>Analytics</span>
-                </a>
-                <a href="#" class="menu-item flex items-center p-3 text-white text-opacity-80">
-                    <i class="fas fa-tags mr-3"></i>
-                    <span>Discounts</span>
-                </a>
-                <a href="#" class="menu-item flex items-center p-3 text-white text-opacity-80">
-                    <i class="fas fa-cog mr-3"></i>
-                    <span>Settings</span>
-                </a>
-            </nav>
-        </div>
-
-        <div class="absolute bottom-0 w-full p-6">
-            <a href="#" class="flex items-center p-3 text-white text-opacity-80 hover:text-opacity-100">
-                <i class="fas fa-sign-out-alt mr-3"></i>
-                <span>Logout</span>
-            </a>
+            </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content flex-1 min-h-screen">
-        <!-- Header -->
-        <header class="header flex items-center justify-between px-6">
-            <div class="flex items-center">
-                <button class="mobile-menu-btn mr-4 text-gray-600 hover:text-purple-600">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <h1 class="text-xl font-semibold text-gray-800">Dashboard</h1>
-            </div>
-
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <button class="text-gray-500 hover:text-purple-600">
-                        <i class="fas fa-bell text-xl"></i>
-                    </button>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">3</span>
-                </div>
-
-                <div class="relative">
-                    <button class="flex items-center space-x-2 text-gray-700">
-                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-purple-600"></i>
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <div class="flex flex-col lg:flex-row gap-8 min-h-screen items-stretch">
+            <!-- Sidebar - Hidden on mobile -->
+            <div class="hidden lg:block w-72">
+                <div class="dashboard-card p-6 h-[700px]">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                            A
                         </div>
-                        <span class="hidden md:block font-medium">Admin</span>
-                        <i class="fas fa-chevron-down text-xs"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content Area -->
-        <main class="p-6">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card card p-6">
-                    <div class="flex justify-between items-start">
                         <div>
-                            <p class="text-white text-opacity-80">Total Revenue</p>
-                            <h3 class="text-2xl font-bold mt-2">$24,580</h3>
-                            <p class="text-white text-opacity-90 text-sm mt-2">
-                                <i class="fas fa-arrow-up mr-1"></i>
-                                <span>12.5% from last month</span>
-                            </p>
-                        </div>
-                        <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                            <i class="fas fa-dollar-sign text-xl"></i>
+                            <h2 class="font-bold text-gray-800">Administrator</h2>
+                            <p class="text-sm text-gray-500 mt-1">Super Admin</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="card p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500">Total Orders</p>
-                            <h3 class="text-2xl font-bold mt-2 text-gray-800">1,248</h3>
-                            <p class="text-gray-500 text-sm mt-2">
-                                <i class="fas fa-arrow-up mr-1 text-green-500"></i>
-                                <span class="text-green-500">8.2% from last month</span>
-                            </p>
-                        </div>
-                        <div class="bg-purple-100 p-3 rounded-lg text-purple-600">
-                            <i class="fas fa-shopping-cart text-xl"></i>
-                        </div>
+                    <div class="space-y-1">
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg admin-nav-active">
+                            <i class="fas fa-tachometer-alt mr-3 text-purple-600"></i>
+                            Dashboard
+                        </a>
+                        <a href="/core/users" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-users mr-3 text-gray-400"></i>
+                            Users
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-box mr-3 text-gray-400"></i>
+                            Products
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
+                            Orders
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-store mr-3 text-gray-400"></i>
+                            Sellers
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-chart-bar mr-3 text-gray-400"></i>
+                            Analytics
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-tags mr-3 text-gray-400"></i>
+                            Discounts
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-cog mr-3 text-gray-400"></i>
+                            Settings
+                        </a>
                     </div>
-                </div>
 
-                <div class="card p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500">Customers</p>
-                            <h3 class="text-2xl font-bold mt-2 text-gray-800">8,642</h3>
-                            <p class="text-gray-500 text-sm mt-2">
-                                <i class="fas fa-arrow-up mr-1 text-green-500"></i>
-                                <span class="text-green-500">5.7% from last month</span>
-                            </p>
-                        </div>
-                        <div class="bg-blue-100 p-3 rounded-lg text-blue-600">
-                            <i class="fas fa-users text-xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-500">Conversion Rate</p>
-                            <h3 class="text-2xl font-bold mt-2 text-gray-800">4.8%</h3>
-                            <p class="text-gray-500 text-sm mt-2">
-                                <i class="fas fa-arrow-down mr-1 text-red-500"></i>
-                                <span class="text-red-500">1.2% from last month</span>
-                            </p>
-                        </div>
-                        <div class="bg-green-100 p-3 rounded-lg text-green-600">
-                            <i class="fas fa-chart-line text-xl"></i>
+                    <!-- Quick Actions -->
+                    <div class="mt-6">
+                        <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-6">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <a href="#" class="flex items-center p-3 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg hover:from-purple-100 hover:to-indigo-100 transition-all">
+                                <i class="fas fa-user-plus text-purple-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-purple-700">Add New User</span>
+                            </a>
+                            <a href="#" class="flex items-center p-3 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-cyan-100 transition-all">
+                                <i class="fas fa-store text-blue-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-blue-700">Manage Sellers</span>
+                            </a>
+                            <a href="#" class="flex items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-all">
+                                <i class="fas fa-chart-line text-green-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-green-700">View Reports</span>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts and Tables Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <!-- Revenue Chart -->
-                <div class="card p-6 col-span-1">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-semibold text-gray-800">Revenue Overview</h2>
-                        <select class="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-200">
-                            <option>Last 7 days</option>
-                            <option>Last 30 days</option>
-                            <option>Last 3 months</option>
-                        </select>
-                    </div>
-                    <div class="h-80">
-                        <canvas id="revenueChart"></canvas>
+            <!-- Main Dashboard Content -->
+            <div class="lg:w-3/4">
+                <!-- Welcome Section -->
+                <div class="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl p-6 text-white mb-8">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold mb-2">Welcome back, Administrator</h1>
+                            <p class="opacity-90">Here's what's happening with your platform today.</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 p-4 rounded-lg hidden sm:block">
+                            <i class="fas fa-shield-alt text-3xl"></i>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Top Products -->
-                <div class="card p-6 col-span-1">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-6">Top Selling Products</h2>
-                    <div class="space-y-4">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                                <i class="fas fa-tshirt text-purple-600"></i>
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                    <div class="stat-card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-white text-opacity-80">Total Revenue</p>
+                                <h3 class="text-2xl font-bold mt-2">{{total_revenue}}</h3>
                             </div>
-                            <div class="flex-1">
-                                <h3 class="font-medium text-gray-800">Classic White Tee</h3>
-                                <p class="text-sm text-gray-500">Men's Fashion</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-gray-800">$29.99</p>
-                                <p class="text-sm text-gray-500">248 sold</p>
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <i class="fas fa-dollar-sign text-xl"></i>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                                <i class="fas fa-shoe-prints text-blue-600"></i>
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500">Total Orders</p>
+                                <h3 class="text-2xl font-bold mt-2 text-gray-800">{{order_count}}</h3>
                             </div>
-                            <div class="flex-1">
-                                <h3 class="font-medium text-gray-800">Urban Sneakers</h3>
-                                <p class="text-sm text-gray-500">Footwear</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-gray-800">$89.99</p>
-                                <p class="text-sm text-gray-500">192 sold</p>
+                            <div class="bg-purple-100 p-3 rounded-lg text-purple-600">
+                                <i class="fas fa-shopping-cart text-xl"></i>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                                <i class="fas fa-vest text-green-600"></i>
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500">Customers</p>
+                                <h3 class="text-2xl font-bold mt-2 text-gray-800">{{customer}}</h3>
                             </div>
-                            <div class="flex-1">
-                                <h3 class="font-medium text-gray-800">Denim Jacket</h3>
-                                <p class="text-sm text-gray-500">Outerwear</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-gray-800">$59.99</p>
-                                <p class="text-sm text-gray-500">164 sold</p>
+                            <div class="bg-blue-100 p-3 rounded-lg text-blue-600">
+                                <i class="fas fa-users text-xl"></i>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
-                                <i class="fas fa-hat-cowboy text-yellow-600"></i>
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500">Conversion Rate</p>
+                                <h3 class="text-2xl font-bold mt-2 text-gray-800">{{conversion_rate}}%</h3>
                             </div>
-                            <div class="flex-1">
-                                <h3 class="font-medium text-gray-800">Summer Hat</h3>
-                                <p class="text-sm text-gray-500">Accessories</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-gray-800">$24.99</p>
-                                <p class="text-sm text-gray-500">138 sold</p>
+                            <div class="bg-green-100 p-3 rounded-lg text-green-600">
+                                <i class="fas fa-chart-line text-xl"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Recent Orders and Activity -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Recent Orders -->
-                <div class="card p-6">
+                <!-- Charts and Tables Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Revenue Chart -->
+                    <div class="dashboard-card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-lg font-semibold text-gray-800">Revenue Overview</h2>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Products -->
+                    <div class="dashboard-card p-6">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-6">Top Selling Products</h2>
+                        <div class="space-y-4">
+                            {% for product in top_products %}
+                            <div class="flex items-center">
+                                <img src="{{ product.images.first.product_image.url }}"
+                                     class="w-12 h-12 rounded-lg mr-4 object-cover"
+                                     alt="{{ product.product_name }}">
+
+                                <div class="flex-1">
+                                    <h3 class="font-medium text-gray-800">{{ product.product_name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ product.subcategory.category.category_name }}</p>
+                                </div>
+
+                                <div class="text-right">
+                                    <p class="font-semibold text-gray-800">{{ product.total_sold }} sold</p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-gray-500">No products sold yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders - Full Width -->
+                <div class="dashboard-card p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-lg font-semibold text-gray-800">Recent Orders</h2>
                         <a href="#" class="text-sm text-purple-600 font-medium">View All</a>
@@ -368,179 +493,204 @@
                                     <th class="pb-3 font-medium">Date</th>
                                     <th class="pb-3 font-medium">Amount</th>
                                     <th class="pb-3 font-medium">Status</th>
+                                    <th class="pb-3 font-medium">Items</th>
+                                    <th class="pb-3 font-medium">Payment</th>
                                 </tr>
                             </thead>
                             <tbody class="text-sm">
+                                {% for order in recent_orders %}
                                 <tr class="border-b border-gray-100">
-                                    <td class="py-4">#SC-4892</td>
-                                    <td class="py-4">John Smith</td>
-                                    <td class="py-4">12 Nov, 2023</td>
-                                    <td class="py-4">$128.50</td>
+                                    <td class="py-4">#SC-{{ order.id }}</td>
+                                    <td class="py-4">{{ order.user.username }}</td>
+                                    <td class="py-4">{{ order.order_date|date:"d M, Y" }}</td>
+                                    <td class="py-4">₹{{ order.total_amount }}</td>
                                     <td class="py-4">
-                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Delivered</span>
+                                        {% with item=order.orderitem_set.first %}
+                                            {% if item %}
+                                                <span class="px-2 py-1 rounded-full text-xs
+                                                    {% if item.status == 'Delivered' %} bg-green-100 text-green-800
+                                                    {% elif item.status == 'Shipped' %} bg-blue-100 text-blue-800
+                                                    {% elif item.status == 'Pending' %} bg-yellow-100 text-yellow-800
+                                                    {% elif item.status == 'Cancelled' %} bg-red-100 text-red-800
+                                                    {% endif %}
+                                                ">
+                                                    {{ item.status }}
+                                                </span>
+                                            {% else %}
+                                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">N/A</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td class="py-4">{{ order.orderitem_set.count }} items</td>
+                                    <td class="py-4">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Paid</span>
                                     </td>
                                 </tr>
-                                <tr class="border-b border-gray-100">
-                                    <td class="py-4">#SC-4891</td>
-                                    <td class="py-4">Sarah Johnson</td>
-                                    <td class="py-4">11 Nov, 2023</td>
-                                    <td class="py-4">$89.99</td>
-                                    <td class="py-4">
-                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Processing</span>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-gray-100">
-                                    <td class="py-4">#SC-4890</td>
-                                    <td class="py-4">Michael Brown</td>
-                                    <td class="py-4">10 Nov, 2023</td>
-                                    <td class="py-4">$245.75</td>
-                                    <td class="py-4">
-                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Shipped</span>
-                                    </td>
-                                </tr>
+                                {% empty %}
                                 <tr>
-                                    <td class="py-4">#SC-4889</td>
-                                    <td class="py-4">Emily Davis</td>
-                                    <td class="py-4">9 Nov, 2023</td>
-                                    <td class="py-4">$67.25</td>
-                                    <td class="py-4">
-                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Delivered</span>
-                                    </td>
+                                    <td colspan="7" class="py-4 text-center text-gray-500">No recent orders</td>
                                 </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-
-                <!-- Recent Activity -->
-                <div class="card p-6">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-6">Recent Activity</h2>
-                    <div class="space-y-4">
-                        <div class="flex">
-                            <div class="mr-4">
-                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-shopping-cart text-purple-600"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-gray-800">
-                                    <span class="font-medium">New order</span> #SC-4892 placed
-                                </p>
-                                <p class="text-gray-500 text-sm">2 hours ago</p>
-                            </div>
-                        </div>
-
-                        <div class="flex">
-                            <div class="mr-4">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user-plus text-green-600"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-gray-800">
-                                    <span class="font-medium">42 new customers</span> registered
-                                </p>
-                                <p class="text-gray-500 text-sm">5 hours ago</p>
-                            </div>
-                        </div>
-
-                        <div class="flex">
-                            <div class="mr-4">
-                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-box text-blue-600"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-gray-800">
-                                    <span class="font-medium">Product "Urban Sneakers"</span> is low in stock
-                                </p>
-                                <p class="text-gray-500 text-sm">Yesterday</p>
-                            </div>
-                        </div>
-
-                        <div class="flex">
-                            <div class="mr-4">
-                                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-tags text-yellow-600"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-gray-800">
-                                    <span class="font-medium">New promotion</span> "Black Friday" created
-                                </p>
-                                <p class="text-gray-500 text-sm">2 days ago</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </main>
+        </div>
     </div>
 
-    <!-- Mobile Overlay -->
-    <div class="overlay" id="overlay"></div>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">Smeclabs,Kochi,Kerala</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+91 6282144992</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    {{ chart_labels|json_script:"labelsData" }}
+    {{ chart_data|json_script:"chartData" }}
 
     <script>
-        // Mobile menu toggle
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.add('active');
-            document.querySelector('.overlay').classList.add('active');
-        });
+        // Mobile Menu Functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
 
-        document.querySelector('#closeSidebar').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.remove('active');
-            document.querySelector('.overlay').classList.remove('active');
-        });
+        if (mobileMenuButton && closeMobileMenu && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.add('active');
+            });
 
-        document.querySelector('#overlay').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.remove('active');
-            this.classList.remove('active');
-        });
+            closeMobileMenu.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                    mobileMenu.classList.remove('active');
+                }
+            });
+        }
 
         // Revenue Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        const revenueChart = new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [{
-                    label: 'Revenue',
-                    data: [12000, 19000, 15000, 25000, 22000, 30000, 28000, 26000, 21000, 24000, 23000, 24580],
-                    borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+        const labelsData = document.getElementById("labelsData");
+        const chartData = document.getElementById("chartData");
+
+        if (labelsData && chartData) {
+            const labels = JSON.parse(labelsData.textContent);
+            const dataPoints = JSON.parse(chartData.textContent);
+
+            const revenueCtx = document.getElementById("revenueChart").getContext("2d");
+
+            const revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: dataPoints,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139,92,246,0.2)',
+                        fill: true,
+                        borderWidth: 3,
+                        tension: 0.4
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            drawBorder: false
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value/1000 + 'k';
-                            }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
                         }
                     },
-                    x: {
-                        grid: {
-                            display: false
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
     </script>
 </body>
 </html>
