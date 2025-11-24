@@ -90,6 +90,10 @@ SOCIALACCOUNT_PROVIDERS = {
             "client_id": os.getenv("GOOGLE_CLIENT_ID"),
             "secret": os.getenv("GOOGLE_CLIENT_SECRET"),
             "key": ""
+        },
+        "OAUTH_PKCE_ENABLED": True,
+        "AUTH_PARAMS": {
+            "prompt": "select_account"
         }
     }
 }
