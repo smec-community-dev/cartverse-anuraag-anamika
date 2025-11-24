@@ -4,20 +4,16 @@ from seller.models import Seller
 
 @receiver(user_signed_up)
 def create_seller_for_social_account(request, user, **kwargs):
-    # if request.session  and request.session['role']:
-    #     user.role = request.session['role']
-    # else:
-    #     user.role = "user"
+    # READ ROLE SAFELY FROM GET PARAM
     role = request.GET.get("role", "customer")
-    user.role=role
 
-    # Mark role as seller
-
+    # Assign user role
+    user.role = role
     user.save()
 
-    # Create linked seller profile
-    if not Seller.objects.filter(user=user).exists() :
-        Seller.objects.create(
+    # If seller, create seller profile
+    if role == "seller":
+        Seller.objects.get_or_create(
             user=user,
-            shop_name=f"{user.username}'s Shop"
+            defaults={"shop_name": f"{user.username}'s Shop"}
         )
