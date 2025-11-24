@@ -12,6 +12,7 @@ from django.db.models import Q
 
 
 def user_register(request):
+    request.session['role'] = 'user'
     if request.method=='POST':
         email=request.POST.get('email')
         password=request.POST.get('password')
@@ -44,6 +45,7 @@ def user_register(request):
     return render(request,'user/register.html')
 
 def user_login(request):
+    request.session['role'] = 'user'
     if request.method=='POST':
         username=request.POST.get('username')
         password=request.POST.get('password')

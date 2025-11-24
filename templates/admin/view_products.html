@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Management - StyleCart Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-nav-active {
+            background-color: #f3f4f6;
+            color: #8b5cf6;
+            font-weight: 600;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Status badges */
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-outofstock {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-lowstock {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Category badges */
+        .category-fashion {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .category-electronics {
+            background-color: #f0fdf4;
+            color: #166534;
+        }
+
+        .category-home {
+            background-color: #fef7cd;
+            color: #92400e;
+        }
+
+        .category-beauty {
+            background-color: #fce7f3;
+            color: #be185d;
+        }
+
+        .category-sports {
+            background-color: #eff6ff;
+            color: #1e40af;
+        }
+
+        /* Table responsive */
+        @media (max-width: 768px) {
+            .table-responsive {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        /* Product details animation */
+        .product-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .product-details.open {
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Admin Navigation Header -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo & Admin Badge -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin</span>
+                </div>
+
+                <!-- Desktop Admin Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="/admin/dashboard/" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
+                    <a href="/admin/users/" class="text-gray-800 hover:text-purple-600 font-medium">Users</a>
+                    <a href="/admin/products/" class="text-purple-600 hover:text-gray-800 font-medium">Products</a>
+                    <a href="/admin/orders/" class="text-gray-800 hover:text-purple-600 font-medium">Orders</a>
+                    <a href="/admin/sellers/" class="text-gray-800 hover:text-purple-600 font-medium">Sellers</a>
+                </div>
+
+                <!-- Admin Actions -->
+                <div class="flex items-center space-x-6">
+                    <!-- Notification -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                3
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- Admin Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                A
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">Admin User</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">Administrator</p>
+                                <p class="text-sm text-gray-500">Admin Account</p>
+                            </div>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user-shield mr-3 text-gray-400"></i>
+                                Admin Profile
+                            </a>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                Settings
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="/admin/logout/" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <div class="md:hidden fixed top-4 left-4 z-50">
+        <button id="mobileMenuButton" class="bg-white p-2 rounded-md shadow-md">
+            <i class="fas fa-bars text-gray-700"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-0 z-30 bg-white md:hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin</span>
+                </div>
+                <button id="closeMobileMenu" class="text-gray-500">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <a href="/core/dashboard/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="/core/users/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-users mr-3"></i>Users
+                </a>
+                <a href="/core/products/" class="block px-4 py-3 text-purple-600 font-medium bg-purple-50 rounded-lg">
+                    <i class="fas fa-box mr-3"></i>Products
+                </a>
+                <a href="/core/orders/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-shopping-cart mr-3"></i>Orders
+                </a>
+                <a href="/core/sellers/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-store mr-3"></i>Sellers
+                </a>
+                <a href="#" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-cog mr-3"></i>Settings
+                </a>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center space-x-3 mb-4">
+                    <!-- Notification -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                3
+                            </span>
+                        </a>
+                    </div>
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        A
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">Admin User</p>
+                        <p class="text-sm text-gray-500">Administrator</p>
+                    </div>
+                </div>
+                <a href="/admin/logout/" class="block px-4 py-2 text-red-600 font-medium hover:bg-red-50 rounded-lg">
+                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <div class="flex flex-col lg:flex-row gap-8 min-h-screen items-stretch">
+            <!-- Sidebar - Hidden on mobile -->
+            <div class="hidden lg:block w-72">
+                <div class="dashboard-card p-6 h-[700px]">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                            A
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-gray-800">Administrator</h2>
+                            <p class="text-sm text-gray-500 mt-1">Super Admin</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <a href="/core/dashboard/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-tachometer-alt mr-3 text-gray-400"></i>
+                            Dashboard
+                        </a>
+                        <a href="/core/users/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-users mr-3 text-gray-400"></i>
+                            Users
+                        </a>
+                        <a href="/core/products/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg admin-nav-active">
+                            <i class="fas fa-box mr-3 text-purple-600"></i>
+                            Products
+                        </a>
+                        <a href="/core/orders/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
+                            Orders
+                        </a>
+                        <a href="/core/sellers/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-store mr-3 text-gray-400"></i>
+                            Sellers
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-chart-bar mr-3 text-gray-400"></i>
+                            Analytics
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-tags mr-3 text-gray-400"></i>
+                            Discounts
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-cog mr-3 text-gray-400"></i>
+                            Settings
+                        </a>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="mt-6">
+                        <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-6">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <a href="#" class="flex items-center p-3 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg hover:from-purple-100 hover:to-indigo-100 transition-all">
+                                <i class="fas fa-plus-circle text-purple-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-purple-700">Add Product</span>
+                            </a>
+                            <a href="#" class="flex items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-all">
+                                <i class="fas fa-chart-line text-green-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-green-700">Product Analytics</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="lg:w-3/4">
+                <!-- Header Section -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800 mb-2">Products Management</h1>
+                        <nav class="flex" aria-label="Breadcrumb">
+                            <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                                <li><a href="/core/dashboard/" class="hover:text-purple-600">Dashboard</a></li>
+                                <li><i class="fas fa-chevron-right text-xs"></i></li>
+                                <li class="text-gray-800">Products</li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                    <div class="dashboard-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Products</p>
+                                <p class="text-2xl font-bold text-gray-800">{{total_products}}</p>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-lg">
+                                <i class="fas fa-box text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600">Active Products</p>
+                                <p class="text-2xl font-bold text-gray-800">{{active_products}}</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600">Low Stock</p>
+                                <p class="text-2xl font-bold text-gray-800">{{low_stock}}</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-lg">
+                                <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm text-gray-600">Out of Stock</p>
+                                <p class="text-2xl font-bold text-gray-800">{{out_of_stock}}</p>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-lg">
+                                <i class="fas fa-times-circle text-red-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters and Search Section -->
+                <div class="dashboard-card p-6 mb-8">
+
+    <form method="GET" class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 w-full">
+
+        <h2 class="text-lg font-semibold text-gray-800">Filter Products</h2>
+
+        <div class="flex flex-col sm:flex-row gap-4 w-full">
+
+            <!-- Search -->
+            <div class="relative">
+                <input type="text" name="search" value="{{ search }}"
+                    placeholder="Search by product name or slug"
+                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg
+                           focus:ring-2 focus:ring-purple-200 focus:border-purple-500 w-full sm:w-64">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+
+            <!-- Status Filter -->
+            <select name="status" onchange="this.form.submit()"
+                class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none">
+                <option value="" {% if not status %}selected{% endif %}>All Status</option>
+                <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
+                <option value="lowstock" {% if status == 'lowstock' %}selected{% endif %}>Low Stock</option>
+                <option value="outofstock" {% if status == 'outofstock' %}selected{% endif %}>Out of Stock</option>
+            </select>
+
+            <!-- Category Filter -->
+            <select name="category" onchange="this.form.submit()"
+                class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}"
+                        {% if category == cat.id|stringformat:'s' %}selected{% endif %}>
+                        {{ cat.category_name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <!-- Seller Filter -->
+            <select name="seller" onchange="this.form.submit()"
+                class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none">
+                <option value="">All Sellers</option>
+                {% for sel in sellers %}
+                    <option value="{{ sel.id }}"
+                        {% if seller == sel.id|stringformat:'s' %}selected{% endif %}>
+                        {{ sel.shop_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+</div>
+
+
+                <!-- Products Table -->
+                <div class="dashboard-card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-semibold text-gray-800">All Products</h2>
+                        <div class="flex space-x-3">
+
+                            <a href="{%url 'admin_products' %}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium flex items-center">
+                                <i class="fas fa-sync-alt mr-2"></i> Refresh
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto table-responsive">
+                        <table class="w-full min-w-max">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">ID</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Image</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Name</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Seller</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Category</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Price</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Stock</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Status</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tbody>
+    {% for product in products %}
+    <tr class="border-b border-gray-100 hover:bg-gray-50 product-row">
+        <td class="py-4 text-sm text-gray-600">#PRD{{ product.id }}</td>
+
+        <td class="py-4">
+            <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden">
+                {% if product.images.all %}
+                    <img src="{{ product.images.first.product_image.url }}"
+                         class="w-full h-full object-cover">
+                {% else %}
+                    <img src="https://placehold.co/100x100" class="w-full h-full object-cover">
+                {% endif %}
+            </div>
+        </td>
+
+        <td class="py-4">
+            <div class="font-medium text-gray-800">{{ product.product_name }}</div>
+            <div class="text-sm text-gray-500">SKU: {{ product.slug }}</div>
+        </td>
+
+        <td class="py-4">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold mr-2">
+                    {{ product.seller.shop_name|slice:":2"|upper }}
+                </div>
+                <span class="text-sm text-gray-700">{{ product.seller.shop_name }}</span>
+            </div>
+        </td>
+
+        <td class="py-4">
+            <span class="px-2 py-1 rounded-full text-xs">
+                {{ product.subcategory.category.category_name }}
+            </span>
+        </td>
+
+        <td class="py-4">
+            <div class="font-semibold text-gray-800">
+                ${{ product.price }}
+            </div>
+        </td>
+
+        <td class="py-4">
+            <div class="text-gray-800">{{ product.stock }}</div>
+        </td>
+
+        <td class="py-4">
+            {% if product.stock == 0 %}
+                <span class="px-2 py-1 rounded-full text-xs status-outofstock">Out of Stock</span>
+            {% elif product.stock <= 10 %}
+                <span class="px-2 py-1 rounded-full text-xs status-lowstock">Low Stock</span>
+            {% else %}
+                <span class="px-2 py-1 rounded-full text-xs status-active">Active</span>
+            {% endif %}
+        </td>
+
+        <td class="py-4">
+            <div class="flex space-x-2">
+                <a href="{% url 'product-detail' product.id %}" class="text-blue-600 hover:text-blue-800 p-1 view-product-details"
+                        title="View Details" data-product-id="{{ product.id }}">
+                    <i class="fas fa-eye"></i>
+                </a>
+
+                <a href="#" class="text-green-600 hover:text-green-800 p-1" title="Edit Product">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                <a href="#" class="text-red-600 hover:text-red-800 p-1" title="Delete Product">
+                    <i class="fas fa-trash"></i>
+                </a>
+
+                <button class="text-purple-600 hover:text-purple-800 p-1 view-seller-info"
+                        data-seller-id="{{ product.seller.id }}">
+                    <i class="fas fa-store"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="10" class="text-center py-6 text-gray-500">
+            No products found.
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="flex justify-between items-center mt-6">
+                        <p class="text-sm text-gray-600">
+    Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} products
+</p>
+
+<div class="flex space-x-2">
+
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 border rounded-md">Previous</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="px-3 py-1 bg-purple-600 text-white rounded-md">{{ num }}</span>
+        {% else %}
+            <a href="?page={{ num }}" class="px-3 py-1 border rounded-md">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 border rounded-md">Next</a>
+    {% endif %}
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="productDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-800">Product Details</h2>
+                    <button id="closeProductModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Product Images -->
+                    <div>
+                        <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                            <img id="modalProductImage" src="" alt="" class="w-full h-64 object-cover rounded-lg">
+                        </div>
+                        <div class="grid grid-cols-4 gap-2">
+                            <div class="bg-gray-200 rounded-lg h-16 cursor-pointer border-2 border-purple-500"></div>
+                            <div class="bg-gray-300 rounded-lg h-16 cursor-pointer"></div>
+                            <div class="bg-gray-400 rounded-lg h-16 cursor-pointer"></div>
+                            <div class="bg-gray-500 rounded-lg h-16 cursor-pointer"></div>
+                        </div>
+                    </div>
+
+                    <!-- Product Information -->
+                    <div>
+                        <h3 id="modalProductName" class="text-2xl font-bold text-gray-800 mb-2"></h3>
+                        <p id="modalProductSKU" class="text-gray-600 mb-4"></p>
+
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Price</span>
+                                <span id="modalProductPrice" class="font-semibold text-gray-800"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Stock</span>
+                                <span id="modalProductStock" class="font-semibold text-gray-800"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Category</span>
+                                <span id="modalProductCategory" class="font-semibold text-gray-800"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subcategory</span>
+                                <span id="modalProductSubcategory" class="font-semibold text-gray-800"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Seller</span>
+                                <span id="modalProductSeller" class="font-semibold text-gray-800"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Status</span>
+                                <span id="modalProductStatus" class="font-semibold text-gray-800"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <h4 class="font-semibold text-gray-800 mb-2">Description</h4>
+                            <p id="modalProductDescription" class="text-gray-600"></p>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                                Edit Product
+                            </button>
+                            <button class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                                Update Stock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seller Info Modal -->
+    <div id="sellerInfoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-800">Seller Information</h2>
+                    <button id="closeSellerModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <div id="sellerAvatar" class="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                    </div>
+                    <div>
+                        <h3 id="sellerShopName" class="text-lg font-bold text-gray-800"></h3>
+                        <p id="sellerUserName" class="text-gray-600"></p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Email</span>
+                        <span id="sellerEmail" class="font-medium text-gray-800"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Phone</span>
+                        <span id="sellerPhone" class="font-medium text-gray-800"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Status</span>
+                        <span id="sellerStatus" class="font-medium text-gray-800"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Verification</span>
+                        <span id="sellerVerification" class="font-medium text-gray-800"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Total Products</span>
+                        <span id="sellerProducts" class="font-medium text-gray-800"></span>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-gray-200 flex justify-end space-x-3">
+                    <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                        View Profile
+                    </button>
+                    <button class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                        Contact Seller
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                        <span class="text-xl font-bold">StyleCart</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
+                            <span class="text-gray-400">Smeclabs,Kochi,Kerala</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">+91 6282144992</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
+                            <span class="text-gray-400">info@stylecart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (mobileMenuButton && closeMobileMenu && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.add('active');
+            });
+
+            closeMobileMenu.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                    mobileMenu.classList.remove('active');
+                }
+            });
+        }
+
+        // Product Details Modal
+        const productDetailsModal = document.getElementById('productDetailsModal');
+        const closeProductModal = document.getElementById('closeProductModal');
+
+        document.querySelectorAll('.view-product-details').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const productRow = this.closest('tr');
+
+                // Get product data from the row
+                const productName = productRow.querySelector('td:nth-child(3) .font-medium').textContent;
+                const productSKU = productRow.querySelector('td:nth-child(3) .text-sm').textContent;
+                const productSeller = productRow.querySelector('td:nth-child(4) .text-sm').textContent;
+                const productCategory = productRow.querySelector('td:nth-child(5) span').textContent;
+                const productSubcategory = productRow.querySelector('td:nth-child(6)').textContent;
+                const productPrice = productRow.querySelector('td:nth-child(7) .font-semibold').textContent;
+                const productStock = productRow.querySelector('td:nth-child(8)').textContent;
+                const productStatus = productRow.querySelector('td:nth-child(9) span').textContent;
+                const productImage = productRow.querySelector('td:nth-child(2) img').src;
+
+                // Populate modal with product data
+                document.getElementById('modalProductName').textContent = productName;
+                document.getElementById('modalProductSKU').textContent = productSKU;
+                document.getElementById('modalProductSeller').textContent = productSeller;
+                document.getElementById('modalProductCategory').textContent = productCategory;
+                document.getElementById('modalProductSubcategory').textContent = productSubcategory;
+                document.getElementById('modalProductPrice').textContent = productPrice;
+                document.getElementById('modalProductStock').textContent = productStock;
+                document.getElementById('modalProductStatus').textContent = productStatus;
+                document.getElementById('modalProductImage').src = productImage;
+                document.getElementById('modalProductDescription').textContent = `This is a detailed description of ${productName}. It includes all the features, specifications, and benefits that customers should know about this product.`;
+
+                // Show modal
+                productDetailsModal.classList.remove('hidden');
+            });
+        });
+
+        closeProductModal.addEventListener('click', function() {
+            productDetailsModal.classList.add('hidden');
+        });
+
+        // Seller Info Modal
+        const sellerInfoModal = document.getElementById('sellerInfoModal');
+        const closeSellerModal = document.getElementById('closeSellerModal');
+
+        document.querySelectorAll('.view-seller-info').forEach(button => {
+            button.addEventListener('click', function() {
+                const sellerId = this.getAttribute('data-seller-id');
+                const sellerRow = this.closest('tr');
+                const sellerShopName = sellerRow.querySelector('td:nth-child(4) .text-sm').textContent;
+                const sellerInitials = sellerRow.querySelector('td:nth-child(4) .rounded-full').textContent;
+
+                // Mock seller data (in real app, this would come from an API)
+                const sellerData = {
+                    1: {
+                        shopName: "Fashion Store",
+                        userName: "John Fashion",
+                        email: "john@fashionstore.com",
+                        phone: "+1 (555) 123-4567",
+                        status: "Active",
+                        verification: "Verified",
+                        products: "248",
+                        color: "bg-green-500"
+                    },
+                    2: {
+                        shopName: "Tech Hub",
+                        userName: "Sarah Tech",
+                        email: "sarah@techhub.com",
+                        phone: "+1 (555) 987-6543",
+                        status: "Active",
+                        verification: "Verified",
+                        products: "156",
+                        color: "bg-blue-500"
+                    },
+                    3: {
+                        shopName: "Home Decor",
+                        userName: "Mike Decor",
+                        email: "mike@homedecor.com",
+                        phone: "+1 (555) 456-7890",
+                        status: "Active",
+                        verification: "Pending",
+                        products: "89",
+                        color: "bg-yellow-500"
+                    },
+                    4: {
+                        shopName: "Beauty Shop",
+                        userName: "Emma Beauty",
+                        email: "emma@beautyshop.com",
+                        phone: "+1 (555) 234-5678",
+                        status: "Active",
+                        verification: "Verified",
+                        products: "312",
+                        color: "bg-pink-500"
+                    }
+                };
+
+                const seller = sellerData[sellerId];
+
+                // Populate modal with seller data
+                document.getElementById('sellerShopName').textContent = seller.shopName;
+                document.getElementById('sellerUserName').textContent = `Managed by ${seller.userName}`;
+                document.getElementById('sellerEmail').textContent = seller.email;
+                document.getElementById('sellerPhone').textContent = seller.phone;
+                document.getElementById('sellerStatus').textContent = seller.status;
+                document.getElementById('sellerVerification').textContent = seller.verification;
+                document.getElementById('sellerProducts').textContent = seller.products;
+
+                const sellerAvatar = document.getElementById('sellerAvatar');
+                sellerAvatar.textContent = sellerInitials;
+                sellerAvatar.className = `w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4 ${seller.color}`;
+
+                // Show modal
+                sellerInfoModal.classList.remove('hidden');
+            });
+        });
+
+        closeSellerModal.addEventListener('click', function() {
+            sellerInfoModal.classList.add('hidden');
+        });
+
+        // Close modals when clicking outside
+        [productDetailsModal, sellerInfoModal].forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+
+        // Filter functionality
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', function() {
+                console.log('Filter applied:', this.value);
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', function() {
+            console.log('Searching for:', this.value);
+        });
+
+        // Export functionality
+        document.querySelector('button:contains("Export")').addEventListener('click', function() {
+            alert('Export functionality would be implemented here');
+        });
+
+        // Refresh functionality
+        document.querySelector('button:contains("Refresh")').addEventListener('click', function() {
+            location.reload();
+        });
+
+        // Add Product functionality
+        document.querySelector('button:contains("Add Product")').addEventListener('click', function() {
+            alert('Add product functionality would be implemented here');
+        });
+    </script>
+</body>
+</html>

@@ -17,6 +17,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 def seller_register(request):
+        request.session['role'] = 'seller'
         if request.method == 'POST':
             username = request.POST.get('username')
             email = request.POST.get('email')
@@ -56,6 +57,7 @@ def seller_register(request):
         return render(request, 'seller/register.html')
 
 def seller_login(request):
+    request.session['role'] ='seller'
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
