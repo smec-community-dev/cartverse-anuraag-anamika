@@ -12,6 +12,14 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from decorators.decorators import role_required
 from django.db.models import Q
+import razorpay
+from django.conf import settings
+
+razorpay_client = razorpay.Client(auth=(
+    settings.RAZORPAY_KEY_ID,
+    settings.RAZORPAY_KEY_SECRET
+))
+
 
 #for user registration
 def user_register(request):
@@ -361,8 +369,16 @@ def update_quantity(request, cart_id):
 
     return redirect("cart")
 
-@role_required('customer','/user/login')
+
 def cart(request):
+    print("=== DEBUG GOOGLE LOGIN ===")
+    print("User:", request.user)
+    print("Authenticated:", request.user.is_authenticated)
+    print("Role:", getattr(request.user, "role", None))
+    print("Customer exists:", Customer.objects.filter(user=request.user).exists())
+    print("==========================")
+    print("User:", request.user)
+    print("Authenticated:", request.user.is_authenticated)
     cart_items = Cart.objects.filter(user=request.user)
 
     total = sum(item.price * item.quantity for item in cart_items)
