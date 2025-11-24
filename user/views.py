@@ -8,11 +8,15 @@ from decorators.decorators import role_required
 from .models import Customer, Wishlist,Cart,Order,OrderItem,Address,Review,ReviewImage
 from core.models import User,Category,SubCategory
 from seller.models import Product,ProductImage
-from django.contrib import messages
 from django.core.paginator import Paginator
 from decorators.decorators import role_required
 from django.db.models import Q
 from django.conf import settings
+import razorpay
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+
 
 
 #for user registration
@@ -367,14 +371,7 @@ def update_quantity(request, cart_id):
 
 @role_required('customer','/user/login')
 def cart(request):
-    print("=== DEBUG GOOGLE LOGIN ===")
-    print("User:", request.user)
-    print("Authenticated:", request.user.is_authenticated)
-    print("Role:", getattr(request.user, "role", None))
-    print("Customer exists:", Customer.objects.filter(user=request.user).exists())
-    print("==========================")
-    print("User:", request.user)
-    print("Authenticated:", request.user.is_authenticated)
+
     cart_items = Cart.objects.filter(user=request.user)
 
     total = sum(item.price * item.quantity for item in cart_items)
@@ -596,7 +593,7 @@ def buy_now(request, slug):
 def order_page_buy_now(request):
     product_id = request.session.get("buy_now_product_id")
     if not product_id:
-        return redirect("shop")
+        return redirect("user_home")
 
     product = Product.objects.get(id=product_id)
 
@@ -619,7 +616,7 @@ def place_order_buy_now(request):
 
         if product.stock < 1:
             messages.error(request, "Out of stock.")
-            return redirect("shop")
+            return redirect("user_home")
 
         order = Order.objects.create(
             user=request.user,
@@ -654,7 +651,7 @@ def order_details(request, order_id):
 @role_required('customer', '/user/login')
 def order_success(request):
     latest_order = Order.objects.filter(user=request.user).order_by('-order_date').first()
-    return render(request, "user/order_success page.html", {"order": latest_order})
+    return render(request, "user/order_success_page.html", {"order": latest_order})
 
 
 
@@ -891,3 +888,98 @@ def delete_account(request):
 
 def contact(request):
     return render(request,'user/contact.html')
+
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+@role_required('customer', '/user/login')
+def create_razorpay_order(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest("POST only")
+
+    # get cart or buy-now logic similar to your place_order view
+    checkout_type = request.POST.get("checkout_type", "cart")  # you will send this from frontend
+    address_id = request.POST.get("address_id")
+    if not address_id:
+        return JsonResponse({"error": "Please select a shipping address."}, status=400)
+
+    if checkout_type == "cart":
+        cart_items = Cart.objects.filter(user=request.user)
+        if not cart_items.exists():
+            return JsonResponse({"error": "Cart empty."}, status=400)
+        total_amount = sum(item.price * int(request.POST.get(f"quantities[{item.id}]", item.quantity)) for item in cart_items)
+    else:  # buynow
+        product_id = request.session.get("buy_now_product_id")
+        product = get_object_or_404(Product, id=product_id)
+        total_amount = product.price
+
+    # create Django Order in DB with Pending/Unpaid status
+    order = Order.objects.create(user=request.user, total_amount=total_amount, address_id=address_id)
+
+    # attach OrderItems now (or alternatively create after payment)
+    if checkout_type == "cart":
+        for item in cart_items:
+            qty = int(request.POST.get(f'quantities[{item.id}]', item.quantity))
+            OrderItem.objects.create(order=order, product=item.product, quantity=qty, price=item.price)
+            # optionally reduce stock now or after payment - here I recommend reduce after success,
+            # but if you want to reserve, reduce now and mark reserved.
+    else:
+        OrderItem.objects.create(order=order, product=product, quantity=1, price=product.price)
+
+    # Razorpay wants amount in paise (1 INR = 100 paise)
+    amount_paise = int(total_amount * 100)
+
+    # create Razorpay order (server-side)
+    razorpay_order = razorpay_client.order.create({
+        "amount": amount_paise,
+        "currency": "INR",
+        "receipt": str(order.id),
+        "payment_capture": 1  # auto-capture
+    })
+
+    return JsonResponse({
+        "razorpay_order_id": razorpay_order['id'],
+        "order_id": order.id,
+        "amount": amount_paise,
+        "currency": "INR",
+        "key": settings.RAZORPAY_KEY_ID
+    })
+
+@csrf_exempt
+def verify_payment(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest("POST only")
+
+    data = request.POST
+    razorpay_payment_id = data.get('razorpay_payment_id')
+    razorpay_order_id = data.get('razorpay_order_id')
+    razorpay_signature = data.get('razorpay_signature')
+    order_id = data.get('order_id')  # your DB order id
+
+    # verify signature
+    params_dict = {
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_payment_id': razorpay_payment_id,
+        'razorpay_signature': razorpay_signature
+    }
+
+    try:
+        # This will raise razorpay.errors.SignatureVerificationError if invalid
+        razorpay_client.utility.verify_payment_signature(params_dict)
+    except Exception as e:
+        # invalid signature
+        return JsonResponse({"status": "error", "message": "Signature verification failed."}, status=400)
+
+    # signature valid — mark order paid
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order.status = "Paid"
+    order.payment_id = razorpay_payment_id  # if you have a field to store payment id
+    order.save()
+
+    # reduce stock now (if you didn't earlier) and clear cart
+    for item in OrderItem.objects.filter(order=order):
+        product = item.product
+        product.stock -= item.quantity
+        product.save()
+    Cart.objects.filter(user=request.user).delete()
+
+    return JsonResponse({"status": "success", "redirect_url": "/user/order_success/"})

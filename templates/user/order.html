@@ -13,44 +13,76 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Header dropdown styles */
         .dropdown-menu {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-5px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;                 /* hidden by default */
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    z-index: 100;
+    padding: 0.5rem 0;
+    border: 1px solid #f3f4f6;
+    transform-origin: top right;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+    opacity: 0;
+    transform: translateY(-6px);
+}
+
+/* visible state controlled by JS by toggling 'open' class */
+.dropdown-menu.open {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* keep dropdown-item styling as before */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    color: #4b5563;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f3ff;
+    color: #6d28d9;
+}
+
+
+        /* Payment method radio styles */
+        .address-option-container input[type="radio"] {
             position: absolute;
-            right: 0;
-            top: 100%;
-            background-color: white;
-            min-width: 200px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            opacity: 0;
+        }
+
+        .address-content-box {
+            border: 2px solid #e5e7eb;
             border-radius: 8px;
-            z-index: 100;
-            padding: 0.5rem 0;
-            border: 1px solid #f3f4f6;
+            padding: 12px 16px;
+            transition: all 0.2s ease;
         }
 
-        .dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        .address-option-container input[type="radio"]:checked + .address-content-box {
+            border-color: #6d28d9;
+            background-color: #faf5ff;
         }
 
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 0.6rem 1rem;
-            color: #4b5563;
-            text-decoration: none;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f5f3ff;
+        .address-option-container input[type="radio"]:checked + .address-content-box .radio-icon {
             color: #6d28d9;
         }
+
+        .radio-icon {
+            color: #d1d5db;
+            transition: color 0.2s ease;
+        }
+
+
 
         .dropdown-divider {
             height: 1px;
@@ -95,13 +127,29 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
         }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .mobile-stack {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .mobile-padding {
+                padding: 1rem;
+            }
+
+            .mobile-text-center {
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
 
     <!-- Updated Header -->
-      <nav class="bg-white shadow-md sticky top-0 z-40">
+    <nav class="bg-white shadow-md sticky top-0 z-40">
         <div class="container mx-auto px-3 sm:px-4">
             <div class="flex justify-between items-center h-14 sm:h-16">
                 <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
@@ -117,7 +165,6 @@
                 </div>
 
                 <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
-
                     <div class="relative">
                         <a href="{% url 'wishlist' %}" class="text-gray-700 hover:text-purple-600 transition relative flex items-center">
                             <i class="fas fa-heart text-lg sm:text-xl"></i>
@@ -204,40 +251,34 @@
                 {% endif %}
             </div>
         </div>
-
-
-
     </nav>
-
-
 
     <!-- Main Content -->
     <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow">
-        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Complete Your Order</h1>
+        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6 mobile-text-center">Complete Your Order</h1>
 
         <!-- ⭐ FORM ACTION BASED ON CHECKOUT TYPE -->
-        {% if checkout_type == "buynow" %}
-            <form method="POST" action="{% url 'place_order_buy_now' %}">
-        {% else %}
-            <form method="POST" action="{% url 'place_order' %}">
-        {% endif %}
-            {% csrf_token %}
+        <!-- ⭐ FORM WITHOUT ACTION (JS will handle submit) -->
+<form method="POST" id="orderForm">
+    {% csrf_token %}
+
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column - Order Items, Shipping, Payment -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- ⭐ PRODUCT SECTION (Cart or BuyNow) -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 order-item">
+                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 order-item">
                         <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Items</h2>
 
                         {% if checkout_type == "cart" %}
                             <!-- CART ITEMS -->
                             {% for item in cart_items %}
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-b-0">
-                                <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
+                                <div class="flex items-start space-x-3 sm:space-x-4 mb-3 sm:mb-0 flex-1">
                                     <img src="{{ item.product.images.first.product_image.url }}"
                                          class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
-                                    <div class="flex-1">
-                                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ item.product.product_name }}</h3>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base truncate">{{ item.product.product_name }}</h3>
                                         <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ item.product.stock }}</p>
 
                                         <div class="flex items-center mt-2">
@@ -251,7 +292,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="font-bold text-gray-900 text-base sm:text-lg">₹{{ item.price }}</div>
+                                <div class="font-bold text-gray-900 text-base sm:text-lg ml-16 sm:ml-0 mt-2 sm:mt-0">₹{{ item.price }}</div>
                             </div>
                             {% endfor %}
                         {% endif %}
@@ -259,27 +300,27 @@
                         {% if checkout_type == "buynow" %}
                             <!-- BUY NOW PRODUCT ONLY -->
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
-                                <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
+                                <div class="flex items-start space-x-3 sm:space-x-4 mb-3 sm:mb-0 flex-1">
                                     <img src="{{ product.images.first.product_image.url }}"
                                          class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
-                                    <div class="flex-1">
-                                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ product.product_name }}</h3>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base truncate">{{ product.product_name }}</h3>
                                         <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ product.stock }}</p>
                                     </div>
                                 </div>
-                                <div class="font-bold text-gray-900 text-base sm:text-lg">₹{{ product.price }}</div>
+                                <div class="font-bold text-gray-900 text-base sm:text-lg ml-16 sm:ml-0 mt-2 sm:mt-0">₹{{ product.price }}</div>
                                 <!-- hidden quantity (always 1) -->
                                 <input type="hidden" name="quantity" value="1">
                             </div>
                         {% endif %}
 
-                        <a href="{% url 'user_home' %}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium mt-4 text-sm">
+                        <a href="{% url 'user_home' %}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium mt-4 text-sm mobile-text-center sm:text-left w-full justify-center sm:justify-start">
                             <i class="fas fa-arrow-left mr-2"></i> Continue Shopping
                         </a>
                     </div>
 
                     <!-- SHIPPING -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                         <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Shipping Information</h2>
 
                         <div class="space-y-4">
@@ -302,11 +343,40 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- PAYMENT METHOD -->
+                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Payment Method</h2>
+
+                        <div class="space-y-3">
+                            <div class="address-option-container relative">
+                                <input type="radio" id="cod" name="payment_method" value="cod" checked>
+                                <label for="cod" class="address-content-box flex items-center hover:bg-gray-50 cursor-pointer p-3 sm:p-4">
+                                    <i class="fas fa-dot-circle radio-icon mr-3 flex-shrink-0"></i>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-money-bill-wave mr-3 text-green-600 text-lg flex-shrink-0"></i>
+                                        <span class="font-medium text-sm">Cash on Delivery (COD)</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="address-option-container relative">
+                                <input type="radio" id="card" name="payment_method" value="card">
+                                <label for="card" class="address-content-box flex items-center hover:bg-gray-50 cursor-pointer p-3 sm:p-4">
+                                    <i class="fas fa-dot-circle radio-icon mr-3 flex-shrink-0"></i>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-credit-card mr-3 text-blue-600 text-lg flex-shrink-0"></i>
+                                        <span class="font-medium text-sm">Credit/Debit Card (Online Payment)</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- ⭐ ORDER SUMMARY -->
+                <!-- Right Column - Order Summary -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white rounded-xl shadow-sm p-6 sticky top-24">
+                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 sticky top-24">
                         <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Summary</h2>
 
                         <div class="space-y-3">
@@ -419,75 +489,176 @@
             </div>
         </div>
     </footer>
+    <!-- Dropdown JS (paste just before </body>) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('profileDropdownButton');
+    const menu = document.getElementById('profileDropdown');
 
-    <script>
-        // Mobile menu functionality
-        const mobileMenuButton = document.getElementById('mobileMenuButton');
-        const mobileMenu = document.getElementById('mobileMenu');
+    // Safety checks
+    if (!btn || !menu) {
+        console.warn('Dropdown JS: profile button or menu not found', { btn, menu });
+        return;
+    }
 
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', function() {
-                mobileMenu.classList.toggle('hidden');
-            });
+    // Make sure menu starts closed
+    menu.classList.remove('open');
+
+    // Toggle on button click
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const isOpen = menu.classList.contains('open');
+        if (isOpen) {
+            menu.classList.remove('open');
+            console.log('Dropdown closed (button click)');
+        } else {
+            menu.classList.add('open');
+            console.log('Dropdown opened (button click)');
         }
+    });
 
-        // Profile dropdown functionality
-        const profileDropdownButton = document.getElementById('profileDropdownButton');
-        const profileDropdown = document.getElementById('profileDropdown');
+    // Prevent clicks inside menu from closing it
+    menu.addEventListener('click', function (e) {
+        e.stopPropagation();
+    });
 
-        if (profileDropdownButton && profileDropdown) {
-            profileDropdownButton.addEventListener('click', function() {
-                profileDropdown.classList.toggle('hidden');
+    // Close when clicking outside
+    document.addEventListener('click', function () {
+        if (menu.classList.contains('open')) {
+            menu.classList.remove('open');
+            console.log('Dropdown closed (outside click)');
+        }
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menu.classList.contains('open')) {
+            menu.classList.remove('open');
+            console.log('Dropdown closed (Esc)');
+        }
+    });
+});
+</script>
+   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+
+<script>
+window.addEventListener("load", function () {
+
+    console.log("Razorpay JS Loaded");
+
+    const orderForm = document.getElementById("orderForm");
+
+    if (!orderForm) {
+        console.error("❌ orderForm NOT FOUND!");
+        return;
+    }
+
+    orderForm.addEventListener("submit", async function (e) {
+
+        e.preventDefault();
+
+        console.log("Form Submit Triggered");
+
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        console.log("Payment method =", paymentMethod);
+
+        if (paymentMethod === "card") {
+            console.log("Online payment selected → Creating Razorpay order...");
+
+            const formData = new FormData(orderForm);
+            formData.append("checkout_type", "{{ checkout_type }}");
+
+            const resp = await fetch("/user/razorpay/create-order/", {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                body: formData
             });
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
-                    profileDropdown.classList.add('hidden');
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                console.error("Error from server:", data);
+                alert(data.error || "Error creating Razorpay order");
+                return;
+            }
+
+            console.log("Razorpay order created:", data);
+
+            const options = {
+                "key": data.key,
+                "amount": data.amount,
+                "currency": data.currency,
+                "name": "StyleCart",
+                "description": "Order #" + data.order_id,
+                "order_id": data.razorpay_order_id,
+
+                "handler": async function (response) {
+                    console.log("Payment success response:", response);
+
+                    const verifyData = new FormData();
+                    verifyData.append("razorpay_payment_id", response.razorpay_payment_id);
+                    verifyData.append("razorpay_order_id", response.razorpay_order_id);
+                    verifyData.append("razorpay_signature", response.razorpay_signature);
+                    verifyData.append("order_id", data.order_id);
+
+                    const verifyResp = await fetch("/user/razorpay/verify-payment/", {
+                        method: "POST",
+                        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                        body: verifyData
+                    });
+
+                    const verifyJson = await verifyResp.json();
+
+                    console.log("Verification result:", verifyJson);
+
+                    if (verifyJson.status === "success") {
+                        window.location.href = verifyJson.redirect_url;
+                    } else {
+                        alert("Payment verification failed!");
+                    }
+                },
+
+                "method": {
+                    "upi": true,
+                    "card": true,
+                    "netbanking": true,
+                    "wallet": true
+                },
+
+                "prefill": {
+                    "name": "{{ request.user.username }}",
+                    "email": "{{ request.user.email }}"
+                },
+
+                "theme": {
+                    "color": "#6d28d9"
                 }
-            });
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
         }
+        else {
+            console.log("COD selected → submitting normally");
 
-        // Quantity validation
-        document.addEventListener('DOMContentLoaded', function() {
-            const quantityInputs = document.querySelectorAll('input[type="number"]');
+            orderForm.action =
+                "{% if checkout_type == 'buynow' %}{% url 'place_order_buy_now' %}{% else %}{% url 'place_order' %}{% endif %}";
 
-            quantityInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    const max = parseInt(this.getAttribute('max'));
-                    const min = parseInt(this.getAttribute('min'));
-                    let value = parseInt(this.value);
-
-                    if (isNaN(value) || value < min) {
-                        this.value = min;
-                    } else if (value > max) {
-                        this.value = max;
-                        alert(`Maximum available stock is ${max}`);
-                    }
-                });
-            });
-        });
-
-        // Form submission enhancement
-        const orderForm = document.querySelector('form');
-        if (orderForm) {
-            orderForm.addEventListener('submit', function(e) {
-                const placeOrderBtn = this.querySelector('.place-order-btn');
-                const originalText = placeOrderBtn.innerHTML;
-
-                // Show loading state
-                placeOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-                placeOrderBtn.disabled = true;
-
-                // Re-enable after 3 seconds if still on page (fallback)
-                setTimeout(() => {
-                    if (placeOrderBtn.disabled) {
-                        placeOrderBtn.innerHTML = originalText;
-                        placeOrderBtn.disabled = false;
-                    }
-                }, 3000);
-            });
+            orderForm.submit();
         }
-    </script>
+    });
+
+});
+    console.log("Order form =", orderForm);
+</script>
+
+
+
+<!-- Dropdown JS (paste just before </body>) -->
+
+
+
 </body>
 </html>

@@ -25,8 +25,6 @@ urlpatterns=[
     path("order/", views.order_page, name="order_page"),
     path("place-order/", views.place_order, name="place_order"),
     path("buy-now/<slug:slug>/", views.buy_now, name="buy_now"),
-    path("place-order/", views.place_order, name="place_order"),
-    path("buy-now/<slug:slug>/", views.buy_now, name="buy_now"),
     path("order_page_buy_now/",views.order_page_buy_now,name='order_page_buy_now'),
     path('place_order_buy_now/',views.place_order_buy_now,name='place_order_buy_now'),
      path('orders/', views.order_history, name='order_item'),
@@ -45,6 +43,7 @@ urlpatterns=[
     path('profile/change-password/', views.change_password, name='change_password'),
    path('delete_account/', views.delete_account, name='delete_account'),
 
-    path('contact/',views.contact,name='contact')
-
+    path('contact/',views.contact,name='contact'),
+    path('razorpay/create-order/', views.create_razorpay_order, name='razorpay_create_order'),
+    path('razorpay/verify-payment/', views.verify_payment, name='razorpay_verify_payment'),
 ]
