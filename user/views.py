@@ -23,6 +23,7 @@ razorpay_client = razorpay.Client(auth=(
 
 #for user registration
 def user_register(request):
+    request.session['role'] = 'user'
     if request.method=='POST':
         username=request.POST.get('username')
         email=request.POST.get('email')
@@ -61,6 +62,7 @@ def user_register(request):
 
 #for user login
 def user_login(request):
+    request.session['role'] = 'user'
     if request.method=='POST':
         username=request.POST.get('username')
         password=request.POST.get('password')

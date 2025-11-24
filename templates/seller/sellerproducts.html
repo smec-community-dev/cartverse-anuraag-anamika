@@ -147,9 +147,17 @@
                 <!-- Seller Actions -->
                 <div class="flex items-center space-x-6">
                     <!-- Notification -->
+
+                    <!-- Notification -->
                     <div class="relative">
                         <a href="{% url 'notifications' %}" class="text-gray-700 hover:text-purple-600 p-2">
                             <i class="fas fa-bell text-lg"></i>
+
+                            {% if unread_count > 0 %}
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                {{ unread_count }}
+                            </span>
+                            {% endif %}
                         </a>
                     </div>
                     <!-- Seller Profile -->
@@ -223,6 +231,19 @@
 
             <div class="mt-8 pt-6 border-t border-gray-200">
                 <div class="flex items-center space-x-3 mb-4">
+
+                    <!-- Notification -->
+                    <div class="relative">
+                        <a href="{% url 'notifications' %}" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-bell text-lg"></i>
+
+                            {% if unread_count > 0 %}
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                {{ unread_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                    </div>
                     <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
                         {{ seller.user.username|slice:":1"|upper }}
                     </div>
@@ -272,13 +293,16 @@
                             <h2 class="font-bold text-gray-800">{{seller.shop_name}}</h2>
                             <div class="flex items-center mt-1">
                                 <div class="flex text-yellow-400 text-sm">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= store_rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
-                                <span class="text-xs text-gray-500 ml-1">(128)</span>
+
+                                <span class="text-xs text-gray-500 ml-1">({{ r_count.count }})</span>
                             </div>
                         </div>
                     </div>

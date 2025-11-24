@@ -8,7 +8,7 @@ class User(AbstractUser):
         ('admin', 'Admin'),
         ('seller', 'Seller'),
         ('customer', 'Customer')
-    ])
+    ],default='customer' )
 
     def __str__(self):
         return self.username

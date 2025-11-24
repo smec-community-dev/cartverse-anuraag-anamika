@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+
+import core.urls
 import user.urls
 import seller.urls
 from user import views
@@ -25,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/',include(user.urls.urlpatterns)),
     path('seller/',include(seller.urls.urlpatterns)),
+    path('core/',include(core.urls.urlpatterns)),
     path('', views.home, name='home'),
     path("accounts/", include("allauth.urls")),
 

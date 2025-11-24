@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order #{{ order.id }} - StyleCart Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-nav-active {
+            background-color: #f3f4f6;
+            color: #8b5cf6;
+            font-weight: 600;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Status badges */
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-processing {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-shipped {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-delivered {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e5e7eb;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 25px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #8b5cf6;
+            border: 2px solid white;
+            z-index: 1;
+        }
+
+        .timeline-item.completed::before {
+            background-color: #10b981;
+        }
+
+        .timeline-item.current::before {
+            background-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .timeline-item.pending::before {
+            background-color: #d1d5db;
+        }
+
+        /* Print styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .dashboard-card {
+                box-shadow: none;
+                border: 1px solid #e5e7eb;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Admin Navigation Header -->
+    <nav class="bg-white shadow-md sticky top-0 z-40 no-print">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo & Admin Badge -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin</span>
+                </div>
+
+                <!-- Desktop Admin Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="/core/dashboard/" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
+                    <a href="/admin/users/" class="text-gray-800 hover:text-purple-600 font-medium">Users</a>
+                    <a href="/admin/products/" class="text-gray-800 hover:text-purple-600 font-medium">Products</a>
+                    <a href="/admin/orders/" class="text-purple-600 hover:text-gray-800 font-medium">Orders</a>
+                    <a href="/admin/sellers/" class="text-gray-800 hover:text-purple-600 font-medium">Sellers</a>
+                </div>
+
+                <!-- Admin Actions -->
+                <div class="flex items-center space-x-6">
+                    <!-- Notification -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                3
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- Admin Profile -->
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-2 focus:outline-none">
+                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                A
+                            </div>
+                            <span class="text-gray-700 font-medium hidden md:block">Admin User</span>
+                            <i class="fas fa-chevron-down text-gray-500 text-xs"></i>
+                        </button>
+
+                        <!-- Profile Dropdown -->
+                        <div class="dropdown-menu absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-800">Administrator</p>
+                                <p class="text-sm text-gray-500">Admin Account</p>
+                            </div>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user-shield mr-3 text-gray-400"></i>
+                                Admin Profile
+                            </a>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                Settings
+                            </a>
+
+                            <div class="border-t border-gray-100 my-1"></div>
+
+                            <a href="/admin/logout/" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt mr-3"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <div class="md:hidden fixed top-4 left-4 z-50 no-print">
+        <button id="mobileMenuButton" class="bg-white p-2 rounded-md shadow-md">
+            <i class="fas fa-bars text-gray-700"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed inset-0 z-30 bg-white md:hidden no-print">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin</span>
+                </div>
+                <button id="closeMobileMenu" class="text-gray-500">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <a href="/core/dashboard/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="/core/users/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-users mr-3"></i>Users
+                </a>
+                <a href="/admin/products/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-box mr-3"></i>Products
+                </a>
+                <a href="/admin/orders/" class="block px-4 py-3 text-purple-600 font-medium bg-purple-50 rounded-lg">
+                    <i class="fas fa-shopping-cart mr-3"></i>Orders
+                </a>
+                <a href="/admin/sellers/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-store mr-3"></i>Sellers
+                </a>
+                <a href="#" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                    <i class="fas fa-cog mr-3"></i>Settings
+                </a>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center space-x-3 mb-4">
+                    <!-- Notification -->
+                    <div class="relative">
+                        <a href="#" class="text-gray-700 hover:text-purple-600 p-2">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                3
+                            </span>
+                        </a>
+                    </div>
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        A
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-800">Admin User</p>
+                        <p class="text-sm text-gray-500">Administrator</p>
+                    </div>
+                </div>
+                <a href="/admin/logout/" class="block px-4 py-2 text-red-600 font-medium hover:bg-red-50 rounded-lg">
+                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <div class="flex flex-col lg:flex-row gap-8 min-h-screen items-stretch">
+            <!-- Sidebar - Hidden on mobile -->
+            <div class="hidden lg:block w-72 no-print">
+                <div class="dashboard-card p-6 h-[700px]">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
+                            A
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-gray-800">Administrator</h2>
+                            <p class="text-sm text-gray-500 mt-1">Super Admin</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <a href="/core/dashboard/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-tachometer-alt mr-3 text-gray-400"></i>
+                            Dashboard
+                        </a>
+                        <a href="/core/users/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-users mr-3 text-gray-400"></i>
+                            Users
+                        </a>
+                        <a href="/core/products/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-box mr-3 text-gray-400"></i>
+                            Products
+                        </a>
+                        <a href="/core/orders/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg admin-nav-active">
+                            <i class="fas fa-shopping-cart mr-3 text-purple-600"></i>
+                            Orders
+                        </a>
+                        <a href="/core/sellers/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-store mr-3 text-gray-400"></i>
+                            Sellers
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-chart-bar mr-3 text-gray-400"></i>
+                            Analytics
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-tags mr-3 text-gray-400"></i>
+                            Discounts
+                        </a>
+                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-cog mr-3 text-gray-400"></i>
+                            Settings
+                        </a>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="mt-6">
+                        <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-6">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <a href="/admin/orders/" class="flex items-center p-3 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg hover:from-purple-100 hover:to-indigo-100 transition-all">
+                                <i class="fas fa-arrow-left text-purple-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-purple-700">Back to Orders</span>
+                            </a>
+                            <button onclick="window.print()" class="w-full flex items-center p-3 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg hover:from-blue-100 hover:to-cyan-100 transition-all">
+                                <i class="fas fa-print text-blue-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-blue-700">Print Invoice</span>
+                            </button>
+                            <button id="updateStatusBtn" class="w-full flex items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-all">
+                                <i class="fas fa-sync-alt text-green-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-green-700">Update Status</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="lg:w-3/4">
+                <!-- Header Section -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800 mb-2">Order #{{ order.id }}</h1>
+                        <nav class="flex" aria-label="Breadcrumb">
+                            <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                                <li><a href="/core/dashboard/" class="hover:text-purple-600">Dashboard</a></li>
+                                <li><i class="fas fa-chevron-right text-xs"></i></li>
+                                <li><a href="/admin/orders/" class="hover:text-purple-600">Orders</a></li>
+                                <li><i class="fas fa-chevron-right text-xs"></i></li>
+                                <li class="text-gray-800">#{{ order.id }}</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="flex space-x-3 mt-4 sm:mt-0 no-print">
+                        <a href="/admin/orders/" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Orders
+                        </a>
+                        <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium flex items-center">
+                            <i class="fas fa-print mr-2"></i> Print
+                        </button>
+                        <button id="updateOrderStatus" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium flex items-center">
+                            <i class="fas fa-edit mr-2"></i> Update Status
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Order Status & Alert -->
+                <div class="dashboard-card p-6 mb-8">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                        <div class="flex items-center mb-4 lg:mb-0">
+                            <div class="mr-4">
+                                <span class="px-3 py-1 rounded-full text-sm font-medium
+                                    {% if order_status == 'Pending' %} status-pending
+                                    {% elif order_status == 'Processing' %} status-processing
+                                    {% elif order_status == 'Shipped' %} status-shipped
+                                    {% elif order_status == 'Delivered' %} status-delivered
+                                    {% elif order_status == 'Cancelled' %} status-cancelled
+                                    {% endif %}
+                                ">
+                                    {{ order_status }}
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">Placed on {{ order.order_date|date:"F d, Y" }} at {{ order.order_date|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3">
+                            <div class="text-right">
+                                <p class="text-2xl font-bold text-gray-800">₹{{ order_total }}</p>
+                                <p class="text-sm text-gray-600">Total Amount</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Order Timeline -->
+                    <div class="lg:col-span-1">
+                        <div class="dashboard-card p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Order Timeline</h3>
+                            <div class="timeline">
+                                <div class="timeline-item completed">
+                                    <div class="text-sm font-medium text-gray-800">Order Placed</div>
+                                    <div class="text-xs text-gray-500">{{ order.order_date|date:"M d, Y" }}</div>
+                                </div>
+                                <div class="timeline-item {% if order_status != 'Pending' %}completed{% elif order_status == 'Pending' %}current{% else %}pending{% endif %}">
+                                    <div class="text-sm font-medium text-gray-800">Payment Confirmed</div>
+                                    <div class="text-xs text-gray-500">
+                                        {% if order_status != 'Pending' %}
+                                        {{ order.order_date|date:"M d, Y" }}
+                                        {% else %}
+                                        Pending
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="timeline-item {% if order_status in 'Processing,Shipped,Delivered' %}completed{% elif order_status == 'Processing' %}current{% else %}pending{% endif %}">
+                                    <div class="text-sm font-medium text-gray-800">Processing</div>
+                                    <div class="text-xs text-gray-500">
+                                        {% if order_status in 'Processing,Shipped,Delivered' %}
+                                        {{ order.order_date|date:"M d, Y" }}
+                                        {% else %}
+                                        Pending
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="timeline-item {% if order_status in 'Shipped,Delivered' %}completed{% elif order_status == 'Shipped' %}current{% else %}pending{% endif %}">
+                                    <div class="text-sm font-medium text-gray-800">Shipped</div>
+                                    <div class="text-xs text-gray-500">
+                                        {% if order_status in 'Shipped,Delivered' %}
+                                        {{ order.order_date|date:"M d, Y" }}
+                                        {% else %}
+                                        Pending
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="timeline-item {% if order_status == 'Delivered' %}completed{% elif order_status == 'Delivered' %}current{% else %}pending{% endif %}">
+                                    <div class="text-sm font-medium text-gray-800">Delivered</div>
+                                    <div class="text-xs text-gray-500">
+                                        {% if order_status == 'Delivered' %}
+                                        {{ order.order_date|date:"M d, Y" }}
+                                        {% else %}
+                                        Pending
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Customer Information -->
+                        <div class="dashboard-card p-6 mt-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Customer Information</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Customer</p>
+                                    <p class="text-gray-800">{{ order.user.username }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Email</p>
+                                    <p class="text-gray-800">{{ order.user.email }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Phone</p>
+                                    <p class="text-gray-800">{{ order.user.phone_number|default:"Not provided" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Customer Since</p>
+                                    <p class="text-gray-800">{{ order.user.date_joined|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <a href="{% url 'user_profile' order.user.id %}" class="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center">
+                                    <i class="fas fa-user mr-2"></i> View Customer Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Details & Items -->
+                    <div class="lg:col-span-2">
+                        <!-- Order Items -->
+                        <div class="dashboard-card p-6 mb-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Order Items</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="text-left py-3 text-sm font-medium text-gray-600">Product</th>
+                                            <th class="text-left py-3 text-sm font-medium text-gray-600">Price</th>
+                                            <th class="text-left py-3 text-sm font-medium text-gray-600">Quantity</th>
+                                            <th class="text-left py-3 text-sm font-medium text-gray-600">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in items %}
+                                        <tr class="border-b border-gray-100">
+                                            <td class="py-4">
+                                                <div class="flex items-center">
+                                                    <div class="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden mr-3 flex-shrink-0">
+                                                        {% if item.product.images.first %}
+                                                        <img src="{{ item.product.images.first.product_image.url }}"
+                                                             alt="{{ item.product.product_name }}"
+                                                             class="w-full h-full object-cover">
+                                                        {% else %}
+                                                        <div class="w-full h-full bg-gray-300 flex items-center justify-center">
+                                                            <i class="fas fa-image text-gray-400"></i>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-800">{{ item.product.product_name }}</div>
+                                                        <div class="text-sm text-gray-500">SKU: {{ item.product.sku }}</div>
+                                                        <div class="text-xs text-gray-500">
+                                                            Seller: {{ item.product.seller.shop_name }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4">
+                                                <div class="text-gray-800">₹{{ item.price }}</div>
+                                            </td>
+                                            <td class="py-4">
+                                                <div class="text-gray-800">{{ item.quantity }}</div>
+                                            </td>
+                                            <td class="py-4">
+                                                <div class="font-semibold text-gray-800">₹{{ item.get_total_price }}</div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Shipping Address -->
+                            <div class="dashboard-card p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Shipping Address</h3>
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    {% if order.shipping_address %}
+                                    <p class="font-medium text-gray-800">{{ order.shipping_address.full_name }}</p>
+                                    <p>{{ order.shipping_address.street_address }}</p>
+                                    <p>{{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.postal_code }}</p>
+                                    <p>{{ order.shipping_address.country }}</p>
+                                    <p class="mt-2">
+                                        <i class="fas fa-phone mr-2"></i>{{ order.shipping_address.phone_number }}
+                                    </p>
+                                    {% else %}
+                                    <p class="text-gray-500">No shipping address provided</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Billing Address -->
+                            <div class="dashboard-card p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Billing Address</h3>
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    {% if order.billing_address %}
+                                    <p class="font-medium text-gray-800">{{ order.billing_address.full_name }}</p>
+                                    <p>{{ order.billing_address.street_address }}</p>
+                                    <p>{{ order.billing_address.city }}, {{ order.billing_address.state }} {{ order.billing_address.postal_code }}</p>
+                                    <p>{{ order.billing_address.country }}</p>
+                                    <p class="mt-2">
+                                        <i class="fas fa-phone mr-2"></i>{{ order.billing_address.phone_number }}
+                                    </p>
+                                    {% else %}
+                                    <p class="text-gray-500">Same as shipping address</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment & Order Summary -->
+                        <div class="dashboard-card p-6 mt-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Summary</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Subtotal</span>
+                                    <span class="text-gray-800">₹{{ order.total_amount }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Shipping</span>
+                                    <span class="text-gray-800">₹0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Tax</span>
+                                    <span class="text-gray-800">₹0.00</span>
+                                </div>
+                                <div class="flex justify-between border-t border-gray-200 pt-3">
+                                    <span class="text-lg font-semibold text-gray-800">Total</span>
+                                    <span class="text-lg font-semibold text-gray-800">₹{{ order.total_amount }}</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <h4 class="text-md font-semibold text-gray-800 mb-2">Payment Method</h4>
+                                <div class="flex items-center">
+                                    <i class="fas fa-credit-card text-gray-400 mr-3"></i>
+                                    <span class="text-gray-600">Credit Card</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Actions -->
+                <div class="mt-8 flex flex-col sm:flex-row sm:justify-between gap-4 no-print">
+                    <div class="flex space-x-3">
+                        <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
+                            <i class="fas fa-envelope mr-2"></i> Email Customer
+                        </button>
+                        <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
+                            <i class="fas fa-truck mr-2"></i> Track Shipment
+                        </button>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 font-medium flex items-center">
+                            <i class="fas fa-times mr-2"></i> Cancel Order
+                        </button>
+                        <a href="{% url 'admin-order-delete' order.id %}" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium flex items-center">
+                            <i class="fas fa-trash mr-2"></i> Delete Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden no-print">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Update Order Status</h3>
+            <form id="statusForm" method="POST" action="{% url 'admin-order-detail' order.id %}">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-200">
+                        <option value="Pending" {% if order_status == 'Pending' %}selected{% endif %}>Pending</option>
+                        <option value="Processing" {% if order_status == 'Processing' %}selected{% endif %}>Processing</option>
+                        <option value="Shipped" {% if order_status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                        <option value="Delivered" {% if order_status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                        <option value="Cancelled" {% if order_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                    <textarea name="notes" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-200" placeholder="Add any notes about this status update..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelStatusUpdate" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                        Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (mobileMenuButton && closeMobileMenu && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.add('active');
+            });
+
+            closeMobileMenu.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                    mobileMenu.classList.remove('active');
+                }
+            });
+        }
+
+        // Status Update Modal
+        const statusModal = document.getElementById('statusModal');
+        const updateStatusBtn = document.getElementById('updateOrderStatus');
+        const cancelStatusUpdate = document.getElementById('cancelStatusUpdate');
+        const statusForm = document.getElementById('statusForm');
+
+        if (updateStatusBtn && statusModal) {
+            updateStatusBtn.addEventListener('click', function() {
+                statusModal.classList.remove('hidden');
+            });
+
+            cancelStatusUpdate.addEventListener('click', function() {
+                statusModal.classList.add('hidden');
+            });
+
+            // Close modal when clicking outside
+            statusModal.addEventListener('click', function(e) {
+                if (e.target === statusModal) {
+                    statusModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // Print functionality
+        function printInvoice() {
+            window.print();
+        }
+
+        // Add event listeners for print buttons
+        document.querySelectorAll('button[onclick="window.print()"]').forEach(button => {
+            button.addEventListener('click', printInvoice);
+        });
+
+        // Status update form submission
+        if (statusForm) {
+            statusForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // In a real application, you would submit the form via AJAX or let it submit normally
+                // For demo purposes, we'll just close the modal and show a success message
+                statusModal.classList.add('hidden');
+                alert('Order status updated successfully!');
+                // You can add AJAX submission here if needed
+                // this.submit(); // Uncomment to allow normal form submission
+            });
+        }
+    </script>
+</body>
+</html>

@@ -16,8 +16,6 @@ import os
 
 load_dotenv()
 
-from django.conf.global_settings import MEDIA_URL, AUTH_USER_MODEL
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
