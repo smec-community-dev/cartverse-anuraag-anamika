@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'user',
+'user.apps.UserConfig',
 "django.contrib.sites",
 
     # authentication
