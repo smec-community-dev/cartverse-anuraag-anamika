@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .terms-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .warning-card {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .info-card {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #8b5cf6;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            z-index: 1000;
+        }
+
+        .back-to-top:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .nav-link {
+            color: #6b7280;
+            transition: all 0.3s;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .nav-link:hover {
+            color: #8b5cf6;
+            background: #f3f4f6;
+        }
+
+        .nav-link.active {
+            color: #8b5cf6;
+            font-weight: 600;
+            background: #f3f4f6;
+        }
+
+        .clause-number {
+            background: #8b5cf6;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/home.html" class="flex items-center">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                        <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="/home.html" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
+                    <a href="/shop.html" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
+                    <a href="/category.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
+                    <a href="/about.html" class="text-gray-800 hover:text-purple-600 font-medium">About</a>
+                </div>
+
+                <!-- Auth Buttons -->
+                <div class="flex items-center space-x-4">
+                    <a href="/user/login.html" class="text-gray-700 hover:text-purple-600 font-medium">Login</a>
+                    <a href="/user/register.html" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 font-medium">
+                        Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12 max-w-6xl">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Navigation -->
+            <div class="lg:w-1/4">
+                <div class="terms-container p-6 sticky top-24">
+                    <h3 class="font-bold text-gray-800 mb-4 text-lg">Terms of Service</h3>
+                    <nav class="space-y-1">
+                        <a href="#acceptance" class="block nav-link active">1. Acceptance of Terms</a>
+                        <a href="#accounts" class="block nav-link">2. User Accounts</a>
+                        <a href="#purchases" class="block nav-link">3. Purchases & Payments</a>
+                        <a href="#seller" class="block nav-link">4. Seller Terms</a>
+                        <a href="#intellectual" class="block nav-link">5. Intellectual Property</a>
+                        <a href="#prohibited" class="block nav-link">6. Prohibited Conduct</a>
+                        <a href="#termination" class="block nav-link">7. Termination</a>
+                        <a href="#disclaimer" class="block nav-link">8. Disclaimers</a>
+                        <a href="#liability" class="block nav-link">9. Limitation of Liability</a>
+                        <a href="#governing" class="block nav-link">10. Governing Law</a>
+                        <a href="#changes" class="block nav-link">11. Changes to Terms</a>
+                        <a href="#contact" class="block nav-link">12. Contact Information</a>
+                    </nav>
+
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <p class="text-sm text-gray-600">Last updated: December 1, 2023</p>
+                        <p class="text-xs text-gray-500 mt-1">Effective immediately</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms Content -->
+            <div class="lg:w-3/4">
+                <div class="terms-container p-8">
+                    <!-- Header -->
+                    <div class="text-center mb-8">
+                        <h1 class="text-4xl font-bold text-gray-800 mb-4">Terms of Service</h1>
+                        <p class="text-gray-600 text-lg">Please read these terms carefully before using our services.</p>
+                        <div class="warning-card p-4 mt-4 rounded-lg">
+                            <p class="text-amber-800 flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                By accessing or using StyleCart, you agree to be bound by these Terms of Service.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Acceptance of Terms -->
+                    <section id="acceptance" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">1</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Acceptance of Terms</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                These Terms of Service ("Terms") govern your access to and use of StyleCart's website,
+                                services, and applications (collectively, the "Services"). By accessing or using our Services,
+                                you agree to be bound by these Terms and our Privacy Policy.
+                            </p>
+                            <div class="info-card p-4 rounded-lg">
+                                <p class="text-blue-800 text-sm">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    If you do not agree to these Terms, you may not access or use our Services.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- User Accounts -->
+                    <section id="accounts" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">2</div>
+                            <h2 class="text-2xl font-bold text-gray-800">User Accounts</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <h3 class="font-semibold text-gray-800 mb-3">Account Registration</h3>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                                <li>You must be at least 16 years old to create an account</li>
+                                <li>Provide accurate and complete registration information</li>
+                                <li>Maintain the security of your account credentials</li>
+                                <li>Notify us immediately of any unauthorized account use</li>
+                            </ul>
+
+                            <h3 class="font-semibold text-gray-800 mb-3">Account Responsibilities</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-user-shield text-purple-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Security</h4>
+                                        <p class="text-gray-700 text-sm">You are responsible for all activities under your account</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-ban text-purple-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">No Transfer</h4>
+                                        <p class="text-gray-700 text-sm">Accounts are non-transferable</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Purchases & Payments -->
+                    <section id="purchases" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">3</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Purchases & Payments</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <h3 class="font-semibold text-gray-800 mb-3">Order Process</h3>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                                <li>All orders are subject to acceptance and availability</li>
+                                <li>Prices are subject to change without notice</li>
+                                <li>We reserve the right to cancel orders for any reason</li>
+                                <li>Shipping costs and delivery times may vary</li>
+                            </ul>
+
+                            <h3 class="font-semibold text-gray-800 mb-3">Payment Terms</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div class="text-center p-4 bg-white rounded-lg border">
+                                    <i class="fas fa-credit-card text-purple-600 text-2xl mb-2"></i>
+                                    <h4 class="font-semibold text-gray-800">Payment Methods</h4>
+                                    <p class="text-sm text-gray-600">We accept major credit cards and digital wallets</p>
+                                </div>
+                                <div class="text-center p-4 bg-white rounded-lg border">
+                                    <i class="fas fa-lock text-purple-600 text-2xl mb-2"></i>
+                                    <h4 class="font-semibold text-gray-800">Security</h4>
+                                    <p class="text-sm text-gray-600">All payments are processed securely</p>
+                                </div>
+                                <div class="text-center p-4 bg-white rounded-lg border">
+                                    <i class="fas fa-receipt text-purple-600 text-2xl mb-2"></i>
+                                    <h4 class="font-semibold text-gray-800">Taxes</h4>
+                                    <p class="text-sm text-gray-600">Prices exclude applicable taxes</p>
+                                </div>
+                            </div>
+
+                            <div class="warning-card p-4 rounded-lg">
+                                <p class="text-amber-800">
+                                    <i class="fas fa-exclamation-circle mr-2"></i>
+                                    All sales are final unless otherwise stated in our Return Policy.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Seller Terms -->
+                    <section id="seller" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">4</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Seller Terms</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <h3 class="font-semibold text-gray-800 mb-3">Seller Responsibilities</h3>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                                <li>Provide accurate product descriptions and images</li>
+                                <li>Maintain adequate inventory levels</li>
+                                <li>Process orders in a timely manner</li>
+                                <li>Comply with all applicable laws and regulations</li>
+                                <li>Provide quality customer service</li>
+                            </ul>
+
+                            <h3 class="font-semibold text-gray-800 mb-3">Commission & Fees</h3>
+                            <div class="bg-white p-4 rounded-lg border mb-4">
+                                <p class="text-gray-700">
+                                    StyleCart charges a commission on each sale. The current commission rate and fee structure
+                                    are detailed in the Seller Agreement. We reserve the right to modify commission rates with
+                                    30 days' notice.
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-gavel text-red-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Prohibited Items</h4>
+                                        <p class="text-gray-700 text-sm">Sellers may not list prohibited or restricted items</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-star text-yellow-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Performance Standards</h4>
+                                        <p class="text-gray-700 text-sm">Sellers must maintain performance standards</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Intellectual Property -->
+                    <section id="intellectual" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">5</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Intellectual Property</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <h3 class="font-semibold text-gray-800 mb-3">Our Content</h3>
+                            <p class="text-gray-700 mb-4">
+                                All content on StyleCart, including text, graphics, logos, images, and software,
+                                is the property of StyleCart or its content suppliers and protected by intellectual
+                                property laws.
+                            </p>
+
+                            <h3 class="font-semibold text-gray-800 mb-3">Your Content</h3>
+                            <p class="text-gray-700 mb-4">
+                                By submitting content to StyleCart, you grant us a worldwide, non-exclusive,
+                                royalty-free license to use, reproduce, and display such content in connection
+                                with our Services.
+                            </p>
+
+                            <div class="warning-card p-4 rounded-lg">
+                                <p class="text-amber-800">
+                                    <i class="fas fa-copyright mr-2"></i>
+                                    You may not use our intellectual property without prior written permission.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Prohibited Conduct -->
+                    <section id="prohibited" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">6</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Prohibited Conduct</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">You agree not to:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-ban text-red-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Illegal Activities</h4>
+                                        <p class="text-gray-700 text-sm">Use our Services for any illegal purpose</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-user-times text-red-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Harassment</h4>
+                                        <p class="text-gray-700 text-sm">Harass, abuse, or harm others</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-robot text-red-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Automated Access</h4>
+                                        <p class="text-gray-700 text-sm">Use bots, scrapers, or other automated means</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-bug text-red-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Security Breaches</h4>
+                                        <p class="text-gray-700 text-sm">Attempt to compromise our security</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Termination -->
+                    <section id="termination" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">7</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Termination</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                We may suspend or terminate your access to our Services at any time for any reason,
+                                including violation of these Terms.
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg border">
+                                    <h4 class="font-semibold text-gray-800 mb-2">User Termination</h4>
+                                    <p class="text-gray-700 text-sm">You may close your account at any time through account settings</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg border">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Effect of Termination</h4>
+                                    <p class="text-gray-700 text-sm">Termination will not affect any rights or obligations that arose prior to termination</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Disclaimers -->
+                    <section id="disclaimer" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">8</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Disclaimers</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                Our Services are provided "as is" and "as available" without warranties of any kind,
+                                either express or implied. We do not warrant that:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                                <li>Our Services will be uninterrupted or error-free</li>
+                                <li>Defects will be corrected</li>
+                                <li>Our Services are free of viruses or other harmful components</li>
+                            </ul>
+                            <div class="info-card p-4 rounded-lg">
+                                <p class="text-blue-800">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    We are not responsible for the quality, safety, or legality of items sold by third-party sellers.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Limitation of Liability -->
+                    <section id="liability" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">9</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Limitation of Liability</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                To the fullest extent permitted by law, StyleCart shall not be liable for any indirect,
+                                incidental, special, consequential, or punitive damages, including loss of profits, data,
+                                or other intangible losses.
+                            </p>
+                            <div class="warning-card p-4 rounded-lg">
+                                <p class="text-amber-800">
+                                    <i class="fas fa-balance-scale mr-2"></i>
+                                    Our total liability shall not exceed the amount you paid to us in the past six months.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Governing Law -->
+                    <section id="governing" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">10</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Governing Law</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                These Terms shall be governed by and construed in accordance with the laws of the State of New York,
+                                without regard to its conflict of law provisions.
+                            </p>
+                            <div class="bg-white p-4 rounded-lg border">
+                                <h4 class="font-semibold text-gray-800 mb-2">Dispute Resolution</h4>
+                                <p class="text-gray-700 text-sm">
+                                    Any disputes arising from these Terms shall be resolved through binding arbitration
+                                    in New York, NY, in accordance with the rules of the American Arbitration Association.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Changes to Terms -->
+                    <section id="changes" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">11</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Changes to Terms</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                We reserve the right to modify these Terms at any time. We will notify you of material changes
+                                by posting the new Terms on this page and updating the "Last Updated" date.
+                            </p>
+                            <div class="info-card p-4 rounded-lg">
+                                <p class="text-blue-800">
+                                    <i class="fas fa-bell mr-2"></i>
+                                    Your continued use of our Services after any changes constitutes acceptance of the new Terms.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Contact Information -->
+                    <section id="contact" class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="clause-number">12</div>
+                            <h2 class="text-2xl font-bold text-gray-800">Contact Information</h2>
+                        </div>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                If you have any questions about these Terms, please contact us:
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">Email</h4>
+                                    <a href="mailto:legal@stylecart.com" class="text-purple-600 hover:underline">
+                                        legal@stylecart.com
+                                    </a>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">Address</h4>
+                                    <p class="text-gray-700">123 Fashion Street<br>New York, NY 10001</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Acceptance Section -->
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                        <i class="fas fa-file-contract text-green-600 text-3xl mb-3"></i>
+                        <h3 class="text-xl font-bold text-green-800 mb-2">Agreement</h3>
+                        <p class="text-green-700">
+                            By using StyleCart, you acknowledge that you have read, understood, and agree to be bound
+                            by these Terms of Service.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <div id="backToTop" class="back-to-top hidden">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+        <!-- Footer Section -->
+<footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Company Info -->
+            <div>
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                    <span class="text-xl font-bold">StyleCart</span>
+                </div>
+                <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                <div class="flex space-x-4">
+                    <a href="https://www.facebook.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.x.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.pinterest.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-pinterest"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- User Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Shop</h3>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                    <li><a href="/user/main" class="text-gray-400 hover:text-white transition-colors">Shop</a></li>
+                    <li><a href="/user/category" class="text-gray-400 hover:text-white transition-colors">Categories</a></li>
+                    <li><a href="/user/view_wishlist" class="text-gray-400 hover:text-white transition-colors">Wishlist</a></li>
+                </ul>
+            </div>
+
+            <!-- Seller Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Seller Center</h3>
+                <ul class="space-y-2">
+                    <li><a href="/seller/login" class="text-gray-400 hover:text-white transition-colors">Seller Login</a></li>
+                    <li><a href="/seller/register" class="text-gray-400 hover:text-white transition-colors">Become a Seller</a></li>
+                    <li><a href="/seller/seller_dashboard" class="text-gray-400 hover:text-white transition-colors">Seller Dashboard</a></li>
+                    <li><a href="/seller/seller_product" class="text-gray-400 hover:text-white transition-colors">Manage Products</a></li>
+                    <li><a href="/seller/order_products" class="text-gray-400 hover:text-white transition-colors">View Orders</a></li>
+                </ul>
+            </div>
+
+            <!-- Support & Info -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Support</h3>
+                <ul class="space-y-2">
+                    <li><a href="/user/about" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="/user/contact" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="border-t border-gray-700 pt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-gray-400">&copy; 2025 StyleCart. All rights reserved.</p>
+                </div>
+                <div class="flex flex-wrap justify-center md:justify-end gap-4 text-sm">
+                    <a href="/seller/privacypolicy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="/seller/termsofservice" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+/* Responsive Footer Styles */
+@media (max-width: 768px) {
+    .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-8.mb-8 {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .flex.flex-col.md\\:flex-row.justify-between.items-center.gap-4 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container.mx-auto.px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .pt-12 {
+        padding-top: 2rem;
+    }
+
+    .text-lg.font-semibold.mb-4 {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+
+    <script>
+        // Back to top functionality
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.remove('hidden');
+            } else {
+                backToTop.classList.add('hidden');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Update active nav link on scroll
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
