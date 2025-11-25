@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .live-notification {
+            animation: slideIn 0.4s ease-out;
+            border-left: 4px solid #10b981;
+        }
+
+        .notification-item {
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c4b5fd;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #8b5cf6;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <!-- Main Container -->
+    <div class="container mx-auto max-w-4xl py-6 px-4 sm:px-6 lg:px-8">
+        <!-- Header Section -->
+        <header class="mb-8">
+            <!-- Back Button -->
+            <a href="/" class="inline-flex items-center mb-6 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Home
+            </a>
+
+            <!-- Page Title -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Notifications</h1>
+                    <p class="text-gray-600">These are your recent updates.</p>
+                </div>
+
+                <!-- Notification Actions -->
+        </header>
+
+        <!-- Notifications Container -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <!-- Tabs -->
+            <div class="border-b border-gray-200">
+                <div class="flex overflow-x-auto custom-scrollbar">
+                    <button class="px-4 py-3 font-medium text-purple-600 border-b-2 border-purple-600 whitespace-nowrap">
+                        All Notifications
+                    </button>
+
+                </div>
+                </div>
+            </div>
+
+            <!-- Notifications Content -->
+            <div class="p-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <!-- Live Notifications (WebSocket) -->
+                <div id="liveNotifications" class="space-y-4 mb-6">
+                    <div class="text-center py-4 text-gray-500 bg-green-50 rounded-lg border border-green-100">
+                        <i class="fas fa-bell text-green-500 text-xl mb-2"></i>
+                        <p>Live notifications will appear here</p>
+                    </div>
+                </div>
+
+                <!-- Today's Notifications -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded mr-2">Today</span>
+                        Recent Updates
+                    </h2>
+
+                    <div class="space-y-4">
+                        <!-- Sample Live Notification -->
+                        <div class="live-notification notification-item bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-start">
+                                    <div class="bg-green-100 p-2 rounded-full mr-3 mt-1">
+                                        <i class="fas fa-shipping-fast text-green-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">Order Shipped</h3>
+                                        <p class="text-gray-600 mt-1">Your order #SC-4892 has been shipped and is on its way!</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-green-600 font-medium">Just now</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Older Notifications -->
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded mr-2">Earlier</span>
+                        Previous Notifications
+                    </h2>
+
+                    <div id="allNotifications" class="space-y-4">
+                        <!-- Sample Notifications -->
+
+
+
+
+
+                        <div class="notification-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-600">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-start">
+                                    <div class="bg-blue-100 p-2 rounded-full mr-3 mt-1">
+                                        <i class="fas fa-box text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">Order Delivered</h3>
+                                        <p class="text-gray-600 mt-1">Your order #SC-4821 has been successfully delivered.</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-500">Yesterday</span>
+                            </div>
+                        </div>
+
+                        <div class="notification-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-yellow-600">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-start">
+                                    <div class="bg-yellow-100 p-2 rounded-full mr-3 mt-1">
+                                        <i class="fas fa-exclamation-triangle text-yellow-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">Payment Issue</h3>
+                                        <p class="text-gray-600 mt-1">There was an issue processing your recent payment. Please update your payment method.</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-500">2 days ago</span>
+                            </div>
+                        </div>
+
+                        <!-- Empty State (commented out for demo) -->
+                        <!--
+                        <div class="text-center py-10 text-gray-500">
+                            <i class="fas fa-bell-slash text-4xl text-gray-300 mb-3"></i>
+                            <p>No notifications yet.</p>
+                        </div>
+                        -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+
+    </div>
+
+    <!-- WEBSOCKET SCRIPT -->
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const socket = new WebSocket(
+            "ws://" + window.location.host + "/ws/users/notifications/"
+        );
+
+        socket.onopen = function () {
+            console.log("WebSocket connected!");
+        };
+
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+
+            const liveBox = document.getElementById("liveNotifications");
+
+            // Remove placeholder if exists
+            if (liveBox.children.length === 1 &&
+                liveBox.children[0].classList.contains("text-center")) {
+                liveBox.innerHTML = "";
+            }
+
+            const div = document.createElement("div");
+            div.className =
+                "live-notification notification-item bg-white p-4 rounded-lg shadow-sm border border-green-200";
+
+            div.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div class="flex items-start">
+                        <div class="bg-green-100 p-2 rounded-full mr-3 mt-1">
+                            <i class="fas fa-bell text-green-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">${data.title}</h3>
+                            <p class="text-gray-600 mt-1">${data.message}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-green-600 font-medium">Just now</span>
+                </div>
+            `;
+
+            liveBox.prepend(div);
+        };
+
+        socket.onclose = function () {
+            console.log("WebSocket disconnected!");
+        };
+
+    });
+</script>
+
+</body>
+</html>

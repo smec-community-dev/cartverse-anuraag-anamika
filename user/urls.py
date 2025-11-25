@@ -45,6 +45,9 @@ urlpatterns=[
     path('profile/change-password/', views.change_password, name='change_password'),
    path('delete_account/', views.delete_account, name='delete_account'),
 
-    path('contact/',views.contact,name='contact')
+    path('contact/',views.contact,name='contact'),
+path("check-status/<int:order_id>/", views.check_order_status),
+path("notifications/", views.notifications_page, name="notifications_page"),
+
 
 ]
