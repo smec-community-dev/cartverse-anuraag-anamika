@@ -174,15 +174,14 @@
                     <!-- Notification -->
 
                     <!-- Notification -->
-                    <div class="relative">
-                        <a href="{% url 'notifications' %}" class="text-gray-700 hover:text-purple-600 p-2">
+                    <!-- Notification -->
+                   <div class="relative">
+                        <a href="{% url 'notifications' %}" class="text-gray-700 hover:text-purple-600 p-2 relative">
                             <i class="fas fa-bell text-lg"></i>
 
-                            {% if unread_count > 0 %}
-                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
-                                {{ unread_count }}
+                            <span id="notificationCountIcon"
+                                class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full hidden">
                             </span>
-                            {% endif %}
                         </a>
                     </div>
                     <!-- Seller Profile -->

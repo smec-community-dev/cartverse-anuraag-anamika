@@ -516,3 +516,12 @@ def privacy(request):
 
 def terms(request):
     return render(request,'seller/termsofservice.html')
+
+from django.http import JsonResponse
+@role_required("seller", login_url="/seller/login")
+def api_unread_notifications(request):
+    unread_count = Notification.objects.filter(
+        user=request.user, is_read=False
+    ).count()
+
+    return JsonResponse({"unread": unread_count})
