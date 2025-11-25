@@ -115,11 +115,9 @@
 
                 <!-- Desktop Admin Navigation -->
                 <div class="hidden md:flex space-x-8 items-center">
-                    <a href="/admin/dashboard/" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
-                    <a href="/admin/users/" class="text-purple-600 hover:text-gray-800 font-medium">Users</a>
-                    <a href="/admin/products/" class="text-gray-800 hover:text-purple-600 font-medium">Products</a>
-                    <a href="/admin/orders/" class="text-gray-800 hover:text-purple-600 font-medium">Orders</a>
-                    <a href="/admin/sellers/" class="text-gray-800 hover:text-purple-600 font-medium">Sellers</a>
+                    <a href="/core/dashboard" class="text-purple-600 hover:text-gray-800 font-medium">Dashboard</a>
+                    <a href="/core/users" class="text-gray-800 hover:text-purple-600 font-medium">Users</a>
+                    <a href="/core/sellers" class="text-gray-800 hover:text-purple-600 font-medium">Sellers</a>
                 </div>
 
                 <!-- Admin Actions -->
@@ -133,7 +131,6 @@
                             </span>
                         </a>
                     </div>
-
                     <!-- Admin Profile -->
                     <div class="relative dropdown">
                         <button class="flex items-center space-x-2 focus:outline-none">
@@ -151,14 +148,9 @@
                                 <p class="text-sm text-gray-500">Admin Account</p>
                             </div>
 
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <a href="{% url 'admin-profile' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                 <i class="fas fa-user-shield mr-3 text-gray-400"></i>
                                 Admin Profile
-                            </a>
-
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-cog mr-3 text-gray-400"></i>
-                                Settings
                             </a>
 
                             <div class="border-t border-gray-100 my-1"></div>

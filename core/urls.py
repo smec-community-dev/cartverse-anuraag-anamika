@@ -26,9 +26,30 @@ path("seller/<int:id>/suspend/", views.admin_suspend_seller, name="admin-suspend
 path("orders/", views.admin_orders_view, name="admin-orders"),
 path("orders/<int:order_id>/", views.admin_order_detail_view, name="admin-order-detail"),
 path("orders/<int:order_id>/delete/", views.admin_order_delete_view, name="admin-order-delete"),
+path("sellers/", views.admin_sellers_view, name="admin_sellers"),
 
+path("sellers/<int:seller_id>/", views.admin_seller_detail, name="admin-seller-detail"),
+path("sellers/<int:seller_id>/delete/", views.admin_seller_delete, name="admin-seller-delete"),
 
+    path("categories/", views.admin_category_view, name="admin-categories"),
+    path("subcategories/", views.view_subcategories, name="admin-subcategories"),
 
+    # Create
+    path("category/add/", views.add_category, name="add-category"),
+    path("subcategory/add/", views.add_subcategory, name="add-subcategory"),
+
+    # Delete
+    path("category/delete/<int:id>/", views.delete_category, name="delete-category"),
+    path("subcategory/delete/<int:id>/", views.delete_subcategory, name="delete-subcategory"),
+
+path("categories/edit/<int:pk>/", views.edit_category, name="edit-category"),
+
+    path("subcategories/edit/<int:pk>/", views.edit_subcategory, name="edit-subcategory"),
+
+path("profile/", views.admin_profile, name="admin-profile"),
+
+path("profile/update/", views.update_profile, name="update-profile"),
+path("profile/change-password/", views.change_password, name="change-password"),
 
 
 
