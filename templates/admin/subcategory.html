@@ -116,6 +116,102 @@
             font-size: 0.75rem;
             font-weight: 500;
         }
+
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+            .container.mx-auto.px-4.py-8.max-w-7xl {
+                max-width: 95%;
+            }
+
+            .flex.flex-col.lg\\:flex-row.gap-8 {
+                flex-direction: column;
+            }
+
+            .hidden.lg\\:block.w-72, .lg\\:w-3\\/4 {
+                width: 100%;
+            }
+
+            .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4.gap-6.mb-8 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4.gap-6.mb-8 {
+                grid-template-columns: 1fr;
+            }
+
+            .flex.flex-col.sm\\:flex-row.sm\\:items-center.sm\\:justify-between.mb-8 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .flex.space-x-3.mt-4.sm\\:mt-0 {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .flex.justify-between.items-center.mb-6 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            form.flex.space-x-3 {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+
+            .relative .w-64 {
+                width: 100%;
+            }
+
+            .flex.justify-between.items-center.mt-6 {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+
+            .dashboard-card.p-6 {
+                padding: 1rem;
+            }
+
+            .h-\\[700px\\] {
+                height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container.mx-auto.px-4.py-8.max-w-7xl {
+                max-width: 100%;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .text-2xl.font-bold.text-gray-800.mb-2 {
+                font-size: 1.5rem;
+            }
+
+            .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-8.mb-8 {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .p-6 {
+                padding: 1rem;
+            }
+
+            .flex.space-x-2 {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -348,20 +444,19 @@
 
                 <!-- Subcategories Table -->
                 <div class="dashboard-card p-6">
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
                         <h2 class="text-lg font-semibold text-gray-800">All Subcategories</h2>
 
-                    </div>
-                            <form method="GET" class="flex space-x-3">
+                        <form method="GET" class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
 
-                                <div class="relative">
+                                <div class="relative w-full sm:w-64">
                                     <input type="text" name="search" placeholder="Search subcategories..."
                                            value="{{ search_query }}"
-                                           class="pl-10 pr-4 py-2 border rounded-lg w-64">
+                                           class="pl-10 pr-4 py-2 border rounded-lg w-full">
                                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                                 </div>
 
-                                <select name="category" class="border rounded-lg px-3 py-2">
+                                <select name="category" class="border rounded-lg px-3 py-2 w-full sm:w-auto">
                                     <option value="">All Categories</option>
                                     {% for cat in categories %}
                                         <option value="{{ cat.id }}" {% if category_filter == cat.id|stringformat:"s" %}selected{% endif %}>
@@ -370,11 +465,12 @@
                                     {% endfor %}
                                 </select>
 
-                                <button class="px-4 py-2 bg-purple-600 text-white rounded-md">
+                                <button class="px-4 py-2 bg-purple-600 text-white rounded-md w-full sm:w-auto">
                                     Filter
                                 </button>
 
                             </form>
+                    </div>
 
                     <div class="overflow-x-auto table-responsive">
                         <table class="w-full min-w-max">
@@ -417,30 +513,30 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div class="flex justify-between items-center mt-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
 
-    <p class="text-sm text-gray-600">
+    <p class="text-sm text-gray-600 text-center sm:text-left">
         Showing {{ subcategories.start_index }} to {{ subcategories.end_index }} of {{ subcategories.paginator.count }}
     </p>
 
-    <div class="flex space-x-2">
+    <div class="flex space-x-2 flex-wrap justify-center">
         {% if subcategories.has_previous %}
             <a href="?page={{ subcategories.previous_page_number }}&search={{ search_query }}&category={{ category_filter }}"
-               class="px-3 py-1 border rounded-md">Previous</a>
+               class="px-3 py-1 border rounded-md text-sm">Previous</a>
         {% endif %}
 
         {% for page in subcategories.paginator.page_range %}
             {% if page == subcategories.number %}
-                <span class="px-3 py-1 rounded-md bg-purple-600 text-white">{{ page }}</span>
+                <span class="px-3 py-1 rounded-md bg-purple-600 text-white text-sm">{{ page }}</span>
             {% else %}
                 <a href="?page={{ page }}&search={{ search_query }}&category={{ category_filter }}"
-                   class="px-3 py-1 border rounded-md">{{ page }}</a>
+                   class="px-3 py-1 border rounded-md text-sm">{{ page }}</a>
             {% endif %}
         {% endfor %}
 
         {% if subcategories.has_next %}
             <a href="?page={{ subcategories.next_page_number }}&search={{ search_query }}&category={{ category_filter }}"
-               class="px-3 py-1 border rounded-md">Next</a>
+               class="px-3 py-1 border rounded-md text-sm">Next</a>
         {% endif %}
     </div>
 
@@ -572,6 +668,28 @@
     </div>
 </footer>
 
+<script>
+    // Mobile Menu Functionality
+    const mobileMenuButton = document.getElementById('mobileMenuButton');
+    const closeMobileMenu = document.getElementById('closeMobileMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (mobileMenuButton && closeMobileMenu && mobileMenu) {
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.add('active');
+        });
+
+        closeMobileMenu.addEventListener('click', function() {
+            mobileMenu.classList.remove('active');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+    }
+</script>
 
 </body>
 </html>
