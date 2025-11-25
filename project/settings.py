@@ -36,26 +36,30 @@ RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
 
 INSTALLED_APPS = [
+    # Django default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
-'user.apps.UserConfig',
-"django.contrib.sites",
+    "django.contrib.sites",
 
-    # authentication
+    # Project apps
+    'core',
+    'user.apps.UserConfig',
+    'seller.apps.SellerConfig',
+
+    # Channels (MUST be above your apps)
+    'channels',
+
+    # Allauth
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-
-    # providers
     "allauth.socialaccount.providers.google",
-    'seller.apps.SellerConfig',
-    'channels'
 ]
+
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",

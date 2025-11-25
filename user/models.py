@@ -101,4 +101,19 @@ class OrderItem(models.Model):
         return f"{self.product.product_name} - {self.quantity}"
 
 
+class UserNotification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255, default="New Notification")
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # OPTIONAL: for product name + price
+    product_name = models.CharField(max_length=255, null=True, blank=True)
+    price = models.CharField(max_length=50, null=True, blank=True)
+
+    def __str__(self):
+        return self.message
+
+
 

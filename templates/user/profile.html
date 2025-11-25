@@ -177,6 +177,27 @@
                             </span>
                         </a>
                     </div>
+                    <div id="notif-box" class="relative mr-3 select-none">
+
+    <!-- 🔔 Bell Icon -->
+    <div id="notif-bell"
+         class="text-black text-2xl cursor-pointer relative hover:text-gray-700 transition">
+        <i class="fa-solid fa-bell"></i>
+
+        <!-- 🔴 Notification Count -->
+        <span id="notif-count"
+              class="absolute -top-1 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full hidden">
+        </span>
+    </div>
+
+    <!-- ▼ Dropdown -->
+    <div id="notif-dropdown"
+         class="hidden absolute right-0 mt-3 w-72 bg-white shadow-lg rounded-xl border border-gray-200 max-h-80 overflow-y-auto z-50">
+        <div id="notif-list" class="p-3 space-y-3"></div>
+    </div>
+</div>
+
+
 
                     <div class="relative">
                         <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
@@ -947,6 +968,65 @@
         }
     }
 </script>
+<script>
+let notifSocket = new WebSocket(
+    (window.location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    "/ws/users/notifications/"
+);
+
+let notifBell = document.getElementById("notif-bell");
+let notifList = document.getElementById("notif-list");
+let notifCount = document.getElementById("notif-count");
+let notifDropdown = document.getElementById("notif-dropdown");
+
+// Bell click → Go to notifications page
+notifBell.onclick = () => {
+    window.location.href = "{% url 'notifications_page' %}";
+};
+
+// Receive WebSocket notification
+notifSocket.onmessage = (event) => {
+    let data = JSON.parse(event.data);
+
+    // ----------- FIXED COUNTING (NO MORE NaN) -----------
+    let current = Number(notifCount.textContent.trim());
+    if (isNaN(current)) current = 0;
+    notifCount.textContent = current + 1;
+    notifCount.style.display = "block";
+
+    // Add new notification item
+    let item = document.createElement("div");
+    item.classList = "py-2 px-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer";
+
+    let link = data.link ? data.link : "{% url 'notifications_page' %}";
+
+    item.innerHTML = `
+        <a href="${link}" style="text-decoration:none; color:black;">
+            <strong>${data.title}</strong><br>
+            <span style="font-size:13px;">${data.message}</span>
+        </a>
+    `;
+
+    notifList.prepend(item);
+
+    // Show dropdown for a moment
+    notifDropdown.style.display = "block";
+    setTimeout(() => {
+        notifDropdown.style.display = "none";
+    }, 2000);
+};
+
+// Close dropdown if clicked outside
+document.addEventListener("click", function (e) {
+    if (!notifBell.contains(e.target) && !notifDropdown.contains(e.target)) {
+        notifDropdown.style.display = "none";
+    }
+});
+</script>
+
+
+
 
 </body>
 </html>

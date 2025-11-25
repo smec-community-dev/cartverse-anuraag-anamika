@@ -168,13 +168,69 @@
             transform: scale(1.05);
             opacity: 0.9;
         }
+
+        /* Improved responsive grid */
+        @media (max-width: 1024px) {
+            .product-grid {
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .product-info {
+                padding: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+
+        /* Better alignment for product details */
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        @media (max-width: 640px) {
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Improved quantity selector alignment */
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        @media (max-width: 480px) {
+            .quantity-selector {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
 
     <!-- Updated Header -->
-       <nav class="bg-white shadow-md sticky top-0 z-40">
+    <nav class="bg-white shadow-md sticky top-0 z-40">
         <div class="container mx-auto px-3 sm:px-4">
             <div class="flex justify-between items-center h-14 sm:h-16">
                 <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
@@ -277,16 +333,11 @@
                 {% endif %}
             </div>
         </div>
-
-
-
     </nav>
 
-
-
     <!-- Compact Product Section -->
-    <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-6 rounded-2xl shadow-lg">
+    <div class="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 product-grid bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
             <!-- Product Images - FIXED GALLERY -->
             <div class="relative image-gallery">
                 <!-- Radio buttons for image selection -->
@@ -321,11 +372,9 @@
             </div>
 
             <!-- Product Info -->
-            <div class="flex flex-col justify-start space-y-4">
-
-
+            <div class="flex flex-col justify-start space-y-4 sm:space-y-5 product-info">
                 <div class="flex justify-between items-start">
-                    <h1 class="text-xl lg:text-2xl font-bold text-gray-900 leading-tight pr-3">
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight pr-3">
                         {{ product.product_name }}
                     </h1>
 
@@ -341,95 +390,79 @@
                     </form>
                 </div>
 
-
-
-                <p class="text-2xl font-bold text-gray-900 border-b pb-3">
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 border-b pb-3">
                     $ <span class="text-green-600">{{ product.price }}</span>
                 </p>
 
-                <p class="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
                     {{ product.description|truncatewords:30 }}
                 </p>
 
-                <div class="grid grid-cols-2 gap-3 border-t pt-3">
+                <div class="product-detail-grid border-t pt-3">
                     <div class="flex items-center">
                         <i class="fas fa-cubes text-purple-500 mr-2 text-xs"></i>
-                        <p class="text-gray-700 font-medium text-xs">
+                        <p class="text-gray-700 font-medium text-xs sm:text-sm">
                             Stock: <span class="font-bold text-gray-900">{{ product.stock }}</span>
                         </p>
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-store text-purple-500 mr-2 text-xs"></i>
-                        <p class="text-gray-700 font-medium text-xs">
+                        <p class="text-gray-700 font-medium text-xs sm:text-sm">
                             Seller: <span class="font-bold text-gray-900">{{ product.seller.shop_name }}</span>
                         </p>
                     </div>
                 </div>
 
                 <div class="space-y-4 pt-4">
+                    <!-- ADD TO CART FORM -->
                     <form method="POST" action="{% url 'add_cart' product.slug %}" class="space-y-3">
                         {% csrf_token %}
 
-                        <div class="flex items-center gap-4">
+                        <div class="quantity-selector">
                             <label class="font-bold text-sm text-gray-700 flex-shrink-0">Quantity:</label>
-                            {% if product.stock > 0 %}
-                                <input type="number"
-                                       name="quantity"
-                                       min="1"
-                                       max="{{ product.stock }}"
-                                       value="1"
-                                       aria-label="Product Quantity"
-                                       class="w-16 border border-gray-300 rounded-lg px-2 py-1 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-purple-500 transition shadow-inner">
-                                <span class="text-xs text-gray-500">({{ product.stock }} available)</span>
-                            {% else %}
-                                <span class="text-sm font-bold text-red-600">Out of Stock</span>
-                            {% endif %}
+                            <input type="number"
+                                   name="quantity"
+                                   id="qtyInput"
+                                   min="1"
+                                   max="{{ product.stock }}"
+                                   value="1"
+                                   class="w-16 border border-gray-300 rounded-lg px-2 py-1 text-sm font-semibold">
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                            {% if product.stock > 0 %}
-                                <button type="submit"
-                                        class="flex items-center justify-center bg-purple-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-purple-700 transition transform hover:scale-[1.01] shadow-md">
-                                    <i class="fas fa-cart-plus mr-1"></i> Add to Cart
-                                </button>
-                            {% else %}
-                                <button disabled
-                                        class="flex items-center justify-center bg-gray-400 text-white py-2 rounded-lg font-bold text-sm cursor-not-allowed shadow-inner">
-                                    <i class="fas fa-exclamation-circle mr-1"></i> Out of Stock
-                                </button>
-                            {% endif %}
+                        <button type="submit"
+                                class="flex items-center justify-center bg-purple-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-purple-700 transition-colors">
+                            <i class="fas fa-cart-plus mr-1"></i> Add to Cart
+                        </button>
+                    </form>
 
-                            {% if product.stock > 0 %}
-                                <a href="{% url 'buy_now' product.slug %}"
-                                class="flex items-center justify-center bg-green-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-700 transition transform hover:scale-[1.01] shadow-md">
-                                  Buy Now <i class="fas fa-bolt ml-1"></i>
-                                </a>
-                            {% endif %}
-                        </div>
+                    <!-- BUY NOW FORM (SEPARATE!) -->
+                    <form method="POST" action="{% url 'buy_now' product.slug %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" id="buyNowQty">
 
-                        <a href="{% url 'user_home' %}"
-                           class="block w-full text-center bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition mt-2 text-xs">
-                           <i class="fas fa-arrow-left mr-1"></i> Continue Shopping
-                        </a>
+                        <button type="submit"
+                                class="w-full flex items-center justify-center bg-green-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-700 transition-colors action-buttons">
+                            Buy Now <i class="fas fa-bolt ml-1"></i>
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
 
         <!-- Description & Reviews Section -->
-        <div class="mt-8 bg-white p-6 rounded-2xl shadow-lg">
-            <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
-                <button class="tab-button active py-3 px-6 text-sm font-bold text-purple-600 border-b-2 border-purple-600 whitespace-nowrap" data-tab="description">
+        <div class="mt-6 sm:mt-8 bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+            <div class="flex border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto">
+                <button class="tab-button active py-3 px-4 sm:px-6 text-sm font-bold text-purple-600 border-b-2 border-purple-600 whitespace-nowrap" data-tab="description">
                     Description
                 </button>
-                <button class="tab-button py-3 px-6 text-sm font-medium text-gray-600 hover:text-purple-600 whitespace-nowrap" data-tab="reviews">
+                <button class="tab-button py-3 px-4 sm:px-6 text-sm font-medium text-gray-600 hover:text-purple-600 whitespace-nowrap" data-tab="reviews">
                     Reviews ({{ reviews|length }})
                 </button>
             </div>
 
             <!-- Description Tab -->
             <div id="description" class="tab-content active">
-                <div class="prose max-w-none text-gray-700 text-sm">
+                <div class="prose max-w-none text-gray-700 text-sm sm:text-base">
                     <h3 class="text-lg font-bold mb-3 text-gray-800">Product Overview</h3>
                     <p>{{ product.description }}</p>
                     <ul class="list-disc list-inside mt-4 text-gray-600 space-y-1">
@@ -441,11 +474,9 @@
                 </div>
             </div>
 
-
-
             <!-- Reviews Tab -->
             <div id="reviews" class="tab-content">
-                <div class="space-y-6">
+                <div class="space-y-4 sm:space-y-6">
                     {% if reviews %}
                         {% for review in reviews %}
                             <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -562,6 +593,21 @@
     </footer>
 
     <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const qtyInput = document.getElementById("qtyInput");     // Visible input
+    const buyNowQty = document.getElementById("buyNowQty");   // Hidden Buy Now field
+
+    if (qtyInput && buyNowQty) {
+        buyNowQty.value = qtyInput.value;    // set default
+
+        qtyInput.addEventListener("input", function () {
+            buyNowQty.value = this.value;    // update on change
+        });
+    }
+
+});
+
         // Tab functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Tab switching

@@ -419,6 +419,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
+<script>
+setInterval(function() {
+    fetch("/check-order-updates/{{ order.id }}/")
+    .then(res => res.json())
+    .then(data => {
+        if (data.updated) {
+            console.log("New notification sent");
+        }
+    });
+}, 5000);
+</script>
 
 </body>
 </html>

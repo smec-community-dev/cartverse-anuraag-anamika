@@ -44,6 +44,13 @@ urlpatterns=[
    path('delete_account/', views.delete_account, name='delete_account'),
 
     path('contact/',views.contact,name='contact'),
+
     path('razorpay/create-order/', views.create_razorpay_order, name='razorpay_create_order'),
     path('razorpay/verify-payment/', views.verify_payment, name='razorpay_verify_payment'),
+
+path("check-status/<int:order_id>/", views.check_order_status),
+path("notifications/", views.notifications_page, name="notifications_page"),
+
+
+
 ]

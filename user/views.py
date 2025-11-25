@@ -11,12 +11,21 @@ from seller.models import Product,ProductImage
 from django.core.paginator import Paginator
 from decorators.decorators import role_required
 from django.db.models import Q
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 from django.conf import settings
 import razorpay
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 
+
+from django.http import JsonResponse
+from .models import OrderItem
+from user.utils import send_user_notification
+from .models import UserNotification
+import re
 
 
 #for user registration
@@ -325,7 +334,6 @@ def add_cart(request, slug):
             product=product,
             defaults={"price": product.price, "quantity": qty}
         )
-
         if not created:
             if cart_item.quantity + qty <= product.stock:
                 cart_item.quantity += qty
@@ -548,6 +556,7 @@ def place_order(request):
     if request.method == "POST":
         cart_items = Cart.objects.filter(user=request.user)
         address_id = request.POST.get('address_id')
+
         if not address_id:
             messages.error(request, "Please select a shipping address.")
             return redirect("order_page")
@@ -562,17 +571,30 @@ def place_order(request):
         for item in cart_items:
             qty = int(request.POST.get(f'quantities[{item.id}]', 1))
             total += item.price * qty
+
+            # Create order item
             OrderItem.objects.create(
                 order=order,
                 product=item.product,
                 quantity=qty,
                 price=item.price
             )
+
+            # Reduce stock
             item.product.stock -= qty
             item.product.save()
 
+            # Send notification for each item
+            send_user_notification(
+                request.user,
+                "Order Placed",
+                f"Your order for {item.product.product_name} (₹{item.product.price}) has been placed!",
+            )
+
         order.total_amount = total
         order.save()
+
+        # Clear cart
         cart_items.delete()
 
     return redirect('order_success')
@@ -582,10 +604,16 @@ def place_order(request):
 @role_required('customer', '/user/login')
 def buy_now(request, slug):
     product = Product.objects.get(slug=slug)
-    if product.stock < 1:
-        messages.error(request, "Product is out of stock.")
+
+    qty = int(request.POST.get("quantity", 1))
+
+    if qty > product.stock:
+        messages.error(request, "Only limited stock available.")
         return redirect("single", slug=slug)
+
     request.session["buy_now_product_id"] = product.id
+    request.session["buy_now_qty"] = qty
+
     return redirect("order_page_buy_now")
 
 
@@ -596,12 +624,15 @@ def order_page_buy_now(request):
         return redirect("user_home")
 
     product = Product.objects.get(id=product_id)
+    qty = int(request.session.get("buy_now_qty", 1))   # ⭐ READ SAVED QUANTITY
 
     return render(request, "user/order.html", {
         "checkout_type": "buynow",
         "product": product,
-        "total": product.price,
+        "quantity": qty,                 # ⭐ SEND QUANTITY
+        "total": product.price * qty,    # ⭐ SEND CORRECT TOTAL
     })
+
 
 
 @role_required('customer', '/user/login')
@@ -610,6 +641,7 @@ def place_order_buy_now(request):
         product_id = request.session.get("buy_now_product_id")
         product = Product.objects.get(id=product_id)
         address_id = request.POST.get("address_id")
+
         if not address_id:
             messages.error(request, "Please select a shipping address.")
             return redirect("order_page_buy_now")
@@ -618,12 +650,14 @@ def place_order_buy_now(request):
             messages.error(request, "Out of stock.")
             return redirect("user_home")
 
+        # Create Order
         order = Order.objects.create(
             user=request.user,
             total_amount=product.price,
             address_id=address_id
         )
 
+        # Create Order Item
         OrderItem.objects.create(
             order=order,
             product=product,
@@ -631,8 +665,18 @@ def place_order_buy_now(request):
             quantity=1
         )
 
+        # Reduce stock
         product.stock -= 1
         product.save()
+
+
+        send_user_notification(
+            request.user,
+            "Order Placed",
+            f"Your order for {product.product_name} (₹{product.price}) has been placed!"
+        )
+
+        # Remove Buy Now session data
         del request.session["buy_now_product_id"]
 
     return redirect("order_success")
@@ -889,6 +933,7 @@ def delete_account(request):
 def contact(request):
     return render(request,'user/contact.html')
 
+
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 @role_required('customer', '/user/login')
@@ -983,3 +1028,67 @@ def verify_payment(request):
     Cart.objects.filter(user=request.user).delete()
 
     return JsonResponse({"status": "success", "redirect_url": "/user/order_success/"})
+
+# Create DB record
+
+
+
+def check_order_status(request, order_id):
+
+    items = OrderItem.objects.filter(order_id=order_id)
+
+    for item in items:
+
+        # SHIPPED
+        if item.status == "Shipped" and not request.session.get(f"shipped_{item.id}"):
+
+            send_user_notification(
+                item.order.user,
+                "Order Shipped",
+                f"Your order #{item.order.id} has been shipped!",
+                link=f"/view_details/{item.order.id}/"
+            )
+
+            request.session[f"shipped_{item.id}"] = True
+
+        # DELIVERED
+        if item.status == "Delivered" and not request.session.get(f"delivered_{item.id}"):
+
+            send_user_notification(
+                item.order.user,
+                "Order Delivered",
+                f"Your order #{item.order.id} has been delivered!",
+                link=f"/view_details/{item.order.id}/"
+            )
+
+            request.session[f"delivered_{item.id}"] = True
+
+    return JsonResponse({"ok": True})
+
+@role_required('customer', '/user/login')
+def notifications_page(request):
+    notes = UserNotification.objects.filter(user=request.user).order_by("-created_at")
+
+    notes.filter(is_read=False).update(is_read=True)
+
+    # extract product details
+    for n in notes:
+        if not n.product_name:  # only extract if not stored already
+            n.product_name, n.price = extract_product_details(n.message)
+
+    return render(request, "user/notifications.html", {
+        "notifications": notes,
+    })
+
+
+def extract_product_details(message):
+    pattern = r"for (.*?) \(₹(\d+)\)"
+    match = re.search(pattern, message)
+    if match:
+        return match.group(1), match.group(2)
+    return None, None
+
+
+
+
+
