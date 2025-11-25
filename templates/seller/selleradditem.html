@@ -553,6 +553,78 @@
 
     <!-- All Original JavaScript Code Preserved -->
     <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+    // Fetch unread notifications count
+    fetch("/seller/api/unread_notifications/")
+        .then(response => response.json())
+        .then(data => {
+            const bell = document.getElementById("notificationCountIcon");
+
+            if (data.unread > 0) {
+                bell.classList.remove("hidden");
+                bell.textContent = data.unread;
+            } else {
+                bell.classList.add("hidden");
+            }
+        });
+
+});
+const socket = new WebSocket(
+    "ws://" + window.location.host + "/ws/notifications/"
+);
+
+socket.onopen = () => {
+    console.log("🔗 WebSocket connected");
+};
+
+socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    console.log("📩 New Notification:", data.message);
+
+    // SHOW POPUP ALERT
+    showSellerNotification(data.title, data.message);
+
+    // UPDATE BELL COUNT
+    updateBellCount();
+};
+
+socket.onclose = () => {
+    console.log("❌ WebSocket closed");
+};
+socket.onerror = (e) => {
+    console.log("⚠️ WebSocket error:", e);
+};
+
+// 🔔 Popup toast
+function showSellerNotification(title, message) {
+    const box = document.createElement("div");
+    box.className = "fixed top-4 right-4 bg-white shadow-xl p-4 rounded-lg border-l-4 border-purple-600 z-50";
+    box.innerHTML = `
+        <strong class="text-gray-800">${title}</strong>
+        <p class="text-gray-600 mt-1">${message}</p>
+    `;
+    document.body.appendChild(box);
+
+    setTimeout(() => box.remove(), 5000);
+}
+
+// 🔢 update icon count (auto refresh)
+function updateBellCount() {
+    fetch("/seller/api/unread_notifications/")
+        .then(res => res.json())
+        .then(data => {
+            const bell = document.getElementById("notificationCountIcon");
+
+            if (data.unread > 0) {
+                bell.textContent = data.unread;
+                bell.classList.remove("hidden");
+            } else {
+                bell.classList.add("hidden");
+            }
+        });
+}
         // Image Upload Functionality
         document.getElementById('mainImageUpload').addEventListener('click', function() {
             document.getElementById('mainImageFile').click();
