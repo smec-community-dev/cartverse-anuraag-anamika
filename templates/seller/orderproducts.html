@@ -565,10 +565,6 @@
                                     <i class="fas fa-edit mr-2"></i>
                                     Edit Product
                                 </a>
-                                <button class="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium flex items-center justify-center">
-                                    <i class="fas fa-truck mr-2"></i>
-                                    Process Shipping
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -663,83 +659,110 @@
         {% endfor %}
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <!-- Company Info -->
-                <div>
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
-                        <span class="text-xl font-bold">StyleCart</span>
-                    </div>
-                    <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
-                    </div>
+    <!-- Footer Section -->
+<footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Company Info -->
+            <div>
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                    <span class="text-xl font-bold">StyleCart</span>
                 </div>
-
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Shop</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
-                    </ul>
-                </div>
-
-                <!-- Customer Service -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Return & Refund</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Size Guide</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Payment Methods</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contact Info -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-purple-400 mt-1 mr-3"></i>
-                            <span class="text-gray-400">123 Fashion Street, New York, NY 10001</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope text-purple-400 mr-3"></i>
-                            <span class="text-gray-400">info@stylecart.com</span>
-                        </li>
-                    </ul>
+                <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                <div class="flex space-x-4">
+                    <a href="https://www.facebook.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.x.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.pinterest.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-pinterest"></i>
+                    </a>
                 </div>
             </div>
 
-            <div class="border-t border-gray-700 pt-6 text-center text-gray-400">
-                <p>&copy; 2023 StyleCart. All rights reserved.</p>
+            <!-- User Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Shop</h3>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                    <li><a href="/user/main" class="text-gray-400 hover:text-white transition-colors">Shop</a></li>
+                    <li><a href="/user/category" class="text-gray-400 hover:text-white transition-colors">Categories</a></li>
+                    <li><a href="/user/view_wishlist" class="text-gray-400 hover:text-white transition-colors">Wishlist</a></li>
+                </ul>
+            </div>
+
+            <!-- Seller Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Seller Center</h3>
+                <ul class="space-y-2">
+                    <li><a href="/seller/login" class="text-gray-400 hover:text-white transition-colors">Seller Login</a></li>
+                    <li><a href="/seller/register" class="text-gray-400 hover:text-white transition-colors">Become a Seller</a></li>
+                    <li><a href="/seller/seller_dashboard" class="text-gray-400 hover:text-white transition-colors">Seller Dashboard</a></li>
+                    <li><a href="/seller/seller_product" class="text-gray-400 hover:text-white transition-colors">Manage Products</a></li>
+                    <li><a href="/seller/order_products" class="text-gray-400 hover:text-white transition-colors">View Orders</a></li>
+                </ul>
+            </div>
+
+            <!-- Support & Info -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Support</h3>
+                <ul class="space-y-2">
+                    <li><a href="/user/about" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="/user/contact" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
 
+        <!-- Bottom Section -->
+        <div class="border-t border-gray-700 pt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-gray-400">&copy; 2025 StyleCart. All rights reserved.</p>
+                </div>
+                <div class="flex flex-wrap justify-center md:justify-end gap-4 text-sm">
+                    <a href="/seller/privacypolicy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="/seller/termsofservice" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+/* Responsive Footer Styles */
+@media (max-width: 768px) {
+    .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-8.mb-8 {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .flex.flex-col.md\\:flex-row.justify-between.items-center.gap-4 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container.mx-auto.px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .pt-12 {
+        padding-top: 2rem;
+    }
+
+    .text-lg.font-semibold.mb-4 {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+}
+</style>
     <script>
         // Mobile Menu Functionality
         const mobileMenuButton = document.getElementById('mobileMenuButton');

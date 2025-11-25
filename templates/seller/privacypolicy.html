@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - StyleCart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .policy-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #8b5cf6;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .back-to-top:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .nav-link {
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #8b5cf6;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/home.html" class="flex items-center">
+                        <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                        <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="/home.html" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
+                    <a href="/shop.html" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
+                    <a href="/category.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
+                    <a href="/about.html" class="text-gray-800 hover:text-purple-600 font-medium">About</a>
+                </div>
+
+                <!-- Auth Buttons -->
+                <div class="flex items-center space-x-4">
+                    <a href="/user/login.html" class="text-gray-700 hover:text-purple-600 font-medium">Login</a>
+                    <a href="/user/register.html" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 font-medium">
+                        Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-12 max-w-6xl">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Navigation -->
+            <div class="lg:w-1/4">
+                <div class="policy-container p-6 sticky top-24">
+                    <h3 class="font-bold text-gray-800 mb-4 text-lg">Privacy Policy</h3>
+                    <nav class="space-y-2">
+                        <a href="#information-collection" class="block nav-link active">Information Collection</a>
+                        <a href="#data-usage" class="block nav-link">How We Use Data</a>
+                        <a href="#data-sharing" class="block nav-link">Data Sharing</a>
+                        <a href="#cookies" class="block nav-link">Cookies & Tracking</a>
+                        <a href="#data-security" class="block nav-link">Data Security</a>
+                        <a href="#user-rights" class="block nav-link">Your Rights</a>
+                        <a href="#children-privacy" class="block nav-link">Children's Privacy</a>
+                        <a href="#policy-changes" class="block nav-link">Policy Changes</a>
+                        <a href="#contact" class="block nav-link">Contact Us</a>
+                    </nav>
+
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <p class="text-sm text-gray-600">Last updated: December 1, 2023</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Policy Content -->
+            <div class="lg:w-3/4">
+                <div class="policy-container p-8">
+                    <!-- Header -->
+                    <div class="text-center mb-8">
+                        <h1 class="text-4xl font-bold text-gray-800 mb-4">Privacy Policy</h1>
+                        <p class="text-gray-600 text-lg">Your privacy is important to us. This policy explains how we collect, use, and protect your information.</p>
+                    </div>
+
+                    <!-- Introduction -->
+                    <div class="mb-8">
+                        <p class="text-gray-700 mb-4">
+                            At StyleCart, we are committed to protecting your privacy and ensuring the security of your personal information.
+                            This Privacy Policy outlines how we collect, use, disclose, and safeguard your information when you visit our website
+                            or make a purchase from us.
+                        </p>
+                        <p class="text-gray-700">
+                            By using our services, you agree to the collection and use of information in accordance with this policy.
+                        </p>
+                    </div>
+
+                    <!-- Information Collection -->
+                    <section id="information-collection" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-info-circle text-purple-600 mr-3"></i>
+                            1. Information We Collect
+                        </h2>
+                        <div class="section-card p-6 mb-4">
+                            <h3 class="font-semibold text-gray-800 mb-3">Personal Information</h3>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                <li>Name, email address, and contact information</li>
+                                <li>Shipping and billing addresses</li>
+                                <li>Payment information (processed securely through our payment partners)</li>
+                                <li>Account credentials and preferences</li>
+                                <li>Order history and purchase details</li>
+                            </ul>
+                        </div>
+                        <div class="section-card p-6">
+                            <h3 class="font-semibold text-gray-800 mb-3">Automatically Collected Information</h3>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                <li>IP address and browser type</li>
+                                <li>Device information and operating system</li>
+                                <li>Browsing behavior and website usage patterns</li>
+                                <li>Cookies and similar tracking technologies</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- How We Use Data -->
+                    <section id="data-usage" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-database text-purple-600 mr-3"></i>
+                            2. How We Use Your Information
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="section-card p-6">
+                                <i class="fas fa-shopping-cart text-purple-600 text-xl mb-3"></i>
+                                <h3 class="font-semibold text-gray-800 mb-2">Order Processing</h3>
+                                <p class="text-gray-700">Process and fulfill your orders, manage payments, and arrange shipping.</p>
+                            </div>
+                            <div class="section-card p-6">
+                                <i class="fas fa-user-shield text-purple-600 text-xl mb-3"></i>
+                                <h3 class="font-semibold text-gray-800 mb-2">Account Management</h3>
+                                <p class="text-gray-700">Create and manage your account, provide customer support, and communicate important updates.</p>
+                            </div>
+                            <div class="section-card p-6">
+                                <i class="fas fa-chart-line text-purple-600 text-xl mb-3"></i>
+                                <h3 class="font-semibold text-gray-800 mb-2">Service Improvement</h3>
+                                <p class="text-gray-700">Analyze website usage to improve our services and user experience.</p>
+                            </div>
+                            <div class="section-card p-6">
+                                <i class="fas fa-bullhorn text-purple-600 text-xl mb-3"></i>
+                                <h3 class="font-semibold text-gray-800 mb-2">Marketing</h3>
+                                <p class="text-gray-700">Send promotional communications with your consent, and personalize your shopping experience.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Data Sharing -->
+                    <section id="data-sharing" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-share-alt text-purple-600 mr-3"></i>
+                            3. Data Sharing and Disclosure
+                        </h2>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                We do not sell your personal information to third parties. We may share your information with:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                <li><strong>Service Providers:</strong> Payment processors, shipping carriers, and IT service providers</li>
+                                <li><strong>Legal Requirements:</strong> When required by law or to protect our rights and safety</li>
+                                <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
+                                <li><strong>With Your Consent:</strong> When you explicitly agree to share your information</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Cookies -->
+                    <section id="cookies" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-cookie text-purple-600 mr-3"></i>
+                            4. Cookies and Tracking Technologies
+                        </h2>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                We use cookies and similar technologies to enhance your browsing experience, analyze site traffic,
+                                and personalize content.
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                <div class="text-center">
+                                    <i class="fas fa-utensils text-purple-600 text-2xl mb-2"></i>
+                                    <h4 class="font-semibold text-gray-800">Essential Cookies</h4>
+                                    <p class="text-sm text-gray-600">Required for basic site functionality</p>
+                                </div>
+                                <div class="text-center">
+                                    <i class="fas fa-chart-bar text-purple-600 text-2xl mb-2"></i>
+                                    <h4 class="font-semibold text-gray-800">Analytics Cookies</h4>
+                                    <p class="text-sm text-gray-600">Help us understand how visitors interact</p>
+                                </div>
+                                <div class="text-center">
+                                    <i class="fas fa-ad text-purple-600 text-2xl mb-2"></i>
+                                    <h4 class="font-semibold text-gray-800">Marketing Cookies</h4>
+                                    <p class="text-sm text-gray-600">Used for personalized advertising</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-4 bg-purple-50 rounded-lg">
+                                <p class="text-purple-800 text-sm">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    You can control cookie settings through your browser preferences. However, disabling cookies may affect site functionality.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Data Security -->
+                    <section id="data-security" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-shield-alt text-purple-600 mr-3"></i>
+                            5. Data Security
+                        </h2>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                We implement appropriate technical and organizational security measures to protect your personal information
+                                against unauthorized access, alteration, disclosure, or destruction.
+                            </p>
+                            <div class="flex flex-wrap gap-4 mt-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-lock text-green-600 mr-2"></i>
+                                    <span class="text-gray-700">SSL Encryption</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-lock text-green-600 mr-2"></i>
+                                    <span class="text-gray-700">Access Controls</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-database text-green-600 mr-2"></i>
+                                    <span class="text-gray-700">Secure Storage</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-sync-alt text-green-600 mr-2"></i>
+                                    <span class="text-gray-700">Regular Audits</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- User Rights -->
+                    <section id="user-rights" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-user-cog text-purple-600 mr-3"></i>
+                            6. Your Rights
+                        </h2>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">You have the right to:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-eye text-purple-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Access</h4>
+                                        <p class="text-gray-700 text-sm">Request copies of your personal data</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-edit text-purple-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Rectification</h4>
+                                        <p class="text-gray-700 text-sm">Correct inaccurate information</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-trash-alt text-purple-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Erasure</h4>
+                                        <p class="text-gray-700 text-sm">Request deletion of your data</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-ban text-purple-600 mt-1 mr-3"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Object</h4>
+                                        <p class="text-gray-700 text-sm">Object to data processing</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                                <p class="text-blue-800 text-sm">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    To exercise these rights, please contact us at
+                                    <a href="mailto:privacy@stylecart.com" class="underline">privacy@stylecart.com</a>
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Children's Privacy -->
+                    <section id="children-privacy" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-child text-purple-600 mr-3"></i>
+                            7. Children's Privacy
+                        </h2>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700">
+                                Our services are not directed to individuals under the age of 16. We do not knowingly collect
+                                personal information from children under 16. If you are a parent or guardian and believe your
+                                child has provided us with personal information, please contact us immediately.
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Policy Changes -->
+                    <section id="policy-changes" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-exchange-alt text-purple-600 mr-3"></i>
+                            8. Changes to This Policy
+                        </h2>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                We may update this Privacy Policy from time to time. We will notify you of any changes by
+                                posting the new policy on this page and updating the "Last Updated" date.
+                            </p>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                                <p class="text-yellow-700">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    We encourage you to review this Privacy Policy periodically for any changes.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Contact -->
+                    <section id="contact" class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-envelope text-purple-600 mr-3"></i>
+                            9. Contact Us
+                        </h2>
+                        <div class="section-card p-6">
+                            <p class="text-gray-700 mb-4">
+                                If you have any questions about this Privacy Policy or our data practices, please contact us:
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">Email</h4>
+                                    <a href="mailto:privacy@stylecart.com" class="text-purple-600 hover:underline">
+                                        privacy@stylecart.com
+                                    </a>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">Address</h4>
+                                    <p class="text-gray-700">123 Fashion Street<br>New York, NY 10001</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Acceptance -->
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                        <i class="fas fa-check-circle text-green-600 text-3xl mb-3"></i>
+                        <h3 class="text-xl font-bold text-green-800 mb-2">Thank You</h3>
+                        <p class="text-green-700">
+                            Thank you for taking the time to read our Privacy Policy. We are committed to protecting your privacy
+                            and providing a safe shopping experience.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <div id="backToTop" class="back-to-top hidden">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+
+    <!-- Footer Section -->
+<footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Company Info -->
+            <div>
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                    <span class="text-xl font-bold">StyleCart</span>
+                </div>
+                <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                <div class="flex space-x-4">
+                    <a href="https://www.facebook.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.x.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.pinterest.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-pinterest"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- User Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Shop</h3>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                    <li><a href="/user/main" class="text-gray-400 hover:text-white transition-colors">Shop</a></li>
+                    <li><a href="/user/category" class="text-gray-400 hover:text-white transition-colors">Categories</a></li>
+                    <li><a href="/user/view_wishlist" class="text-gray-400 hover:text-white transition-colors">Wishlist</a></li>
+                </ul>
+            </div>
+
+            <!-- Seller Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Seller Center</h3>
+                <ul class="space-y-2">
+                    <li><a href="/seller/login" class="text-gray-400 hover:text-white transition-colors">Seller Login</a></li>
+                    <li><a href="/seller/register" class="text-gray-400 hover:text-white transition-colors">Become a Seller</a></li>
+                    <li><a href="/seller/seller_dashboard" class="text-gray-400 hover:text-white transition-colors">Seller Dashboard</a></li>
+                    <li><a href="/seller/seller_product" class="text-gray-400 hover:text-white transition-colors">Manage Products</a></li>
+                    <li><a href="/seller/order_products" class="text-gray-400 hover:text-white transition-colors">View Orders</a></li>
+                </ul>
+            </div>
+
+            <!-- Support & Info -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Support</h3>
+                <ul class="space-y-2">
+                    <li><a href="/user/about" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="/user/contact" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bottom Section -->
+        <div class="border-t border-gray-700 pt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-gray-400">&copy; 2025 StyleCart. All rights reserved.</p>
+                </div>
+                <div class="flex flex-wrap justify-center md:justify-end gap-4 text-sm">
+                    <a href="/seller/privacypolicy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="/seller/termsofservice" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+/* Responsive Footer Styles */
+@media (max-width: 768px) {
+    .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-8.mb-8 {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .flex.flex-col.md\\:flex-row.justify-between.items-center.gap-4 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container.mx-auto.px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .pt-12 {
+        padding-top: 2rem;
+    }
+
+    .text-lg.font-semibold.mb-4 {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+
+    <script>
+        // Back to top functionality
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.remove('hidden');
+            } else {
+                backToTop.classList.add('hidden');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Update active nav link on scroll
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
