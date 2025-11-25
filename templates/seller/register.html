@@ -251,6 +251,77 @@
             color: white;
             font-size: 20px;
         }
+
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+            .container.mx-auto.flex.max-w-6xl {
+                flex-direction: column;
+                max-width: 90%;
+            }
+
+            .w-1\/2 {
+                width: 100%;
+            }
+
+            .pr-8, .pl-8 {
+                padding-right: 0;
+                padding-left: 0;
+            }
+
+            .w-1\/2.pl-8 {
+                margin-top: 2rem;
+            }
+
+            .grid.grid-cols-4.gap-8.mb-8 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth-buttons {
+                display: none;
+            }
+
+            .mobile-auth-buttons {
+                display: flex;
+            }
+
+            .grid.grid-cols-4.gap-8.mb-8 {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .form-header {
+                padding: 1rem 1.5rem;
+                margin: -1.5rem -1.5rem 1.5rem;
+            }
+
+            .grid.grid-cols-2.gap-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container.mx-auto.flex.max-w-6xl {
+                max-width: 95%;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+
+            .form-header {
+                padding: 1rem;
+                margin: -1rem -1rem 1rem;
+            }
+
+            .feature-card {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -270,7 +341,6 @@
                     <a href="home.html" class="text-gray-800 hover:text-purple-600 font-medium">Home</a>
                     <a href="shop.html" class="text-gray-800 hover:text-purple-600 font-medium">Shop</a>
                     <a href="categories.html" class="text-gray-800 hover:text-purple-600 font-medium">Categories</a>
-                    <a href="deals.html" class="text-gray-800 hover:text-purple-600 font-medium">Deals</a>
                 </div>
 
                 <!-- Icons and Mobile Menu Button -->
@@ -311,9 +381,9 @@
 
     <!-- Main Content -->
     <div class="flex-grow flex items-center justify-center py-12 px-4">
-        <div class="container mx-auto flex max-w-6xl">
+        <div class="container mx-auto flex max-w-6xl flex-col lg:flex-row">
             <!-- Registration Form -->
-            <div class="w-1/2 pr-8">
+            <div class="w-full lg:w-1/2 lg:pr-8 mb-8 lg:mb-0">
                 <div class="form-container p-8">
                     <div class="form-header text-white py-4 px-6 -mx-8 -mt-8 mb-8">
                         <h1 class="text-2xl font-bold">Create Your Seller Account</h1>
@@ -322,7 +392,7 @@
 
                     <form id="registerForm" method="POST" action="{%url 'seller_register'%}">
                         {% csrf_token %}
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="input-group">
                                 <i class="input-icon fas fa-user"></i>
                                 <input type="text" class="form-input" placeholder="First Name" name="first_name" required>
@@ -397,11 +467,11 @@
             </div>
 
             <!-- Benefits Section -->
-            <div class="w-1/2 pl-8">
+            <div class="w-full lg:w-1/2 lg:pl-8">
                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Sell Your Items</h2>
                 <p class="text-gray-600 mb-8">Create an account to unlock these exclusive benefits and enhance your shopping experience.</p>
 
-                <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <i class="fas fa-tags"></i>
@@ -410,13 +480,6 @@
                         <p class="text-gray-600">Get access to member-only sales, special promotions, and early access to new collections.</p>
                     </div>
 
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shipping-fast"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Free Shipping</h3>
-                        <p class="text-gray-600">Enjoy free standard shipping on all orders over $50 as a registered member.</p>
-                    </div>
 
                     <div class="feature-card">
                         <div class="feature-icon">
@@ -425,8 +488,6 @@
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Wishlist & Save Items</h3>
                         <p class="text-gray-600">Save your favorite items to wishlists and get notified when they go on sale.</p>
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -435,7 +496,7 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-4 gap-8 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                 <!-- Company Info -->
                 <div>
                     <div class="flex items-center mb-4">
@@ -509,25 +570,32 @@
         </div>
     </footer>
 
-<!--    <script>-->
-<!--        // Form submission handler-->
-<!--        document.getElementById('registerForm').addEventListener('submit', function(e) {-->
-<!--            e.preventDefault();-->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileMenuButton').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        });
 
-<!--            // Get form values-->
-<!--            const password = document.querySelector('input[type="password"]').value;-->
-<!--            const confirmPassword = document.querySelectorAll('input[type="password"]')[1].value;-->
+        // Form submission handler
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-<!--            // Simple validation-->
-<!--            if (password !== confirmPassword) {-->
-<!--                alert('Passwords do not match!');-->
-<!--                return;-->
-<!--            }-->
+            // Get form values
+            const password = document.querySelector('input[type="password"]').value;
+            const confirmPassword = document.querySelectorAll('input[type="password"]')[1].value;
 
+            // Simple validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
 
-<!--            // Redirect to home page (in a real app)-->
-<!--            // window.location.href = 'index.html';-->
-<!--        });-->
-<!--    </script>-->
+            // In a real application, you would send the data to a server here
+            alert('Registration successful! Redirecting to your dashboard.');
+
+            // Redirect to home page (in a real app)
+            // window.location.href = 'index.html';
+        });
+    </script>
 </body>
 </html>

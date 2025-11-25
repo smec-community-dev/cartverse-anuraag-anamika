@@ -507,3 +507,12 @@ def notification_page(request):
     # Mark notifications as read
     notifications.filter(is_read=False).update(is_read=True)
     return render(request, "seller/notifications.html", {"notifications": notifications,'seller':seller,"unread_count": unread_count})
+
+
+
+def privacy(request):
+    return render(request,'seller/privacypolicy.html')
+
+
+def terms(request):
+    return render(request,'seller/termsofservice.html')
