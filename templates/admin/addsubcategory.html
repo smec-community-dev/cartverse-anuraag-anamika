@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Subcategory - StyleCart Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Admin Navigation Header -->
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo & Admin Badge -->
+                <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-600 mr-2"></i>
+                    <span class="text-xl font-bold text-gray-800">StyleCart</span>
+                    <span class="ml-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin</span>
+                </div>
+
+                <!-- Desktop Admin Navigation -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="/core/dashboard/" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
+                    <a href="/core/categories/" class="text-purple-600 hover:text-gray-800 font-medium">Categories</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Add New Subcategory</h1>
+            <p class="text-gray-600">Create a new subcategory under an existing category</p>
+        </div>
+
+        <!-- Add Subcategory Form -->
+        <div class="dashboard-card p-6">
+            <form method="POST" action="{% url 'add-subcategory' %}" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Parent Category -->
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                        Parent Category *
+                    </label>
+                    <select
+                        id="category"
+                        name="category"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input transition-colors"
+                        required
+                    >
+                        <option value="">Select a parent category</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.category_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Choose the main category this subcategory will belong to
+                    </p>
+                </div>
+
+                <!-- Subcategory Name -->
+                <div>
+                    <label for="sub_category_name" class="block text-sm font-medium text-gray-700 mb-2">
+                        Subcategory Name *
+                    </label>
+                    <input
+                        type="text"
+                        id="sub_category_name"
+                        name="sub_category_name"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input transition-colors"
+                        placeholder="e.g., Smartphones, T-Shirts, Furniture"
+                        required
+                        autofocus
+                    >
+                    <p class="text-sm text-gray-500 mt-1">
+                        Enter a specific name that describes this subcategory
+                    </p>
+                </div>
+
+                <!-- Example Preview -->
+                <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                    <div class="flex items-start">
+                        <i class="fas fa-eye text-purple-500 mt-0.5 mr-3"></i>
+                        <div>
+                            <p class="text-sm font-medium text-purple-800">Example Structure</p>
+                            <p class="text-sm text-purple-600 mt-1">
+                                <span id="parentCategoryExample" class="font-medium">Electronics</span>
+                                →
+                                <span id="subcategoryExample" class="font-medium">Subcategory Name</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-6 border-t border-gray-200">
+                    <a href="/core/categories/" class="mb-4 sm:mb-0 text-gray-600 hover:text-gray-800 font-medium flex items-center justify-center sm:justify-start">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Categories
+                    </a>
+                    <div class="flex space-x-3">
+                        <button
+                            type="submit"
+                            class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium flex items-center transition-colors"
+                        >
+                            <i class="fas fa-plus mr-2"></i>
+                            Create Subcategory
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Quick Tips -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-6 bg-white rounded-lg border border-gray-200">
+                <div class="flex items-center mb-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-sitemap text-green-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-800">Organize Products</h3>
+                </div>
+                <p class="text-sm text-gray-600">
+                    Subcategories help organize products into logical groups, making it easier for customers to find what they need.
+                </p>
+            </div>
+
+            <div class="p-6 bg-white rounded-lg border border-gray-200">
+                <div class="flex items-center mb-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-search text-blue-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-800">Better Navigation</h3>
+                </div>
+                <p class="text-sm text-gray-600">
+                    Well-structured subcategories improve user experience and help with search engine optimization.
+                </p>
+            </div>
+        </div>
+
+        <!-- Examples Section -->
+        <div class="mt-8 bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                Good Subcategory Examples
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p class="font-medium text-gray-700 mb-2">Electronics →</p>
+                    <ul class="text-gray-600 space-y-1">
+                        <li>• Smartphones & Tablets</li>
+                        <li>• Laptops & Computers</li>
+                        <li>• Cameras & Photography</li>
+                        <li>• Audio & Headphones</li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-700 mb-2">Fashion →</p>
+                    <ul class="text-gray-600 space-y-1">
+                        <li>• Men's Clothing</li>
+                        <li>• Women's Clothing</li>
+                        <li>• Shoes & Footwear</li>
+                        <li>• Accessories</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update example preview when fields change
+        const categorySelect = document.getElementById('category');
+        const subcategoryInput = document.getElementById('sub_category_name');
+        const parentExample = document.getElementById('parentCategoryExample');
+        const subcategoryExample = document.getElementById('subcategoryExample');
+
+        // Get category name from selected option
+        function getSelectedCategoryName() {
+            const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+            return selectedOption.textContent || 'Parent Category';
+        }
+
+        // Update examples in real-time
+        categorySelect.addEventListener('change', function() {
+            parentExample.textContent = getSelectedCategoryName();
+        });
+
+        subcategoryInput.addEventListener('input', function() {
+            subcategoryExample.textContent = this.value || 'Subcategory Name';
+        });
+
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const category = document.getElementById('category').value;
+            const subcategoryName = document.getElementById('sub_category_name').value.trim();
+
+            if (!category) {
+                e.preventDefault();
+                alert('Please select a parent category');
+                document.getElementById('category').focus();
+                return false;
+            }
+
+            if (!subcategoryName) {
+                e.preventDefault();
+                alert('Please enter a subcategory name');
+                document.getElementById('sub_category_name').focus();
+                return false;
+            }
+
+            return true;
+        });
+
+        // Auto-focus on subcategory name
+        document.addEventListener('DOMContentLoaded', function() {
+            subcategoryInput.focus();
+        });
+    </script>
+</body>
+</html>

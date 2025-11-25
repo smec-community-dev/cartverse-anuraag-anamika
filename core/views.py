@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import authenticate,login
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from .models import User,Category
+from .models import User,Category,SubCategory
 from user.models import Order,OrderItem,Address,Review
 from seller.models import Product,ProductImage,Seller
 from decorators.decorators import role_required
@@ -12,8 +12,9 @@ import calendar
 from django.core.paginator import Paginator
 from django.utils.timezone import now, timedelta
 from django.db import models,transaction
-
+from django.utils.text import slugify
 from django.db.models import Avg, Sum, Count,F
+from django.contrib.auth import update_session_auth_hash
 
 
 # Create your views here.
@@ -40,7 +41,7 @@ def admin_login(request):
 
     return render(request,'admin/login.html')
 
-@role_required("admin", login_url="/admin/login")
+@role_required("admin", login_url="/core/login")
 def admin_dashboard(request):
 
     customer=User.objects.filter(role='customer').count()
@@ -85,7 +86,7 @@ def admin_dashboard(request):
     return render(request,'admin/admindashboard.html',{"customer":customer,"order_count":order,"total_revenue": total_revenue,"conversion_rate": round(conversion_rate, 2),"chart_labels": labels,"chart_data": data,"top_products":top_products,"recent_orders":recent_orders})
 
 
-
+@role_required("admin", login_url="/core/login")
 def view_user(request):
     users = User.objects.exclude(role='admin')
 
@@ -141,23 +142,32 @@ def view_user(request):
         "status": status,
         "date": date_filter,
     })
+
+@role_required("admin", login_url="/core/login")
 def suspend_user(request, user_id):
     user = User.objects.get(id=user_id)
     user.is_active = False
     user.save()
-    return redirect("view_user")
+    return redirect("/core/users")
 
+
+@role_required("admin", login_url="/core/login")
 def activate_user(request, user_id):
     user = User.objects.get(id=user_id)
     user.is_active = True
     user.save()
-    return redirect("view_user")
+    return redirect("/core/users")
 
+
+@role_required("admin", login_url="/core/login")
 def delete_user(request, user_id):
     user = User.objects.get(id=user_id)
     user.delete()
-    return redirect("view_user")
+    return redirect("/core/users")
 
+
+
+@role_required("admin", login_url="/core/login")
 def edit_user(request, user_id):
     user = User.objects.get(id=user_id)
 
@@ -167,10 +177,12 @@ def edit_user(request, user_id):
         user.role = request.POST.get("role")
         user.is_active = True if request.POST.get("is_active") else False
         user.save()
-        return redirect("view_user")
+        return redirect("/core/users")
 
     return render(request, "admin/editprofile.html", {"user": user})
 
+
+@role_required("admin", login_url="/core/login")
 def view_profile(request, user_id):
     user = get_object_or_404(User, id=user_id)
 
@@ -201,6 +213,8 @@ def view_profile(request, user_id):
         "addresses": addresses,
     })
 
+
+@role_required("admin", login_url="/core/login")
 def view_user_orders(request, user_id):
 
     user = get_object_or_404(User, id=user_id)
@@ -267,29 +281,70 @@ def view_user_orders(request, user_id):
             "search": search_query,
         }
     )
+
+
+
+@role_required("admin", login_url="/core/login")
 def view_seller_products(request, user_id):
 
-    # Get seller using user_id
     seller = get_object_or_404(Seller, user_id=user_id)
 
-    # Fetch all products for this seller
-    products = Product.objects.filter(seller=seller).prefetch_related("images")
+    search_query = request.GET.get("search", "")
+    status_filter = request.GET.get("status", "")
+    category_filter = request.GET.get("category", "")
 
-    # Stats for the summary cards
+    products = (
+        Product.objects.filter(seller=seller)
+        .prefetch_related("images", "subcategory__category")
+        .annotate(
+            total_sold=Sum("orderitem__quantity"),
+            revenue=Sum("orderitem__price"),
+            review_count=Count("review"),
+            avg_rating=Avg("review__rating"),
+        )
+    )
+
+    # SEARCH
+    if search_query:
+        products = products.filter(
+            Q(product_name__icontains=search_query) |
+            Q(id__icontains=search_query)
+        )
+
+    # STATUS FILTER
+    if status_filter == "active":
+        products = products.filter(stock__gt=10)
+    elif status_filter == "lowstock":
+        products = products.filter(stock__gt=0, stock__lte=10)
+    elif status_filter == "outofstock":
+        products = products.filter(stock=0)
+
+    # CATEGORY FILTER
+    if category_filter:
+        products = products.filter(subcategory__category__category_name=category_filter)
+
+    # PAGINATION
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get("page")
+    products_page = paginator.get_page(page_number)
+
+    # SUMMARY STATS
     product_stats = {
         "total_products": products.count(),
-        "active_products": products.filter(status="active").count(),
+        "active_products": products.filter(stock__gt=0).count(),
         "low_stock": products.filter(stock__lte=10, stock__gt=0).count(),
         "out_of_stock": products.filter(stock=0).count(),
     }
 
     return render(request, "admin/seller_products.html", {
         "seller": seller,
-        "products": products,
-        "product_stats": product_stats
+        "products": products_page,        # <-- FIXED
+        "product_stats": product_stats,   # <-- FIXED
+        "search_query": search_query,
+        "status_filter": status_filter,
+        "category_filter": category_filter,
     })
-
-
+@role_required("admin", login_url="/core/login")
 def add_user(request):
     if request.method == "POST":
 
@@ -352,7 +407,7 @@ def add_user(request):
 
     return render(request, "admin/add_user.html")
 
-
+@role_required("admin", login_url="/core/login")
 def admin_products(request):
     search = request.GET.get('search', '')
     status = request.GET.get('status', '')
@@ -410,6 +465,9 @@ def admin_products(request):
         "out_of_stock": out_of_stock
     })
 
+
+
+@role_required("admin", login_url="/core/login")
 def product_detail_view(request, id):
     # Fetch product using ID
     product = get_object_or_404(Product, id=id)
@@ -434,6 +492,9 @@ def product_detail_view(request, id):
     return render(request, "admin/singleproduct.html", context)
 
 
+
+
+@role_required("admin", login_url="/core/login")
 def delete_product_view(request, id):
     if request.method == "POST":
         product = get_object_or_404(Product, id=id)
@@ -451,6 +512,8 @@ def delete_product_view(request, id):
 
 
 
+
+@role_required("admin", login_url="/core/login")
 def admin_seller_profile(request, id):
     seller = get_object_or_404(Seller, id=id)
 
@@ -485,6 +548,8 @@ def admin_seller_profile(request, id):
     return render(request, "admin/product_sellerinfo.html", context)
 
 
+
+@role_required("admin", login_url="/core/login")
 def admin_products_by_seller(request, seller_id):
     seller = get_object_or_404(Seller, id=seller_id)
     products = Product.objects.filter(seller=seller)
@@ -498,6 +563,7 @@ def admin_products_by_seller(request, seller_id):
 from django.contrib import messages
 
 
+@role_required("admin", login_url="/core/login")
 def admin_send_warning(request, id):
     seller = get_object_or_404(Seller, id=id)
 
@@ -506,6 +572,8 @@ def admin_send_warning(request, id):
 
     return redirect("admin-seller-profile", id=id)
 
+
+@role_required("admin", login_url="/core/login")
 def admin_suspend_seller(request, id):
     seller = get_object_or_404(Seller, id=id)
 
@@ -522,6 +590,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Count
 
 
+
+@role_required("admin", login_url="/core/login")
 def admin_orders_view(request):
 
     # -------------------------------
@@ -572,6 +642,9 @@ def admin_orders_view(request):
     }
 
     return render(request, "admin/orders_page.html", context)
+
+
+@role_required("admin", login_url="/core/login")
 def admin_order_detail_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
 
@@ -646,6 +719,8 @@ def admin_order_detail_view(request, order_id):
     }
 
     return render(request, "admin/order_detail.html", context)
+
+@role_required("admin", login_url="/core/login")
 def admin_order_delete_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
 
@@ -656,3 +731,390 @@ def admin_order_delete_view(request, order_id):
 
     # Optional: confirmation page
     return render(request, "admin/order_delete_confirm.html", {"order": order})
+
+
+@role_required("admin", login_url="/core/login")
+def admin_sellers_view(request):
+
+    # --------------------------------
+    # 1️⃣ SEARCH (username, email, shop name)
+    # --------------------------------
+    search_query = request.GET.get("search", "")
+
+    sellers = Seller.objects.all().select_related("user").annotate(
+        product_count=Count("product", distinct=True),
+        order_count=Count("product__orderitem", distinct=True),
+        total_revenue=Sum(F("product__orderitem__quantity") * F("product__orderitem__price"), distinct=True),
+        avg_rating=Avg("product__review__rating")
+    )
+
+    if search_query:
+        sellers = sellers.filter(
+            Q(user__username__icontains=search_query) |
+            Q(user__email__icontains=search_query) |
+            Q(shop_name__icontains=search_query)
+        )
+
+    # --------------------------------
+    # 2️⃣ FILTER BY STATUS (active / inactive)
+    # --------------------------------
+    status_filter = request.GET.get("status", "")
+    if status_filter == "active":
+        sellers = sellers.filter(user__is_active=True)
+    elif status_filter == "inactive":
+        sellers = sellers.filter(user__is_active=False)
+
+    # --------------------------------
+    # 3️⃣ PAGINATION
+    # --------------------------------
+    paginator = Paginator(sellers, 10)   # 10 sellers per page
+    page_no = request.GET.get("page")
+    sellers_page = paginator.get_page(page_no)
+
+    # --------------------------------
+    # 4️⃣ GLOBAL STATISTICS
+    # --------------------------------
+    total_sellers = Seller.objects.count()
+    active_sellers = Seller.objects.filter(user__is_active=True).count()
+    inactive_sellers = Seller.objects.filter(user__is_active=False).count()
+    total_revenue = (
+            OrderItem.objects.aggregate(
+                total=Sum(F("quantity") * F("price"))
+            )["total"] or 0
+    )
+
+    context = {
+        "sellers": sellers_page,
+        "total_sellers": total_sellers,
+        "active_sellers": active_sellers,
+        "inactive_sellers": inactive_sellers,
+        "search_query": search_query,
+        "status_filter": status_filter,
+        "total_revenue": total_revenue,
+    }
+
+    return render(request, "admin/seller_page.html", context)
+
+
+@role_required("admin", login_url="/core/login")
+def admin_seller_detail(request, seller_id):
+    seller = get_object_or_404(Seller, id=seller_id)
+
+    # Get products
+    products = Product.objects.filter(seller=seller)
+    total_products = products.count()
+
+    # Get order items
+    order_items = OrderItem.objects.filter(product__seller=seller)
+
+    # Total orders (order items count)
+    total_orders = order_items.count()
+
+    # Total revenue
+    total_revenue = (
+        order_items.aggregate(
+            total=Sum(F("quantity") * F("price"))
+        )["total"] or 0
+    )
+
+    # Average rating
+    avg_rating = (
+        Review.objects.filter(product__seller=seller)
+        .aggregate(avg=Avg("rating"))["avg"] or 0
+    )
+    avg_rating = round(avg_rating, 1)
+
+    # All product data (for table)
+    product_data = []
+    for product in products:
+        order_count = OrderItem.objects.filter(product=product).aggregate(
+            total=Sum("quantity")
+        )["total"] or 0
+
+        rating = (
+            Review.objects.filter(product=product).aggregate(avg=Avg("rating"))["avg"] or 0
+        )
+
+        product_data.append({
+            "product": product,
+            "order_count": order_count,
+            "avg_rating": round(rating, 1),
+        })
+
+    context = {
+        "seller": seller,
+        "products": product_data,
+        "total_products": total_products,
+        "total_orders": total_orders,
+        "total_revenue": total_revenue,
+        "avg_rating": avg_rating,
+    }
+
+    return render(request, "admin/seller_detail.html", context)
+
+
+
+@role_required("admin", login_url="/core/login")
+def admin_seller_delete(request, seller_id):
+    seller = get_object_or_404(Seller, id=seller_id)
+
+    # Delete user + seller profile
+    user = seller.user
+
+    seller.delete()
+    user.delete()
+
+    messages.success(request, "Seller deleted successfully.")
+    return redirect("/admin/sellers/")
+
+@role_required("admin", login_url="/core/login")
+def admin_category_view(request):
+    search = request.GET.get("search", "")
+
+    categories = Category.objects.annotate(
+        product_count=Count("subcategory__product", distinct=True)
+    )
+
+    # search
+    if search:
+        categories = categories.filter(category_name__icontains=search)
+
+    # pagination
+    paginator = Paginator(categories, 10)
+    page_number = request.GET.get("page")
+    categories_page = paginator.get_page(page_number)
+
+    context = {
+        "categories": categories_page,
+        "search": search,
+        "total_categories": Category.objects.count(),
+    }
+    return render(request, "admin/category.html", context)
+
+
+@role_required("admin", login_url="/core/login")
+def view_categories(request):
+    search = request.GET.get("search", "")
+
+    # Annotate product count for each category
+    categories = Category.objects.annotate(
+        product_count=Count("subcategory__product")
+    )
+
+    # SEARCH
+    if search:
+        categories = categories.filter(
+            Q(category_name__icontains=search)
+        )
+
+    # PAGINATION
+    paginator = Paginator(categories, 10)  # Show 10 per page
+    page_number = request.GET.get("page")
+    categories_page = paginator.get_page(page_number)
+
+    # Stats
+    total_categories = Category.objects.count()
+    total_products = Product.objects.count()
+
+    context = {
+        "categories": categories_page,
+        "total_categories": total_categories,
+        "total_products": total_products,
+        "search": search,
+    }
+
+    return render(request, "admin/category.html", context)
+
+
+@role_required("admin", login_url="/core/login")
+def view_subcategories(request):
+    search_query = request.GET.get("search", "")
+    category_filter = request.GET.get("category", "")
+
+    # Count products under each subcategory
+    subcategories = SubCategory.objects.annotate(product_count=Count("product"))
+
+    # ─── SEARCH FILTER ───────────────────────────────
+    if search_query:
+        subcategories = subcategories.filter(
+            Q(sub_category_name__icontains=search_query) |
+            Q(category__category_name__icontains=search_query)
+        )
+
+    # ─── CATEGORY FILTER ─────────────────────────────
+    if category_filter:
+        subcategories = subcategories.filter(category_id=category_filter)
+
+    # ─── PAGINATION ──────────────────────────────────
+    paginator = Paginator(subcategories, 10)
+    page_number = request.GET.get("page")
+    subcategories_page = paginator.get_page(page_number)
+
+    # ─── STATS FOR CARDS ─────────────────────────────
+    total_subcategories = SubCategory.objects.count()
+    total_products = Product.objects.count()
+
+    categories = Category.objects.all()
+
+    context = {
+        "subcategories": subcategories_page,
+        "categories": categories,
+        "search_query": search_query,
+        "category_filter": category_filter,
+
+        # stats
+        "total_subcategories": total_subcategories,
+        "total_products": total_products,
+    }
+
+
+    return render(request, "admin/subcategory.html", context)
+
+
+@role_required("admin", login_url="/core/login")
+def add_category(request):
+    if request.method == "POST":
+        name = request.POST.get("category_name")
+        image = request.FILES.get("image")  # ← file upload
+
+        Category.objects.create(
+            category_name=name,
+            slug=slugify(name),
+            image=image
+        )
+
+        return redirect("admin-categories")
+
+    return render(request, "admin/addcategory.html")
+
+@role_required("admin", login_url="/core/login")
+def add_subcategory(request):
+    categories = Category.objects.all()
+
+    if request.method == "POST":
+        category_id = request.POST.get("category")
+        sub_name = request.POST.get("sub_category_name")
+
+        category = get_object_or_404(Category, id=category_id)
+
+        SubCategory.objects.create(
+            category=category,
+            sub_category_name=sub_name,
+            slug=slugify(sub_name)
+        )
+
+        return redirect("admin-subcategories")  # or your subcategory list
+
+    return render(request, "admin/addsubcategory.html", {
+        "categories": categories
+    })
+
+
+@role_required("admin", login_url="/core/login")
+def delete_category(request, id):
+    category = get_object_or_404(Category, id=id)
+    category.delete()
+    return redirect("admin-categories")
+
+
+@role_required("admin", login_url="/core/login")
+def delete_subcategory(request, id):
+    sub = get_object_or_404(SubCategory, id=id)
+    sub.delete()
+    return redirect("admin-subcategories")
+
+
+@role_required("admin", login_url="/core/login")
+def edit_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == "POST":
+        name = request.POST.get("category_name")
+        image = request.FILES.get("image")  # optional
+
+        category.category_name = name
+        category.slug = slugify(name)
+
+        if image:
+            category.image = image  # update only if new image uploaded
+
+        category.save()
+        return redirect("admin-categories")
+
+    return render(request, "admin/editcategory.html", {"category": category})
+
+
+@role_required("admin", login_url="/core/login")
+def edit_subcategory(request, pk):
+    subcategory = get_object_or_404(SubCategory, pk=pk)
+    categories = Category.objects.all()
+
+    if request.method == "POST":
+        sub_name = request.POST.get("name")  # <-- Correct field name
+        category_id = request.POST.get("category")
+
+        # Validation
+        if not sub_name:
+            messages.error(request, "Subcategory name cannot be empty.")
+            return redirect("edit-subcategory", pk=pk)
+
+        subcategory.sub_category_name = sub_name
+        subcategory.category_id = category_id
+        subcategory.slug = slugify(sub_name)
+
+        subcategory.save()
+        return redirect("/core/subcategories")
+
+    return render(request, "admin/editsubcategory.html", {
+        "subcategory": subcategory,
+        "categories": categories
+    })
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+@role_required("admin", login_url="/core/login")
+def admin_profile(request):
+    admin_user = request.user   # Logged-in admin
+
+    context = {
+        "admin": admin_user,
+    }
+
+    return render(request, "admin/admin_profile.html", context)
+
+@role_required("admin", login_url="/core/login")
+def update_profile(request):
+    user = request.user
+
+    if request.method == "POST":
+        user.first_name = request.POST.get("first_name")
+        user.last_name = request.POST.get("last_name")
+        user.email = request.POST.get("email")
+
+        user.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect("admin-profile")
+
+    return redirect("admin-profile")
+
+@role_required("admin", login_url="/core/login")
+def change_password(request):
+    if request.method == "POST":
+        current_password = request.POST.get("current_password")
+        new_password = request.POST.get("new_password")
+
+        if not request.user.check_password(current_password):
+            messages.error(request, "Current password is incorrect!")
+            return redirect("admin-profile")
+
+        request.user.set_password(new_password)
+        request.user.save()
+
+        update_session_auth_hash(request, request.user)
+
+        messages.success(request, "Password changed successfully!")
+        return redirect("admin-profile")
+
+    return redirect("admin-profile")

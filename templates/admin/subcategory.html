@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Orders - StyleCart Admin</title>
+    <title>Subcategory Management - StyleCart Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -51,27 +51,12 @@
         }
 
         /* Status badges */
-        .status-pending {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-processing {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status-shipped {
+        .status-active {
             background-color: #d1fae5;
             color: #065f46;
         }
 
-        .status-delivered {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .status-cancelled {
+        .status-inactive {
             background-color: #fee2e2;
             color: #991b1b;
         }
@@ -85,15 +70,51 @@
             }
         }
 
-        /* Order details animation */
-        .order-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .order-details.open {
-            max-height: 500px;
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Animation for new rows */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Category badge */
+        .category-badge {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -194,13 +215,12 @@
                 <a href="/core/products/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
                     <i class="fas fa-box mr-3"></i>Products
                 </a>
-                <a href="/core/orders/" class="block px-4 py-3 text-purple-600 font-medium bg-purple-50 rounded-lg">
+                <a href="/core/orders/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
                     <i class="fas fa-shopping-cart mr-3"></i>Orders
                 </a>
                 <a href="/core/sellers/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
                     <i class="fas fa-store mr-3"></i>Sellers
                 </a>
-
             </div>
 
             <div class="mt-8 pt-6 border-t border-gray-200">
@@ -258,8 +278,8 @@
                             <i class="fas fa-box mr-3 text-gray-400"></i>
                             Products
                         </a>
-                        <a href="/core/orders/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg admin-nav-active">
-                            <i class="fas fa-shopping-cart mr-3 text-purple-600"></i>
+                        <a href="/core/orders/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
                             Orders
                         </a>
                         <a href="/core/sellers/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
@@ -270,12 +290,22 @@
                             <i class="fas fa-chart-bar mr-3 text-gray-400"></i>
                             Categories
                         </a>
-                        <a href="{% url 'admin-subcategories' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
-                            <i class="fas fa-layer-group mr-3 text-gray-400"></i>
+                        <a href="{% url 'admin-subcategories' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg admin-nav-active">
+                            <i class="fas fa-layer-group mr-3 text-purple-400"></i>
                             Subcategories
                         </a>
                     </div>
 
+                    <!-- Quick Actions -->
+                    <div class="mt-6">
+                        <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-6">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <a href="/core/categories/" class="flex items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-all">
+                                <i class="fas fa-tags text-green-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-green-700">Manage Categories</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -284,187 +314,202 @@
                 <!-- Header Section -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-800 mb-2">All Orders</h1>
+                        <h1 class="text-2xl font-bold text-gray-800 mb-2">Subcategory Management</h1>
                         <nav class="flex" aria-label="Breadcrumb">
                             <ol class="flex items-center space-x-2 text-sm text-gray-600">
                                 <li><a href="/core/dashboard/" class="hover:text-purple-600">Dashboard</a></li>
                                 <li><i class="fas fa-chevron-right text-xs"></i></li>
-                                <li class="text-gray-800">Orders</li>
+                                <li><a href="/core/categories/" class="hover:text-purple-600">Categories</a></li>
+                                <li><i class="fas fa-chevron-right text-xs"></i></li>
+                                <li class="text-gray-800">Subcategories</li>
                             </ol>
                         </nav>
                     </div>
                     <div class="flex space-x-3 mt-4 sm:mt-0">
+                        <a href="{%url 'add-subcategory' %}" id="addSubcategoryBtn" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Add Subcategory
+                        </a>
                     </div>
                 </div>
 
-                <!-- Order Stats -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="dashboard-card p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-lg bg-blue-100 text-blue-600 mr-4">
-                                <i class="fas fa-shopping-cart text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-800">{{ total_orders }}</p>
-                                <p class="text-sm text-gray-600">Total Orders</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-lg bg-green-100 text-green-600 mr-4">
-                                <i class="fas fa-check-circle text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-800">{{ completed }}</p>
-                                <p class="text-sm text-gray-600">Completed</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-lg bg-yellow-100 text-yellow-600 mr-4">
-                                <i class="fas fa-clock text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-800">{{ pending }}</p>
-                                <p class="text-sm text-gray-600">Pending</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-lg bg-red-100 text-red-600 mr-4">
-                                <i class="fas fa-times-circle text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-800">{{ cancelled }}</p>
-                                <p class="text-sm text-gray-600">Cancelled</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               <!-- Subcategory Stats -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-                <!-- Filters and Search Section -->
-                <div class="dashboard-card p-6 mb-8">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <h2 class="text-lg font-semibold text-gray-800">Filter Orders</h2>
+    <div class="dashboard-card p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-lg bg-blue-100 text-blue-600 mr-4">
+                <i class="fas fa-layer-group text-xl"></i>
+            </div>
+            <div>
+                <p class="text-2xl font-bold text-gray-800">{{ total_subcategories }}</p>
+                <p class="text-sm text-gray-600">Total Subcategories</p>
+            </div>
+        </div>
+    </div>
 
-                        <form method="GET" class="flex flex-col sm:flex-row gap-4">
-                            <div class="relative">
-                                <input type="text" name="search" placeholder="Search..."
-                                       value="{{ search_query }}"
-                                       class="pl-10 pr-4 py-2 border rounded-lg">
-                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                            </div>
 
-                            <select name="status" class="border rounded-lg px-3 py-2">
-                                <option value="">All Status</option>
-                                <option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
-                                <option value="Delivered" {% if status_filter == "Delivered" %}selected{% endif %}>Delivered</option>
-                                <option value="Cancelled" {% if status_filter == "Cancelled" %}selected{% endif %}>Cancelled</option>
-                            </select>
-                        </form>
+    <div class="dashboard-card p-6">
+        <div class="flex items-center">
+            <div class="p-3 rounded-lg bg-purple-100 text-purple-600 mr-4">
+                <i class="fas fa-box text-xl"></i>
+            </div>
+            <div>
+                <p class="text-2xl font-bold text-gray-800">{{ total_products }}</p>
+                <p class="text-sm text-gray-600">Total Products</p>
+            </div>
+        </div>
+    </div>
 
-                    </div>
-                </div>
+</div>
 
-                <!-- Orders Table -->
+                <!-- Subcategories Table -->
                 <div class="dashboard-card p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-semibold text-gray-800">Order Management</h2>
-                        <div class="flex space-x-3">
-                            <a href="#" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium flex items-center">
-                                <i class="fas fa-sync-alt mr-2"></i> Refresh
-                            </a>
-                        </div>
+                        <h2 class="text-lg font-semibold text-gray-800">All Subcategories</h2>
+
                     </div>
+                            <form method="GET" class="flex space-x-3">
+
+                                <div class="relative">
+                                    <input type="text" name="search" placeholder="Search subcategories..."
+                                           value="{{ search_query }}"
+                                           class="pl-10 pr-4 py-2 border rounded-lg w-64">
+                                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                </div>
+
+                                <select name="category" class="border rounded-lg px-3 py-2">
+                                    <option value="">All Categories</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}" {% if category_filter == cat.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ cat.category_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+
+                                <button class="px-4 py-2 bg-purple-600 text-white rounded-md">
+                                    Filter
+                                </button>
+
+                            </form>
 
                     <div class="overflow-x-auto table-responsive">
                         <table class="w-full min-w-max">
                             <thead>
                                 <tr class="border-b border-gray-200">
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Order ID</th>
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Customer</th>
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Date</th>
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Amount</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Subcategory Name</th>
+                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Parent Category</th><th class="text-left py-3 text-sm font-medium text-gray-600">Products</th>
                                     <th class="text-left py-3 text-sm font-medium text-gray-600">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for order in orders %}
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 order-row" data-order-id="{{ order.id }}">
-                                    <td class="py-4">
-                                        <div class="font-medium text-gray-800">#ORD-{{ order.id }}</div>
-                                        <div class="text-sm text-gray-500">{{ order.items.count }} items</div>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="font-medium text-gray-800">{{ order.user.username }}</div>
-                                        <div class="text-sm text-gray-500">{{ order.user.email }}</div>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="text-gray-800">{{ order.order_date|date:"M d, Y" }}</div>
-                                        <div class="text-sm text-gray-500">{{ order.order_date|date:"M d, Y" }}</div>
-                                    </td>
-                                                    <td class="py-4">
-                                                        <div class="font-semibold text-gray-800">₹{{ order.total_amount }}</div>
+                                {% for sub in subcategories %}
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="py-3">{{ sub.sub_category_name }}</td>
+                                    <td class="py-3"><span class="category-badge">{{ sub.category.category_name }}</span></td>
+                                    <td class="py-3">{{ sub.product_count }}</td>
 
-
-                                    <td class="py-4">
-                                        <div class="flex space-x-2">
-                                            <a href="{% url 'admin-order-detail' order.id %}" class="text-blue-600 hover:text-blue-800 p-1" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{% url 'admin-order-delete' order.id %}" class="text-red-600 hover:text-red-800 p-1" title="Delete Order">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </div>
+                                    <td class="py-3">
+                                        <a href="{% url 'edit-subcategory' sub.id %}" class="text-blue-600 mr-2"><i class="fas fa-edit"></i></a>
+                                        <a href="{% url 'delete-subcategory' sub.id %}" class="text-red-600"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                                 {% empty %}
-                                <tr>
-                                    <td colspan="6" class="py-8 text-center text-gray-500">
-                                        <i class="fas fa-shopping-cart text-4xl mb-4 text-gray-300"></i>
-                                        <p>No orders found.</p>
-                                    </td>
-                                </tr>
+                                <tr><td colspan="7" class="text-center py-6 text-gray-500">No subcategories found</td></tr>
                                 {% endfor %}
                             </tbody>
+
+
                         </table>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="py-12 text-center hidden">
+                        <i class="fas fa-layer-group text-4xl mb-4 text-gray-300"></i>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">No subcategories found</h3>
+                        <p class="text-gray-500 mb-6">Get started by creating your first subcategory.</p>
+                        <button id="emptyAddBtn" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                            <i class="fas fa-plus mr-2"></i> Add Subcategory
+                        </button>
                     </div>
 
                     <!-- Pagination -->
                     <div class="flex justify-between items-center mt-6">
-                        <p class="text-sm text-gray-600">
-                            Showing {{ orders.start_index }} to {{ orders.end_index }} of {{ orders.paginator.count }} orders
-                        </p>
-                        <div class="flex space-x-2">
-                            {% if orders.has_previous %}
-                            <a href="?page={{ orders.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
-                               class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
-                                Previous
-                            </a>
-                            {% endif %}
 
-                            {% for num in orders.paginator.page_range %}
-                                {% if orders.number == num %}
-                                <span class="px-3 py-1 bg-purple-600 text-white rounded-md font-medium">{{ num }}</span>
-                                {% else %}
-                                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
-                                   class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">{{ num }}</a>
-                                {% endif %}
-                            {% endfor %}
+    <p class="text-sm text-gray-600">
+        Showing {{ subcategories.start_index }} to {{ subcategories.end_index }} of {{ subcategories.paginator.count }}
+    </p>
 
-                            {% if orders.has_next %}
-                            <a href="?page={{ orders.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
-                               class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
-                                Next
-                            </a>
-                            {% endif %}
+    <div class="flex space-x-2">
+        {% if subcategories.has_previous %}
+            <a href="?page={{ subcategories.previous_page_number }}&search={{ search_query }}&category={{ category_filter }}"
+               class="px-3 py-1 border rounded-md">Previous</a>
+        {% endif %}
+
+        {% for page in subcategories.paginator.page_range %}
+            {% if page == subcategories.number %}
+                <span class="px-3 py-1 rounded-md bg-purple-600 text-white">{{ page }}</span>
+            {% else %}
+                <a href="?page={{ page }}&search={{ search_query }}&category={{ category_filter }}"
+                   class="px-3 py-1 border rounded-md">{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if subcategories.has_next %}
+            <a href="?page={{ subcategories.next_page_number }}&search={{ search_query }}&category={{ category_filter }}"
+               class="px-3 py-1 border rounded-md">Next</a>
+        {% endif %}
+    </div>
+
+</div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Subcategory Modal -->
+    <div id="subcategoryModal" class="modal">
+        <div class="modal-content">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800" id="modalTitle">Add New Subcategory</h2>
+            </div>
+            <form id="subcategoryForm" class="p-6">
+                <input type="hidden" id="subcategoryId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subcategory Name *</label>
+                        <input type="text" id="subcategoryName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500" placeholder="Enter subcategory name" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Parent Category *</label>
+                        <select id="parentCategory" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500" required>
+                            <option value="">Select a category</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="status" value="active" class="mr-2 text-purple-600 focus:ring-purple-500" checked>
+                                <span class="text-sm text-gray-700">Active</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="status" value="inactive" class="mr-2 text-purple-600 focus:ring-purple-500">
+                                <span class="text-sm text-gray-700">Inactive</span>
+                            </label>
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+                        <span id="submitBtnText">Add Subcategory</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -545,66 +590,6 @@
         </div>
     </footer>
 
-    <script>
-        // Mobile Menu Functionality
-        const mobileMenuButton = document.getElementById('mobileMenuButton');
-        const closeMobileMenu = document.getElementById('closeMobileMenu');
-        const mobileMenu = document.getElementById('mobileMenu');
 
-        if (mobileMenuButton && closeMobileMenu && mobileMenu) {
-            mobileMenuButton.addEventListener('click', function() {
-                mobileMenu.classList.add('active');
-            });
-
-            closeMobileMenu.addEventListener('click', function() {
-                mobileMenu.classList.remove('active');
-            });
-
-            document.addEventListener('click', function(event) {
-                if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-                    mobileMenu.classList.remove('active');
-                }
-            });
-        }
-
-        // Filter functionality
-        document.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', function() {
-                // Submit the form when filters change
-                if (this.name === 'status') {
-                    this.form.submit();
-                }
-            });
-        });
-
-        // Search functionality
-        const searchInput = document.querySelector('input[type="text"]');
-        let searchTimeout;
-
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                // Submit the form after user stops typing
-                this.form.submit();
-            }, 500);
-        });
-
-        // Export functionality
-        document.querySelector('button:contains("Export")').addEventListener('click', function() {
-            alert('Export functionality would be implemented here');
-        });
-
-        // Refresh functionality
-        document.querySelector('button:contains("Refresh")').addEventListener('click', function() {
-            location.reload();
-        });
-
-        // Order actions
-        document.querySelectorAll('button:contains("Edit Order")').forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Edit order functionality would be implemented here');
-            });
-        });
-    </script>
 </body>
 </html>

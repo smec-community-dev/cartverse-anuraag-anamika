@@ -150,11 +150,9 @@
 
                 <!-- Desktop Admin Navigation -->
                 <div class="hidden md:flex space-x-8 items-center">
-                    <a href="/core/dashboard/" class="text-gray-800 hover:text-purple-600 font-medium">Dashboard</a>
-                    <a href="/admin/users/" class="text-gray-800 hover:text-purple-600 font-medium">Users</a>
-                    <a href="/admin/products/" class="text-gray-800 hover:text-purple-600 font-medium">Products</a>
-                    <a href="/admin/orders/" class="text-purple-600 hover:text-gray-800 font-medium">Orders</a>
-                    <a href="/admin/sellers/" class="text-gray-800 hover:text-purple-600 font-medium">Sellers</a>
+                    <a href="/core/dashboard" class="text-purple-600 hover:text-gray-800 font-medium">Dashboard</a>
+                    <a href="/core/users" class="text-gray-800 hover:text-purple-600 font-medium">Users</a>
+                    <a href="/core/sellers" class="text-gray-800 hover:text-purple-600 font-medium">Sellers</a>
                 </div>
 
                 <!-- Admin Actions -->
@@ -186,14 +184,9 @@
                                 <p class="text-sm text-gray-500">Admin Account</p>
                             </div>
 
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <a href="{% url 'admin-profile' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                 <i class="fas fa-user-shield mr-3 text-gray-400"></i>
                                 Admin Profile
-                            </a>
-
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                <i class="fas fa-cog mr-3 text-gray-400"></i>
-                                Settings
                             </a>
 
                             <div class="border-t border-gray-100 my-1"></div>
@@ -314,18 +307,7 @@
                             <i class="fas fa-store mr-3 text-gray-400"></i>
                             Sellers
                         </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
-                            <i class="fas fa-chart-bar mr-3 text-gray-400"></i>
-                            Analytics
-                        </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
-                            <i class="fas fa-tags mr-3 text-gray-400"></i>
-                            Discounts
-                        </a>
-                        <a href="#" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
-                            <i class="fas fa-cog mr-3 text-gray-400"></i>
-                            Settings
-                        </a>
+
                     </div>
 
                     <!-- Quick Actions -->
@@ -366,15 +348,10 @@
                         </nav>
                     </div>
                     <div class="flex space-x-3 mt-4 sm:mt-0 no-print">
-                        <a href="/admin/orders/" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
+                        <a href="/core/orders/" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
                             <i class="fas fa-arrow-left mr-2"></i> Back to Orders
                         </a>
-                        <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium flex items-center">
-                            <i class="fas fa-print mr-2"></i> Print
-                        </button>
-                        <button id="updateOrderStatus" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium flex items-center">
-                            <i class="fas fa-edit mr-2"></i> Update Status
-                        </button>
+
                     </div>
                 </div>
 
@@ -395,7 +372,7 @@
                                 </span>
                             </div>
                             <div>
-                                <p class="text-gray-600">Placed on {{ order.order_date|date:"F d, Y" }} at {{ order.order_date|date:"F d, Y" }}</p>
+                                <p class="text-gray-600">Placed on {{ order.order_date|date:"F d, Y" }} </p>
                             </div>
                         </div>
                         <div class="flex space-x-3">
@@ -536,7 +513,7 @@
                                                 <div class="text-gray-800">{{ item.quantity }}</div>
                                             </td>
                                             <td class="py-4">
-                                                <div class="font-semibold text-gray-800">₹{{ item.get_total_price }}</div>
+                                                <div class="font-semibold text-gray-800">₹{{ order_total }}</div>
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -620,17 +597,12 @@
                 <!-- Order Actions -->
                 <div class="mt-8 flex flex-col sm:flex-row sm:justify-between gap-4 no-print">
                     <div class="flex space-x-3">
-                        <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
+                        <a href="mailto:" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
                             <i class="fas fa-envelope mr-2"></i> Email Customer
-                        </button>
-                        <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
-                            <i class="fas fa-truck mr-2"></i> Track Shipment
-                        </button>
+                        </a>
+
                     </div>
                     <div class="flex space-x-3">
-                        <button class="px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 font-medium flex items-center">
-                            <i class="fas fa-times mr-2"></i> Cancel Order
-                        </button>
                         <a href="{% url 'admin-order-delete' order.id %}" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 font-medium flex items-center">
                             <i class="fas fa-trash mr-2"></i> Delete Order
                         </a>
