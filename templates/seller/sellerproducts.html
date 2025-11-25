@@ -233,15 +233,14 @@
                 <div class="flex items-center space-x-3 mb-4">
 
                     <!-- Notification -->
+                    <!-- Notification -->
                     <div class="relative">
-                        <a href="{% url 'notifications' %}" class="text-gray-700 hover:text-purple-600 p-2">
+                        <a href="{% url 'notifications' %}" class="text-gray-700 hover:text-purple-600 p-2 relative">
                             <i class="fas fa-bell text-lg"></i>
 
-                            {% if unread_count > 0 %}
-                            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
-                                {{ unread_count }}
+                            <span id="notificationCountIcon"
+                                class="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full hidden">
                             </span>
-                            {% endif %}
                         </a>
                     </div>
                     <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
@@ -742,6 +741,78 @@
     </footer>
 
     <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+    // Fetch unread notifications count
+    fetch("/seller/api/unread_notifications/")
+        .then(response => response.json())
+        .then(data => {
+            const bell = document.getElementById("notificationCountIcon");
+
+            if (data.unread > 0) {
+                bell.classList.remove("hidden");
+                bell.textContent = data.unread;
+            } else {
+                bell.classList.add("hidden");
+            }
+        });
+
+});
+const socket = new WebSocket(
+    "ws://" + window.location.host + "/ws/notifications/"
+);
+
+socket.onopen = () => {
+    console.log("🔗 WebSocket connected");
+};
+
+socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    console.log("📩 New Notification:", data.message);
+
+    // SHOW POPUP ALERT
+    showSellerNotification(data.title, data.message);
+
+    // UPDATE BELL COUNT
+    updateBellCount();
+};
+
+socket.onclose = () => {
+    console.log("❌ WebSocket closed");
+};
+socket.onerror = (e) => {
+    console.log("⚠️ WebSocket error:", e);
+};
+
+// 🔔 Popup toast
+function showSellerNotification(title, message) {
+    const box = document.createElement("div");
+    box.className = "fixed top-4 right-4 bg-white shadow-xl p-4 rounded-lg border-l-4 border-purple-600 z-50";
+    box.innerHTML = `
+        <strong class="text-gray-800">${title}</strong>
+        <p class="text-gray-600 mt-1">${message}</p>
+    `;
+    document.body.appendChild(box);
+
+    setTimeout(() => box.remove(), 5000);
+}
+
+// 🔢 update icon count (auto refresh)
+function updateBellCount() {
+    fetch("/seller/api/unread_notifications/")
+        .then(res => res.json())
+        .then(data => {
+            const bell = document.getElementById("notificationCountIcon");
+
+            if (data.unread > 0) {
+                bell.textContent = data.unread;
+                bell.classList.remove("hidden");
+            } else {
+                bell.classList.add("hidden");
+            }
+        });
+}
         // Mobile Menu Functionality
         const mobileMenuButton = document.getElementById('mobileMenuButton');
         const closeMobileMenu = document.getElementById('closeMobileMenu');

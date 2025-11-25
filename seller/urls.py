@@ -18,5 +18,8 @@ urlpatterns=[
     path('seller_delete/',views.seller_account_delete,name='seller_account_delete'),
     path('seller_profile/',views.seller_profile,name='seller_profile'),
     path('seller_review/<int:product_id>/<slug:slug>/',views.seller_review,name='seller_review'),
-    path('seller_notifications/',views.notification_page,name="notifications")
+    path('seller_notifications/',views.notification_page,name="notifications"),
+ path("api/unread_notifications/", views.api_unread_notifications, name="unread_notifications"),
 ]
+
+

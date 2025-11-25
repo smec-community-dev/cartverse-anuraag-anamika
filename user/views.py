@@ -1,5 +1,5 @@
 from re import search
-
+from seller.views import send_notification
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
 from django.utils.text import normalize_newlines
@@ -563,6 +563,13 @@ def place_order(request):
 
         total = 0
         for item in cart_items:
+            seller = item.product.seller.user  # seller's user object
+            product_name = item.product.product_name
+            send_notification(
+                seller,
+                f"New order received for {product_name}",
+                title="New Order"
+            )
             qty = int(request.POST.get(f'quantities[{item.id}]', 1))
             total += item.price * qty
             OrderItem.objects.create(
