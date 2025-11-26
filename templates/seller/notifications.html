@@ -390,8 +390,11 @@
     <!-- Original JavaScript (Unchanged) -->
     <script>
         const socket = new WebSocket(
-            "ws://" + window.location.host + "/ws/notifications/"
-        );
+    (window.location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    "/ws/users/notifications/"
+);
+
 
         socket.onmessage = function(e) {
             let data = JSON.parse(e.data);

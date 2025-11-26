@@ -8,36 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        @keyframes pop {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes pop {0% {transform:scale(.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
+        @keyframes fadeIn {from {opacity:0;transform:translateY(10px);}to {opacity:1;transform:translateY(0);}}
     </style>
 </head>
 <body class="bg-gray-50">
 
 <div class="flex justify-center items-center min-h-screen py-8">
-    <div class="bg-white shadow-lg rounded-xl p-6 w-full max-w-md mx-4" style="animation: fadeIn 0.6s ease;">
+    <div class="bg-white shadow-lg rounded-xl p-6 w-full max-w-md mx-4" style="animation: fadeIn .6s ease;">
 
-        <!-- Success Icon -->
         <div class="flex justify-center mb-4">
-            <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold"
-                 style="animation: pop 0.5s ease;">
+            <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold" style="animation: pop .5s ease;">
                 <i class="fas fa-check"></i>
             </div>
         </div>
 
-        <!-- Success Message -->
         <h1 class="text-xl font-bold text-center text-gray-800 mb-2">Order Confirmed!</h1>
-        <p class="text-center text-gray-600 text-sm mb-6">
-            Thank you for your purchase. Your order is being processed.
-        </p>
+        <p class="text-center text-gray-600 text-sm mb-6">Thank you for your purchase. Your order is being processed.</p>
 
-        <!-- Order Details Card -->
         <div class="bg-gray-50 p-4 rounded-lg border mb-5 text-sm">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="font-semibold text-gray-800">Order Summary</h2>
@@ -55,20 +43,16 @@
                 </div>
             </div>
 
-            <!-- Shipping Address -->
             <div class="mt-4 pt-3 border-t border-gray-200">
                 <h3 class="font-semibold text-gray-800 text-xs mb-2">SHIPPING TO</h3>
                 <p class="text-xs text-gray-700">
                     {{ order.address.full_name }}<br>
                     {{ order.address.address_line1 }}<br>
-                    {% if order.address.address_line2 %}
-                    {{ order.address.address_line2 }}<br>
-                    {% endif %}
+                    {% if order.address.address_line2 %}{{ order.address.address_line2 }}<br>{% endif %}
                     {{ order.address.city }}, {{ order.address.pincode }}
                 </p>
             </div>
 
-            <!-- Ordered Items -->
             <div class="mt-4 pt-3 border-t border-gray-200">
                 <h3 class="font-semibold text-gray-800 text-xs mb-2">ITEMS ({{ order.orderitem_set.all|length }})</h3>
                 <div class="space-y-2 max-h-24 overflow-y-auto">
@@ -85,45 +69,37 @@
             </div>
         </div>
 
-        <!-- Buttons -->
         <div class="flex flex-col sm:flex-row gap-3">
-            <a href="{% url 'user_home' %}"
-               class="flex-1 text-center bg-purple-600 text-white py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition text-sm flex items-center justify-center gap-2">
-                <i class="fas fa-shopping-bag text-xs"></i>
-                Shop More
+            <a href="{% url 'user_home' %}" class="flex-1 text-center bg-purple-600 text-white py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition text-sm flex items-center justify-center gap-2">
+                <i class="fas fa-shopping-bag text-xs"></i> Shop More
             </a>
 
-            <a href="{% url 'order_item' %}"
-               class="flex-1 text-center bg-gray-200 text-gray-800 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition text-sm flex items-center justify-center gap-2">
-                <i class="fas fa-clipboard-list text-xs"></i>
-                My Orders
+            <a href="{% url 'order_item' %}" class="flex-1 text-center bg-gray-200 text-gray-800 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition text-sm flex items-center justify-center gap-2">
+                <i class="fas fa-clipboard-list text-xs"></i> My Orders
             </a>
         </div>
 
-        <!-- Additional Info -->
-        <div class="mt-4 text-center">
-            <p class="text-xs text-gray-500">
-                Confirmation email sent to your registered email address
-            </p>
-        </div>
+        <p class="mt-4 text-center text-xs text-gray-500">A confirmation email has been sent to your registered email.</p>
 
     </div>
 </div>
 
+<!-- 🔥 WebSocket + Live Order Watch -->
 <script>
-    // Add some interactive effects
-    document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('a');
-        buttons.forEach(button => {
-            button.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-1px)';
-                this.style.transition = 'all 0.2s ease';
-            });
-            button.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-    });
+// WebSocket Notifications
+let ws = new WebSocket("ws://" + window.location.host + "/ws/users/notifications/");
+
+ws.onopen = () => console.log("WS Connected");
+ws.onmessage = e => {
+    let data = JSON.parse(e.data);
+    alert(`🔔 ${data.title}\n${data.message}`);
+};
+
+// AUTO CHECK ORDER STATUS EVERY 5sec
+setInterval(() => {
+    fetch(window.location.origin + "/user/check-order-status/{{ order.id }}/")
+        .then(res => console.log("ORDER STATUS CHECK:", res.status));
+}, 5000);
 </script>
 
 </body>

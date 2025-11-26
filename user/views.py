@@ -569,37 +569,33 @@ def place_order(request):
 
         total = 0
         for item in cart_items:
-            qty = int(request.POST.get(f'quantities[{item.id}]', 1))
-            total += item.price * qty
+            qty = int(request.POST.get(f'quantities[{item.id}]', item.quantity))
+            item_total = item.price * qty  # ✔ multiply by qty
+            total += item_total
 
-            # Create order item
             OrderItem.objects.create(
                 order=order,
                 product=item.product,
                 quantity=qty,
-                price=item.price
+                price=item_total  # ✔ FIXED
             )
 
-            # Reduce stock
+            # Update stock
             item.product.stock -= qty
             item.product.save()
 
-            # Send notification for each item
             send_user_notification(
                 request.user,
                 "Order Placed",
-                f"Your order for {item.product.product_name} (₹{item.product.price}) has been placed!",
+                f"Your order for {item.product.product_name} (₹{item_total}) has been placed!"
             )
 
         order.total_amount = total
         order.save()
 
-        # Clear cart
         cart_items.delete()
 
-    return redirect('order_success')
-
-
+    return redirect('order_success', order_id=order.id)
 
 @role_required('customer', '/user/login')
 def buy_now(request, slug):
@@ -639,6 +635,7 @@ def order_page_buy_now(request):
 def place_order_buy_now(request):
     if request.method == "POST":
         product_id = request.session.get("buy_now_product_id")
+        qty = int(request.session.get("buy_now_qty", 1))  # ← Get correct quantity
         product = Product.objects.get(id=product_id)
         address_id = request.POST.get("address_id")
 
@@ -646,41 +643,43 @@ def place_order_buy_now(request):
             messages.error(request, "Please select a shipping address.")
             return redirect("order_page_buy_now")
 
-        if product.stock < 1:
-            messages.error(request, "Out of stock.")
-            return redirect("user_home")
+        if qty > product.stock:
+            messages.error(request, "Only limited stock available.")
+            return redirect("order_page_buy_now")
+
+        total_price = product.price * qty  # ← FIXED 💥
 
         # Create Order
         order = Order.objects.create(
             user=request.user,
-            total_amount=product.price,
+            total_amount=total_price,
             address_id=address_id
         )
 
-        # Create Order Item
+        # Order Item
         OrderItem.objects.create(
             order=order,
             product=product,
-            price=product.price,
-            quantity=1
+            price=total_price,  # ← FIXED 💥 (price multiplied by qty)
+            quantity=qty
         )
 
-        # Reduce stock
-        product.stock -= 1
+        # Update stock
+        product.stock -= qty
         product.save()
 
-
+        # Notification
         send_user_notification(
             request.user,
             "Order Placed",
-            f"Your order for {product.product_name} (₹{product.price}) has been placed!"
+            f"Your order for {product.product_name} (₹{total_price}) has been placed!"
         )
 
-        # Remove Buy Now session data
+        # Remove session
         del request.session["buy_now_product_id"]
+        del request.session["buy_now_qty"]
 
-    return redirect("order_success")
-
+    return redirect('order_success', order_id=order.id)
 
 @role_required('customer', '/user/login')
 def order_details(request, order_id):
@@ -692,11 +691,9 @@ def order_details(request, order_id):
     })
 
 
-@role_required('customer', '/user/login')
-def order_success(request):
-    latest_order = Order.objects.filter(user=request.user).order_by('-order_date').first()
-    return render(request, "user/order_success_page.html", {"order": latest_order})
-
+def order_success(request, order_id):
+    order = Order.objects.get(id=order_id, user=request.user)
+    return render(request, "user/order_success_page.html", {"order": order})
 
 
 @role_required('customer', '/user/login')
@@ -1027,7 +1024,7 @@ def verify_payment(request):
         product.save()
     Cart.objects.filter(user=request.user).delete()
 
-    return JsonResponse({"status": "success", "redirect_url": "/user/order_success/"})
+    return JsonResponse({"status": "success", "redirect_url": f"/user/order-success/{order_id}/"})
 
 # Create DB record
 
@@ -1067,19 +1064,17 @@ def check_order_status(request, order_id):
 
 @role_required('customer', '/user/login')
 def notifications_page(request):
-    notes = UserNotification.objects.filter(user=request.user).order_by("-created_at")
+    notifications = UserNotification.objects.filter(user=request.user).order_by("-created_at")
 
-    notes.filter(is_read=False).update(is_read=True)
+    unread_count = UserNotification.objects.filter(user=request.user, is_read=False).count()
 
-    # extract product details
-    for n in notes:
-        if not n.product_name:  # only extract if not stored already
-            n.product_name, n.price = extract_product_details(n.message)
+    # Mark all as read
+    UserNotification.objects.filter(user=request.user, is_read=False).update(is_read=True)
 
     return render(request, "user/notifications.html", {
-        "notifications": notes,
+        "notifications": notifications,
+        "unread_count": unread_count,
     })
-
 
 def extract_product_details(message):
     pattern = r"for (.*?) \(₹(\d+)\)"
