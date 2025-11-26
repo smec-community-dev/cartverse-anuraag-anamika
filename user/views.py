@@ -8,6 +8,7 @@ from decorators.decorators import role_required
 from .models import Customer, Wishlist,Cart,Order,OrderItem,Address,Review,ReviewImage
 from core.models import User,Category,SubCategory
 from seller.models import Product,ProductImage
+from django.contrib import messages
 from django.core.paginator import Paginator
 from decorators.decorators import role_required
 from django.db.models import Q
@@ -334,6 +335,7 @@ def add_cart(request, slug):
             product=product,
             defaults={"price": product.price, "quantity": qty}
         )
+
         if not created:
             if cart_item.quantity + qty <= product.stock:
                 cart_item.quantity += qty
@@ -379,7 +381,14 @@ def update_quantity(request, cart_id):
 
 @role_required('customer','/user/login')
 def cart(request):
-
+    print("=== DEBUG GOOGLE LOGIN ===")
+    print("User:", request.user)
+    print("Authenticated:", request.user.is_authenticated)
+    print("Role:", getattr(request.user, "role", None))
+    print("Customer exists:", Customer.objects.filter(user=request.user).exists())
+    print("==========================")
+    print("User:", request.user)
+    print("Authenticated:", request.user.is_authenticated)
     cart_items = Cart.objects.filter(user=request.user)
 
     total = sum(item.price * item.quantity for item in cart_items)
@@ -569,6 +578,15 @@ def place_order(request):
 
         total = 0
         for item in cart_items:
+            seller = item.product.seller.user  # seller's user object
+            product_name = item.product.product_name
+            send_notification(
+                seller,
+                f"New order received for {product_name}",
+                title="New Order"
+            )
+            qty = int(request.POST.get(f'quantities[{item.id}]', 1))
+            total += item.price * qty
             qty = int(request.POST.get(f'quantities[{item.id}]', item.quantity))
             item_total = item.price * qty  # ✔ multiply by qty
             total += item_total

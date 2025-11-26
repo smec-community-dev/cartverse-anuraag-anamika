@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Orders - StyleCart Admin</title>
+    <title>Edit Category - StyleCart Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -51,49 +51,14 @@
         }
 
         /* Status badges */
-        .status-pending {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-processing {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status-shipped {
+        .status-active {
             background-color: #d1fae5;
             color: #065f46;
         }
 
-        .status-delivered {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .status-cancelled {
+        .status-inactive {
             background-color: #fee2e2;
             color: #991b1b;
-        }
-
-        /* Table responsive */
-        @media (max-width: 768px) {
-            .table-responsive {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-        }
-
-        /* Order details animation */
-        .order-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-
-        .order-details.open {
-            max-height: 500px;
         }
     </style>
 </head>
@@ -137,9 +102,14 @@
                                 <p class="text-sm text-gray-500">Admin Account</p>
                             </div>
 
-                            <a href="{% url 'admin-profile' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                 <i class="fas fa-user-shield mr-3 text-gray-400"></i>
                                 Admin Profile
+                            </a>
+
+                            <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-3 text-gray-400"></i>
+                                Settings
                             </a>
 
                             <div class="border-t border-gray-100 my-1"></div>
@@ -183,16 +153,18 @@
                 <a href="/core/users/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
                     <i class="fas fa-users mr-3"></i>Users
                 </a>
-                <a href="/core/products/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                <a href="/admin/products/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
                     <i class="fas fa-box mr-3"></i>Products
                 </a>
-                <a href="/core/orders/" class="block px-4 py-3 text-purple-600 font-medium bg-purple-50 rounded-lg">
+                <a href="/admin/orders/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
                     <i class="fas fa-shopping-cart mr-3"></i>Orders
                 </a>
-                <a href="/core/sellers/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
+                <a href="/admin/sellers/" class="block px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg">
                     <i class="fas fa-store mr-3"></i>Sellers
                 </a>
-
+                <a href="/admin/categories/" class="block px-4 py-3 text-purple-600 font-medium bg-purple-50 rounded-lg">
+                    <i class="fas fa-tags mr-3"></i>Categories
+                </a>
             </div>
 
             <div class="mt-8 pt-6 border-t border-gray-200">
@@ -214,7 +186,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
         <div class="flex flex-col lg:flex-row gap-8 min-h-screen items-stretch">
             <!-- Sidebar - Hidden on mobile -->
             <div class="hidden lg:block w-72">
@@ -242,16 +214,16 @@
                             <i class="fas fa-box mr-3 text-gray-400"></i>
                             Products
                         </a>
-                        <a href="/core/orders/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg admin-nav-active">
-                            <i class="fas fa-shopping-cart mr-3 text-purple-600"></i>
+                        <a href="/core/orders/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+                            <i class="fas fa-shopping-cart mr-3 text-gray-400"></i>
                             Orders
                         </a>
                         <a href="/core/sellers/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
                             <i class="fas fa-store mr-3 text-gray-400"></i>
                             Sellers
                         </a>
-                        <a href="{% url 'admin-categories' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
-                            <i class="fas fa-chart-bar mr-3 text-gray-400"></i>
+                        <a href="/core/categories/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg admin-nav-active">
+                            <i class="fas fa-tags mr-3 text-purple-600"></i>
                             Categories
                         </a>
                         <a href="{% url 'admin-subcategories' %}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
@@ -260,6 +232,20 @@
                         </a>
                     </div>
 
+                    <!-- Quick Actions -->
+                    <div class="mt-6">
+                        <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-6">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <a href="/admin/categories/" class="flex items-center p-3 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg hover:from-purple-100 hover:to-indigo-100 transition-all">
+                                <i class="fas fa-arrow-left text-purple-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-purple-700">Back to Categories</span>
+                            </a>
+                            <a href="/admin/categories/add/" class="flex items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-all">
+                                <i class="fas fa-plus text-green-600 mr-3 text-lg"></i>
+                                <span class="font-medium text-green-700">Add New Category</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -268,186 +254,110 @@
                 <!-- Header Section -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-800 mb-2">All Orders</h1>
+                        <h1 class="text-2xl font-bold text-gray-800 mb-2">Edit Category</h1>
                         <nav class="flex" aria-label="Breadcrumb">
                             <ol class="flex items-center space-x-2 text-sm text-gray-600">
                                 <li><a href="/core/dashboard/" class="hover:text-purple-600">Dashboard</a></li>
                                 <li><i class="fas fa-chevron-right text-xs"></i></li>
-                                <li class="text-gray-800">Orders</li>
+                                <li><a href="/admin/categories/" class="hover:text-purple-600">Categories</a></li>
+                                <li><i class="fas fa-chevron-right text-xs"></i></li>
+                                <li class="text-gray-800">Edit Category</li>
                             </ol>
                         </nav>
                     </div>
                     <div class="flex space-x-3 mt-4 sm:mt-0">
+                        <a href="/admin/categories/" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i> Back to Categories
+                        </a>
                     </div>
                 </div>
 
-                <!-- Order Stats -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="dashboard-card p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-lg bg-blue-100 text-blue-600 mr-4">
-                                <i class="fas fa-shopping-cart text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-800">{{ total_orders }}</p>
-                                <p class="text-sm text-gray-600">Total Orders</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-lg bg-green-100 text-green-600 mr-4">
-                                <i class="fas fa-check-circle text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-800">{{ completed }}</p>
-                                <p class="text-sm text-gray-600">Completed</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-lg bg-yellow-100 text-yellow-600 mr-4">
-                                <i class="fas fa-clock text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-800">{{ pending }}</p>
-                                <p class="text-sm text-gray-600">Pending</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-lg bg-red-100 text-red-600 mr-4">
-                                <i class="fas fa-times-circle text-xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-800">{{ cancelled }}</p>
-                                <p class="text-sm text-gray-600">Cancelled</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Filters and Search Section -->
-                <div class="dashboard-card p-6 mb-8">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <h2 class="text-lg font-semibold text-gray-800">Filter Orders</h2>
-
-                        <form method="GET" class="flex flex-col sm:flex-row gap-4">
-                            <div class="relative">
-                                <input type="text" name="search" placeholder="Search..."
-                                       value="{{ search_query }}"
-                                       class="pl-10 pr-4 py-2 border rounded-lg">
-                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                            </div>
-
-                            <select name="status" class="border rounded-lg px-3 py-2">
-                                <option value="">All Status</option>
-                                <option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
-                                <option value="Delivered" {% if status_filter == "Delivered" %}selected{% endif %}>Delivered</option>
-                                <option value="Cancelled" {% if status_filter == "Cancelled" %}selected{% endif %}>Cancelled</option>
-                            </select>
-                        </form>
-
-                    </div>
-                </div>
-
-                <!-- Orders Table -->
+                <!-- Edit Category Form -->
                 <div class="dashboard-card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-semibold text-gray-800">Order Management</h2>
-                        <div class="flex space-x-3">
-                            <a href="#" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium flex items-center">
-                                <i class="fas fa-sync-alt mr-2"></i> Refresh
-                            </a>
+                    <h2 class="text-lg font-semibold text-gray-800 mb-6">Update Category Information</h2>
+
+                    <form method="POST" action="">
+                        {% csrf_token %}
+
+                        <div class="space-y-6">
+                            <!-- Category Name -->
+                            <div>
+                                <label for="category_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Category Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    id="category_name"
+                                    name="category_name"
+                                    value="{{ category.category_name }}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 transition-colors"
+                                    placeholder="Enter category name"
+                                    required
+                                >
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Enter a descriptive name for your category
+                                </p>
+                            </div>
+
+                            <!-- Category Slug (Read-only) -->
+                            <div>
+                                <label for="category_slug" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Category Slug
+                                </label>
+                                <input
+                                    type="text"
+                                    id="category_slug"
+                                    value="{{ category.slug|default:'' }}"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                                    placeholder="Auto-generated slug"
+                                    readonly
+                                >
+                                <p class="text-sm text-gray-500 mt-1">
+                                    URL-friendly version of the category name (auto-generated)
+                                </p>
+                            </div>
+
+
+                            <!-- Category Details -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+                            </div>
+
+
                         </div>
-                    </div>
 
-                    <div class="overflow-x-auto table-responsive">
-                        <table class="w-full min-w-max">
-                            <thead>
-                                <tr class="border-b border-gray-200">
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Order ID</th>
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Customer</th>
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Date</th>
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Amount</th>
-                                    <th class="text-left py-3 text-sm font-medium text-gray-600">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for order in orders %}
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 order-row" data-order-id="{{ order.id }}">
-                                    <td class="py-4">
-                                        <div class="font-medium text-gray-800">#ORD-{{ order.id }}</div>
-                                        <div class="text-sm text-gray-500">{{ order.items.count }} items</div>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="font-medium text-gray-800">{{ order.user.username }}</div>
-                                        <div class="text-sm text-gray-500">{{ order.user.email }}</div>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="text-gray-800">{{ order.order_date|date:"M d, Y" }}</div>
-                                        <div class="text-sm text-gray-500">{{ order.order_date|date:"M d, Y" }}</div>
-                                    </td>
-                                                    <td class="py-4">
-                                                        <div class="font-semibold text-gray-800">₹{{ order.total_amount }}</div>
-
-
-                                    <td class="py-4">
-                                        <div class="flex space-x-2">
-                                            <a href="{% url 'admin-order-detail' order.id %}" class="text-blue-600 hover:text-blue-800 p-1" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{% url 'admin-order-delete' order.id %}" class="text-red-600 hover:text-red-800 p-1" title="Delete Order">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="6" class="py-8 text-center text-gray-500">
-                                        <i class="fas fa-shopping-cart text-4xl mb-4 text-gray-300"></i>
-                                        <p>No orders found.</p>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="flex justify-between items-center mt-6">
-                        <p class="text-sm text-gray-600">
-                            Showing {{ orders.start_index }} to {{ orders.end_index }} of {{ orders.paginator.count }} orders
-                        </p>
-                        <div class="flex space-x-2">
-                            {% if orders.has_previous %}
-                            <a href="?page={{ orders.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
-                               class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
-                                Previous
-                            </a>
-                            {% endif %}
-
-                            {% for num in orders.paginator.page_range %}
-                                {% if orders.number == num %}
-                                <span class="px-3 py-1 bg-purple-600 text-white rounded-md font-medium">{{ num }}</span>
-                                {% else %}
-                                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
-                                   class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">{{ num }}</a>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% if orders.has_next %}
-                            <a href="?page={{ orders.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
-                               class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium">
-                                Next
-                            </a>
-                            {% endif %}
+                        <!-- Form Actions -->
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-6 mt-8 border-t border-gray-200">
+                            <div class="mb-4 sm:mb-0">
+                                <a href="/admin/categories/" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
+                                    <i class="fas fa-times mr-2"></i>
+                                    Cancel
+                                </a>
+                            </div>
+                            <div class="flex space-x-3">
+                                <a href="{%url 'delete-category' category.pk %}" class="px-6 py-2 border border-red-300 text-red-700 rounded-md hover:bg-red-50 font-medium flex items-center transition-colors"
+                                >
+                                    <i class="fas fa-trash mr-2"></i>
+                                    Delete Category
+                                </a>
+                                <button
+                                    type="submit"
+                                    class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium flex items-center transition-colors"
+                                >
+                                    <i class="fas fa-save mr-2"></i>
+                                    Update Category
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </form>
+
+                    <!-- Delete Form (Hidden) -->
+                    <form id="delete-form" action="{% url 'delete-category' category.pk %}" method="POST" class="hidden">
+                        {% csrf_token %}
+                    </form>
                 </div>
+
             </div>
         </div>
     </div>
@@ -526,37 +436,6 @@
         </div>
     </div>
 </footer>
-
-<style>
-/* Responsive Footer Styles */
-@media (max-width: 768px) {
-    .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-8.mb-8 {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-
-    .flex.flex-col.md\\:flex-row.justify-between.items-center.gap-4 {
-        text-align: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .container.mx-auto.px-4 {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
-    .pt-12 {
-        padding-top: 2rem;
-    }
-
-    .text-lg.font-semibold.mb-4 {
-        font-size: 1.125rem;
-        margin-bottom: 1rem;
-    }
-}
-</style>
-
     <script>
         // Mobile Menu Functionality
         const mobileMenuButton = document.getElementById('mobileMenuButton');
@@ -579,44 +458,40 @@
             });
         }
 
-        // Filter functionality
-        document.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', function() {
-                // Submit the form when filters change
-                if (this.name === 'status') {
-                    this.form.submit();
+        // Auto-generate slug from category name
+        const categoryNameInput = document.getElementById('category_name');
+        const categorySlugInput = document.getElementById('category_slug');
+
+        if (categoryNameInput && categorySlugInput) {
+            categoryNameInput.addEventListener('input', function() {
+                // Simple slug generation - in a real app, you might want more sophisticated logic
+                const slug = this.value
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+
+                categorySlugInput.value = slug;
+            });
+        }
+
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const categoryName = document.getElementById('category_name').value.trim();
+
+                if (!categoryName) {
+                    e.preventDefault();
+                    alert('Please enter a category name');
+                    return false;
                 }
+
+                // Additional validation can be added here
+                return true;
             });
-        });
-
-        // Search functionality
-        const searchInput = document.querySelector('input[type="text"]');
-        let searchTimeout;
-
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                // Submit the form after user stops typing
-                this.form.submit();
-            }, 500);
-        });
-
-        // Export functionality
-        document.querySelector('button:contains("Export")').addEventListener('click', function() {
-            alert('Export functionality would be implemented here');
-        });
-
-        // Refresh functionality
-        document.querySelector('button:contains("Refresh")').addEventListener('click', function() {
-            location.reload();
-        });
-
-        // Order actions
-        document.querySelectorAll('button:contains("Edit Order")').forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Edit order functionality would be implemented here');
-            });
-        });
+        }
     </script>
 </body>
 </html>
