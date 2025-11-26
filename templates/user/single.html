@@ -168,13 +168,69 @@
             transform: scale(1.05);
             opacity: 0.9;
         }
+
+        /* Improved responsive grid */
+        @media (max-width: 1024px) {
+            .product-grid {
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .product-info {
+                padding: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+        }
+
+        /* Better alignment for product details */
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        @media (max-width: 640px) {
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Improved quantity selector alignment */
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        @media (max-width: 480px) {
+            .quantity-selector {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
 
     <!-- Updated Header -->
-       <nav class="bg-white shadow-md sticky top-0 z-40">
+    <nav class="bg-white shadow-md sticky top-0 z-40">
         <div class="container mx-auto px-3 sm:px-4">
             <div class="flex justify-between items-center h-14 sm:h-16">
                 <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
@@ -208,6 +264,28 @@
                             </span>
                         </a>
                     </div>
+                    <div id="notif-box" class="relative mr-3 select-none">
+
+    <!-- 🔔 Bell Icon -->
+    <div id="notif-bell"
+         class="text-black text-2xl cursor-pointer relative hover:text-gray-700 transition">
+
+        <i class="fa-solid fa-bell"></i>
+
+        <!-- 🔴 Notification Count -->
+        <span id="notif-count"
+              class="absolute -top-1 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full hidden">
+        </span>
+    </div>
+
+    <!-- ▼ Dropdown -->
+    <div id="notif-dropdown"
+         class="hidden absolute right-0 mt-3 w-72 bg-white shadow-lg rounded-xl border border-gray-200 max-h-80 overflow-y-auto z-50">
+        <div id="notif-list" class="p-3 space-y-3"></div>
+    </div>
+</div>
+
+
 
                     <div class="relative">
                         <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
@@ -277,16 +355,12 @@
                 {% endif %}
             </div>
         </div>
-
-
-
     </nav>
 
 
-
     <!-- Compact Product Section -->
-    <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-6 rounded-2xl shadow-lg">
+    <div class="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 product-grid bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
             <!-- Product Images - FIXED GALLERY -->
             <div class="relative image-gallery">
                 <!-- Radio buttons for image selection -->
@@ -321,11 +395,9 @@
             </div>
 
             <!-- Product Info -->
-            <div class="flex flex-col justify-start space-y-4">
-
-
+            <div class="flex flex-col justify-start space-y-4 sm:space-y-5 product-info">
                 <div class="flex justify-between items-start">
-                    <h1 class="text-xl lg:text-2xl font-bold text-gray-900 leading-tight pr-3">
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight pr-3">
                         {{ product.product_name }}
                     </h1>
 
@@ -341,95 +413,79 @@
                     </form>
                 </div>
 
-
-
-                <p class="text-2xl font-bold text-gray-900 border-b pb-3">
+                <p class="text-2xl sm:text-3xl font-bold text-gray-900 border-b pb-3">
                     $ <span class="text-green-600">{{ product.price }}</span>
                 </p>
 
-                <p class="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
                     {{ product.description|truncatewords:30 }}
                 </p>
 
-                <div class="grid grid-cols-2 gap-3 border-t pt-3">
+                <div class="product-detail-grid border-t pt-3">
                     <div class="flex items-center">
                         <i class="fas fa-cubes text-purple-500 mr-2 text-xs"></i>
-                        <p class="text-gray-700 font-medium text-xs">
+                        <p class="text-gray-700 font-medium text-xs sm:text-sm">
                             Stock: <span class="font-bold text-gray-900">{{ product.stock }}</span>
                         </p>
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-store text-purple-500 mr-2 text-xs"></i>
-                        <p class="text-gray-700 font-medium text-xs">
+                        <p class="text-gray-700 font-medium text-xs sm:text-sm">
                             Seller: <span class="font-bold text-gray-900">{{ product.seller.shop_name }}</span>
                         </p>
                     </div>
                 </div>
 
                 <div class="space-y-4 pt-4">
+                    <!-- ADD TO CART FORM -->
                     <form method="POST" action="{% url 'add_cart' product.slug %}" class="space-y-3">
                         {% csrf_token %}
 
-                        <div class="flex items-center gap-4">
+                        <div class="quantity-selector">
                             <label class="font-bold text-sm text-gray-700 flex-shrink-0">Quantity:</label>
-                            {% if product.stock > 0 %}
-                                <input type="number"
-                                       name="quantity"
-                                       min="1"
-                                       max="{{ product.stock }}"
-                                       value="1"
-                                       aria-label="Product Quantity"
-                                       class="w-16 border border-gray-300 rounded-lg px-2 py-1 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-purple-500 transition shadow-inner">
-                                <span class="text-xs text-gray-500">({{ product.stock }} available)</span>
-                            {% else %}
-                                <span class="text-sm font-bold text-red-600">Out of Stock</span>
-                            {% endif %}
+                            <input type="number"
+                                   name="quantity"
+                                   id="qtyInput"
+                                   min="1"
+                                   max="{{ product.stock }}"
+                                   value="1"
+                                   class="w-16 border border-gray-300 rounded-lg px-2 py-1 text-sm font-semibold">
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                            {% if product.stock > 0 %}
-                                <button type="submit"
-                                        class="flex items-center justify-center bg-purple-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-purple-700 transition transform hover:scale-[1.01] shadow-md">
-                                    <i class="fas fa-cart-plus mr-1"></i> Add to Cart
-                                </button>
-                            {% else %}
-                                <button disabled
-                                        class="flex items-center justify-center bg-gray-400 text-white py-2 rounded-lg font-bold text-sm cursor-not-allowed shadow-inner">
-                                    <i class="fas fa-exclamation-circle mr-1"></i> Out of Stock
-                                </button>
-                            {% endif %}
+                        <button type="submit"
+                                class="flex items-center justify-center bg-purple-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-purple-700 transition-colors">
+                            <i class="fas fa-cart-plus mr-1"></i> Add to Cart
+                        </button>
+                    </form>
 
-                            {% if product.stock > 0 %}
-                                <a href="{% url 'buy_now' product.slug %}"
-                                class="flex items-center justify-center bg-green-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-700 transition transform hover:scale-[1.01] shadow-md">
-                                  Buy Now <i class="fas fa-bolt ml-1"></i>
-                                </a>
-                            {% endif %}
-                        </div>
+                    <!-- BUY NOW FORM (SEPARATE!) -->
+                    <form method="POST" action="{% url 'buy_now' product.slug %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" id="buyNowQty">
 
-                        <a href="{% url 'user_home' %}"
-                           class="block w-full text-center bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition mt-2 text-xs">
-                           <i class="fas fa-arrow-left mr-1"></i> Continue Shopping
-                        </a>
+                        <button type="submit"
+                                class="w-full flex items-center justify-center bg-green-600 text-white py-2 rounded-lg font-bold text-sm hover:bg-green-700 transition-colors action-buttons">
+                            Buy Now <i class="fas fa-bolt ml-1"></i>
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
 
         <!-- Description & Reviews Section -->
-        <div class="mt-8 bg-white p-6 rounded-2xl shadow-lg">
-            <div class="flex border-b border-gray-200 mb-6 overflow-x-auto">
-                <button class="tab-button active py-3 px-6 text-sm font-bold text-purple-600 border-b-2 border-purple-600 whitespace-nowrap" data-tab="description">
+        <div class="mt-6 sm:mt-8 bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+            <div class="flex border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto">
+                <button class="tab-button active py-3 px-4 sm:px-6 text-sm font-bold text-purple-600 border-b-2 border-purple-600 whitespace-nowrap" data-tab="description">
                     Description
                 </button>
-                <button class="tab-button py-3 px-6 text-sm font-medium text-gray-600 hover:text-purple-600 whitespace-nowrap" data-tab="reviews">
+                <button class="tab-button py-3 px-4 sm:px-6 text-sm font-medium text-gray-600 hover:text-purple-600 whitespace-nowrap" data-tab="reviews">
                     Reviews ({{ reviews|length }})
                 </button>
             </div>
 
             <!-- Description Tab -->
             <div id="description" class="tab-content active">
-                <div class="prose max-w-none text-gray-700 text-sm">
+                <div class="prose max-w-none text-gray-700 text-sm sm:text-base">
                     <h3 class="text-lg font-bold mb-3 text-gray-800">Product Overview</h3>
                     <p>{{ product.description }}</p>
                     <ul class="list-disc list-inside mt-4 text-gray-600 space-y-1">
@@ -441,11 +497,9 @@
                 </div>
             </div>
 
-
-
             <!-- Reviews Tab -->
             <div id="reviews" class="tab-content">
-                <div class="space-y-6">
+                <div class="space-y-4 sm:space-y-6">
                     {% if reviews %}
                         {% for review in reviews %}
                             <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -499,69 +553,184 @@
     </div>
 
     <!-- Updated Footer -->
-    <footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
-        <div class="container mx-auto px-3 sm:px-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
-                <div>
-                    <div class="flex items-center mb-4 sm:mb-6">
-                        <i class="fas fa-shopping-bag text-lg sm:text-xl lg:text-2xl text-purple-500 mr-2 sm:mr-3"></i>
-                        <span class="text-lg sm:text-xl font-bold responsive-text">StyleCart</span>
-                    </div>
-                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 responsive-text">Your one-stop destination for the latest fashion trends and styles.</p>
-                    <div class="flex space-x-3 sm:space-x-4">
-                        <a href="https://facebook.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
-                            <i class="fab fa-facebook-f text-sm sm:text-base"></i>
-                        </a>
-                        <a href="https://instagram.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
-                            <i class="fab fa-instagram text-sm sm:text-base"></i>
-                        </a>
-                    </div>
+    <!-- Footer Section -->
+<footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Company Info -->
+            <div>
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                    <span class="text-xl font-bold">StyleCart</span>
                 </div>
-
-                <div>
-                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Quick Links</h3>
-                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
-                        <li><a href="{% url 'home' %}" class="hover:text-purple-400 transition responsive-text">Home</a></li>
-                        <li><a href="{% url 'user_home' %}" class="hover:text-purple-400 transition responsive-text">Shop</a></li>
-                        <li><a href="{% url 'about' %}" class="hover:text-purple-400 transition responsive-text">About</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Support</h3>
-                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
-                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Shipping Policy</a></li>
-                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Return & Refund</a></li>
-                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Payment Methods</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Contact</h3>
-                    <ul class="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-purple-500 mt-1 mr-2 sm:mr-3 w-4"></i>
-                            <span class="responsive-text">123 Fashion Street,<br>New York, NY 10001</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone text-purple-500 mr-2 sm:mr-3 w-4"></i>
-                            <span class="responsive-text">+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope text-purple-500 mr-2 sm:mr-3 w-4"></i>
-                            <span class="responsive-text">info@stylecart.com</span>
-                        </li>
-                    </ul>
+                <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                <div class="flex space-x-4">
+                    <a href="https://www.facebook.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.x.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.pinterest.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-pinterest"></i>
+                    </a>
                 </div>
             </div>
 
-            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
-                <p class="text-gray-500 text-sm sm:text-base responsive-text">&copy; 2023 StyleCart. All rights reserved.</p>
+            <!-- User Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Shop</h3>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                    <li><a href="/user/main" class="text-gray-400 hover:text-white transition-colors">Shop</a></li>
+                    <li><a href="/user/category" class="text-gray-400 hover:text-white transition-colors">Categories</a></li>
+                    <li><a href="/user/view_wishlist" class="text-gray-400 hover:text-white transition-colors">Wishlist</a></li>
+                </ul>
+            </div>
+
+            <!-- Seller Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Seller Center</h3>
+                <ul class="space-y-2">
+                    <li><a href="/seller/login" class="text-gray-400 hover:text-white transition-colors">Seller Login</a></li>
+                    <li><a href="/seller/register" class="text-gray-400 hover:text-white transition-colors">Become a Seller</a></li>
+                    <li><a href="/seller/seller_dashboard" class="text-gray-400 hover:text-white transition-colors">Seller Dashboard</a></li>
+                    <li><a href="/seller/seller_product" class="text-gray-400 hover:text-white transition-colors">Manage Products</a></li>
+                    <li><a href="/seller/order_products" class="text-gray-400 hover:text-white transition-colors">View Orders</a></li>
+                </ul>
+            </div>
+
+            <!-- Support & Info -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Support</h3>
+                <ul class="space-y-2">
+                    <li><a href="/user/about" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="/user/contact" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
+
+        <!-- Bottom Section -->
+        <div class="border-t border-gray-700 pt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-gray-400">&copy; 2025 StyleCart. All rights reserved.</p>
+                </div>
+                <div class="flex flex-wrap justify-center md:justify-end gap-4 text-sm">
+                    <a href="/seller/privacypolicy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="/seller/termsofservice" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+/* Responsive Footer Styles */
+@media (max-width: 768px) {
+    .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-8.mb-8 {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .flex.flex-col.md\\:flex-row.justify-between.items-center.gap-4 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container.mx-auto.px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .pt-12 {
+        padding-top: 2rem;
+    }
+
+    .text-lg.font-semibold.mb-4 {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+
+<script>
+let notifSocket = new WebSocket(
+    (window.location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    "/ws/users/notifications/"
+);
+
+let notifBell = document.getElementById("notif-bell");
+let notifList = document.getElementById("notif-list");
+let notifCount = document.getElementById("notif-count");
+let notifDropdown = document.getElementById("notif-dropdown");
+
+// Bell click → Go to notifications page
+notifBell.onclick = () => {
+    window.location.href = "{% url 'notifications_page' %}";
+};
+
+// Receive WebSocket notification
+notifSocket.onmessage = (event) => {
+    let data = JSON.parse(event.data);
+
+    // ----------- FIXED COUNTING (NO MORE NaN) -----------
+    let current = Number(notifCount.textContent.trim());
+    if (isNaN(current)) current = 0;
+    notifCount.textContent = current + 1;
+    notifCount.style.display = "block";
+
+    // Add new notification item
+    let item = document.createElement("div");
+    item.classList = "py-2 px-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer";
+
+    let link = data.link ? data.link : "{% url 'notifications_page' %}";
+
+    item.innerHTML = `
+        <a href="${link}" style="text-decoration:none; color:black;">
+            <strong>${data.title}</strong><br>
+            <span style="font-size:13px;">${data.message}</span>
+        </a>
+    `;
+
+    notifList.prepend(item);
+
+    // Show dropdown for a moment
+    notifDropdown.style.display = "block";
+    setTimeout(() => {
+        notifDropdown.style.display = "none";
+    }, 2000);
+};
+
+// Close dropdown if clicked outside
+document.addEventListener("click", function (e) {
+    if (!notifBell.contains(e.target) && !notifDropdown.contains(e.target)) {
+        notifDropdown.style.display = "none";
+    }
+});
+</script>
 
     <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const qtyInput = document.getElementById("qtyInput");     // Visible input
+    const buyNowQty = document.getElementById("buyNowQty");   // Hidden Buy Now field
+
+    if (qtyInput && buyNowQty) {
+        buyNowQty.value = qtyInput.value;    // set default
+
+        qtyInput.addEventListener("input", function () {
+            buyNowQty.value = this.value;    // update on change
+        });
+    }
+
+});
+
         // Tab functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Tab switching

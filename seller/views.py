@@ -16,6 +16,9 @@ from decorators.decorators import role_required
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+from user.utils import send_user_notification
+
+
 def seller_register(request):
         request.session['role'] = 'seller'
         if request.method == 'POST':
@@ -316,34 +319,72 @@ def seller_logout(request):
     return render(request, 'seller/login.html')
 
 @role_required("seller", login_url="/seller/login")
-def single_order_product(request,slug):
+def single_order_product(request, slug):
     seller = Seller.objects.get(user=request.user)
 
-    # or_slug=Order.objects.get(slug=slug)
-    order_items = OrderItem.objects.filter(order__slug=slug,product__seller=seller)
+    # Get all order items for this seller for this order
+    order_items = OrderItem.objects.filter(order__slug=slug, product__seller=seller)
     if not order_items.exists():
         return HttpResponse('not found')
+
     order = order_items.first().order
     product = order_items.first().product
+
     if request.method == "POST":
         new_status = request.POST.get("status")
 
+        # UPDATE STATUS FOR ALL ITEMS OF THIS SELLER
         for item in order_items:
             item.status = new_status
             item.save()
+
+            customer = item.order.user
+            order_id = item.order.id
+
+            # SEND CUSTOMER NOTIFICATIONS
+            if new_status == "Shipped":
+                send_user_notification(
+                    customer,
+                    "Order Shipped",
+                    f"Your order #{order_id} for {item.product.product_name} has been shipped!",
+                    link=f"/view_details/{order_id}/"
+                )
+
+            elif new_status == "Delivered":
+                send_user_notification(
+                    customer,
+                    "Order Delivered",
+                    f"Your order #{order_id} for {item.product.product_name} has been delivered! 🎉",
+                    link=f"/view_details/{order_id}/"
+                )
+
+            elif new_status == "Cancelled":
+                send_user_notification(
+                    customer,
+                    "Order Cancelled",
+                    f"Your order #{order_id} for {item.product.product_name} has been cancelled.",
+                    link=f"/view_details/{order_id}/"
+                )
+
+        # SEND NOTIFICATION TO SELLER (You)
         product_name = order_items.first().product.product_name
-        send_notification(
-            request.user,
-            f"{product_name} status changed to {new_status}",
-            title="Order Update"
+
+        send_user_notification(
+            request.user,                      # seller
+            "Order Update",                    # title
+            f"{product_name} status changed to {new_status}"  # message
         )
+
         return redirect(f"/seller/single_orderproduct/{slug}/")
+
+    # PAGE RENDER
     return render(request, 'seller/orderproducts.html', {
         "product": product,
-        "order":order,
+        "order": order,
         "order_item": order_items,
-        "seller":seller
+        "seller": seller
     })
+
 
 @role_required("seller", login_url="/seller/login")
 def seller_profile(request):

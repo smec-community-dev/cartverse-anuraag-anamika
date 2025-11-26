@@ -13,44 +13,76 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Header dropdown styles */
         .dropdown-menu {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-5px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;                 /* hidden by default */
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    z-index: 100;
+    padding: 0.5rem 0;
+    border: 1px solid #f3f4f6;
+    transform-origin: top right;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+    opacity: 0;
+    transform: translateY(-6px);
+}
+
+/* visible state controlled by JS by toggling 'open' class */
+.dropdown-menu.open {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* keep dropdown-item styling as before */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    color: #4b5563;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f3ff;
+    color: #6d28d9;
+}
+
+
+        /* Payment method radio styles */
+        .address-option-container input[type="radio"] {
             position: absolute;
-            right: 0;
-            top: 100%;
-            background-color: white;
-            min-width: 200px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            opacity: 0;
+        }
+
+        .address-content-box {
+            border: 2px solid #e5e7eb;
             border-radius: 8px;
-            z-index: 100;
-            padding: 0.5rem 0;
-            border: 1px solid #f3f4f6;
+            padding: 12px 16px;
+            transition: all 0.2s ease;
         }
 
-        .dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        .address-option-container input[type="radio"]:checked + .address-content-box {
+            border-color: #6d28d9;
+            background-color: #faf5ff;
         }
 
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 0.6rem 1rem;
-            color: #4b5563;
-            text-decoration: none;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f5f3ff;
+        .address-option-container input[type="radio"]:checked + .address-content-box .radio-icon {
             color: #6d28d9;
         }
+
+        .radio-icon {
+            color: #d1d5db;
+            transition: color 0.2s ease;
+        }
+
+
 
         .dropdown-divider {
             height: 1px;
@@ -95,13 +127,29 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
         }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .mobile-stack {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .mobile-padding {
+                padding: 1rem;
+            }
+
+            .mobile-text-center {
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 flex flex-col min-h-screen">
 
     <!-- Updated Header -->
-      <nav class="bg-white shadow-md sticky top-0 z-40">
+    <nav class="bg-white shadow-md sticky top-0 z-40">
         <div class="container mx-auto px-3 sm:px-4">
             <div class="flex justify-between items-center h-14 sm:h-16">
                 <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
@@ -135,6 +183,28 @@
                             </span>
                         </a>
                     </div>
+                    <div id="notif-box" class="relative mr-3 select-none">
+
+    <!-- 🔔 Bell Icon -->
+    <div id="notif-bell"
+         class="text-black text-2xl cursor-pointer relative hover:text-gray-700 transition">
+
+        <i class="fa-solid fa-bell"></i>
+
+        <!-- 🔴 Notification Count -->
+        <span id="notif-count"
+              class="absolute -top-1 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full hidden">
+        </span>
+    </div>
+
+    <!-- ▼ Dropdown -->
+    <div id="notif-dropdown"
+         class="hidden absolute right-0 mt-3 w-72 bg-white shadow-lg rounded-xl border border-gray-200 max-h-80 overflow-y-auto z-50">
+        <div id="notif-list" class="p-3 space-y-3"></div>
+    </div>
+</div>
+
+
 
                     <div class="relative">
                         <button id="profileDropdownButton" class="flex items-center text-gray-700 hover:text-purple-600 focus:outline-none gap-1 sm:gap-2">
@@ -204,41 +274,34 @@
                 {% endif %}
             </div>
         </div>
-
-
-
     </nav>
-
 
 
     <!-- Main Content -->
     <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow">
-        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Complete Your Order</h1>
+        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6 mobile-text-center">Complete Your Order</h1>
 
         <!-- ⭐ FORM ACTION BASED ON CHECKOUT TYPE -->
-        {% if checkout_type == "buynow" %}
-            <form method="POST" action="{% url 'place_order_buy_now' %}">
-        {% else %}
-            <form method="POST" action="{% url 'place_order' %}">
-        {% endif %}
-            {% csrf_token %}
+        <!-- ⭐ FORM WITHOUT ACTION (JS will handle submit) -->
+<form method="POST" id="orderForm">
+    {% csrf_token %}
+
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column - Order Items, Shipping, Payment -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- ⭐ PRODUCT SECTION (Cart or BuyNow) -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 order-item">
+                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 order-item">
                         <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Items</h2>
 
                         {% if checkout_type == "cart" %}
                             <!-- CART ITEMS -->
                             {% for item in cart_items %}
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-b-0">
-                                <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
+                                <div class="flex items-start space-x-3 sm:space-x-4 mb-3 sm:mb-0 flex-1">
                                     <img src="{{ item.product.images.first.product_image.url }}"
                                          class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
-                                    <div class="flex-1">
-                                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ item.product.product_name }}</h3>
-                                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ item.product.stock }}</p>
+                                    <div class="flex-1 min-w-0">
 
                                         <div class="flex items-center mt-2">
                                             <label for="quantity_{{ item.id }}" class="text-xs sm:text-sm font-medium text-gray-700 mr-2">Qty:</label>
@@ -251,35 +314,54 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="font-bold text-gray-900 text-base sm:text-lg">₹{{ item.price }}</div>
+                                <div class="font-bold text-gray-900 text-base sm:text-lg ml-16 sm:ml-0 mt-2 sm:mt-0">₹{{ item.price }}</div>
                             </div>
                             {% endfor %}
                         {% endif %}
 
                         {% if checkout_type == "buynow" %}
-                            <!-- BUY NOW PRODUCT ONLY -->
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
-                                <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
-                                    <img src="{{ product.images.first.product_image.url }}"
-                                         class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
-                                    <div class="flex-1">
-                                        <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ product.product_name }}</h3>
-                                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ product.stock }}</p>
-                                    </div>
-                                </div>
-                                <div class="font-bold text-gray-900 text-base sm:text-lg">₹{{ product.price }}</div>
-                                <!-- hidden quantity (always 1) -->
-                                <input type="hidden" name="quantity" value="1">
-                            </div>
+
+
                         {% endif %}
 
-                        <a href="{% url 'user_home' %}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium mt-4 text-sm">
+<!-- BUY NOW PRODUCT ONLY -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
+
+    <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
+        <img src="{{ product.images.first.product_image.url }}"
+             class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
+
+        <div class="flex-1">
+            <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ product.product_name }}</h3>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ product.stock }}</p>
+
+            <!-- Show selected quantity -->
+            <p class="text-xs text-gray-700 mt-1">
+                Quantity: <strong>{{ quantity }}</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- Price × Quantity = Total -->
+    <div class="font-bold text-gray-900 text-base sm:text-lg">
+        ₹{{ product.price }} × {{ quantity }} =
+        <span class="text-green-600">₹{{ total }}</span>
+    </div>
+
+    <!-- Send quantity in POST -->
+    <input type="hidden" name="quantity" value="{{ quantity }}">
+</div>
+
+
+
+
+                        <a href="{% url 'user_home' %}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium mt-4 text-sm mobile-text-center sm:text-left w-full justify-center sm:justify-start">
                             <i class="fas fa-arrow-left mr-2"></i> Continue Shopping
                         </a>
                     </div>
 
                     <!-- SHIPPING -->
-                    <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                         <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Shipping Information</h2>
 
                         <div class="space-y-4">
@@ -302,11 +384,40 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- PAYMENT METHOD -->
+                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Payment Method</h2>
+
+                        <div class="space-y-3">
+                            <div class="address-option-container relative">
+                                <input type="radio" id="cod" name="payment_method" value="cod" checked>
+                                <label for="cod" class="address-content-box flex items-center hover:bg-gray-50 cursor-pointer p-3 sm:p-4">
+                                    <i class="fas fa-dot-circle radio-icon mr-3 flex-shrink-0"></i>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-money-bill-wave mr-3 text-green-600 text-lg flex-shrink-0"></i>
+                                        <span class="font-medium text-sm">Cash on Delivery (COD)</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="address-option-container relative">
+                                <input type="radio" id="card" name="payment_method" value="card">
+                                <label for="card" class="address-content-box flex items-center hover:bg-gray-50 cursor-pointer p-3 sm:p-4">
+                                    <i class="fas fa-dot-circle radio-icon mr-3 flex-shrink-0"></i>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-credit-card mr-3 text-blue-600 text-lg flex-shrink-0"></i>
+                                        <span class="font-medium text-sm">Credit/Debit Card (Online Payment)</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- ⭐ ORDER SUMMARY -->
+                <!-- Right Column - Order Summary -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white rounded-xl shadow-sm p-6 sticky top-24">
+                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6 sticky top-24">
                         <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Summary</h2>
 
                         <div class="space-y-3">
@@ -338,7 +449,7 @@
                                     {% if checkout_type == "cart" %}
                                         <span class="text-gray-900">₹{{ total }}</span>
                                     {% else %}
-                                        <span class="text-gray-900">₹{{ product.price }}</span>
+                                        <span class="text-gray-900">₹{{total}}</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -358,136 +469,345 @@
     </div>
 
     <!-- Updated Footer -->
-    <footer class="bg-gray-900 text-white pt-8 sm:pt-10 lg:pt-12 pb-6 sm:pb-8 mt-auto">
-        <div class="container mx-auto px-3 sm:px-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 mb-8 sm:mb-10">
-                <div>
-                    <div class="flex items-center mb-4 sm:mb-6">
-                        <i class="fas fa-shopping-bag text-lg sm:text-xl lg:text-2xl text-purple-500 mr-2 sm:mr-3"></i>
-                        <span class="text-lg sm:text-xl font-bold responsive-text">StyleCart</span>
-                    </div>
-                    <p class="text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 responsive-text">Your one-stop destination for the latest fashion trends and styles.</p>
-                    <div class="flex space-x-3 sm:space-x-4">
-                        <a href="https://facebook.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
-                            <i class="fab fa-facebook-f text-sm sm:text-base"></i>
-                        </a>
-                        <a href="https://instagram.com" target="_blank" class="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition">
-                            <i class="fab fa-instagram text-sm sm:text-base"></i>
-                        </a>
-                    </div>
+   <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <!-- Company Info -->
+            <div>
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-400 mr-2"></i>
+                    <span class="text-xl font-bold">StyleCart</span>
                 </div>
-
-                <div>
-                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Quick Links</h3>
-                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
-                        <li><a href="{% url 'home' %}" class="hover:text-purple-400 transition responsive-text">Home</a></li>
-                        <li><a href="{% url 'user_home' %}" class="hover:text-purple-400 transition responsive-text">Shop</a></li>
-                        <li><a href="{% url 'about' %}" class="hover:text-purple-400 transition responsive-text">About</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Support</h3>
-                    <ul class="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
-                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Shipping Policy</a></li>
-                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Return & Refund</a></li>
-                        <li><a href="#" class="hover:text-purple-400 transition responsive-text">Payment Methods</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-sm sm:text-base font-bold uppercase tracking-wider mb-4 sm:mb-6 text-gray-200 responsive-text">Contact</h3>
-                    <ul class="space-y-3 sm:space-y-4 text-sm sm:text-base text-gray-400">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-purple-500 mt-1 mr-2 sm:mr-3 w-4"></i>
-                            <span class="responsive-text">123 Fashion Street,<br>New York, NY 10001</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone text-purple-500 mr-2 sm:mr-3 w-4"></i>
-                            <span class="responsive-text">+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope text-purple-500 mr-2 sm:mr-3 w-4"></i>
-                            <span class="responsive-text">info@stylecart.com</span>
-                        </li>
-                    </ul>
+                <p class="text-gray-400 mb-4">Your one-stop destination for the latest fashion trends and styles.</p>
+                <div class="flex space-x-4">
+                    <a href="https://www.facebook.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.x.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.pinterest.com/" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-pinterest"></i>
+                    </a>
                 </div>
             </div>
 
-            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
-                <p class="text-gray-500 text-sm sm:text-base responsive-text">&copy; 2023 StyleCart. All rights reserved.</p>
+            <!-- User Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Shop</h3>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                    <li><a href="/user/main" class="text-gray-400 hover:text-white transition-colors">Shop</a></li>
+                    <li><a href="/user/category" class="text-gray-400 hover:text-white transition-colors">Categories</a></li>
+                    <li><a href="/user/view_wishlist" class="text-gray-400 hover:text-white transition-colors">Wishlist</a></li>
+                </ul>
+            </div>
+
+            <!-- Seller Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Seller Center</h3>
+                <ul class="space-y-2">
+                    <li><a href="/seller/login" class="text-gray-400 hover:text-white transition-colors">Seller Login</a></li>
+                    <li><a href="/seller/register" class="text-gray-400 hover:text-white transition-colors">Become a Seller</a></li>
+                    <li><a href="/seller/seller_dashboard" class="text-gray-400 hover:text-white transition-colors">Seller Dashboard</a></li>
+                    <li><a href="/seller/seller_product" class="text-gray-400 hover:text-white transition-colors">Manage Products</a></li>
+                    <li><a href="/seller/order_products" class="text-gray-400 hover:text-white transition-colors">View Orders</a></li>
+                </ul>
+            </div>
+
+            <!-- Support & Info -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Support</h3>
+                <ul class="space-y-2">
+                    <li><a href="/user/about" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="/user/contact" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
 
-    <script>
-        // Mobile menu functionality
-        const mobileMenuButton = document.getElementById('mobileMenuButton');
-        const mobileMenu = document.getElementById('mobileMenu');
+        <!-- Bottom Section -->
+        <div class="border-t border-gray-700 pt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-gray-400">&copy; 2025 StyleCart. All rights reserved.</p>
+                </div>
+                <div class="flex flex-wrap justify-center md:justify-end gap-4 text-sm">
+                    <a href="/seller/privacypolicy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="/seller/termsofservice" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
 
-        if (mobileMenuButton && mobileMenu) {
-            mobileMenuButton.addEventListener('click', function() {
-                mobileMenu.classList.toggle('hidden');
-            });
+<style>
+/* Responsive Footer Styles */
+@media (max-width: 768px) {
+    .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-8.mb-8 {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .flex.flex-col.md\\:flex-row.justify-between.items-center.gap-4 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container.mx-auto.px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .pt-12 {
+        padding-top: 2rem;
+    }
+
+    .text-lg.font-semibold.mb-4 {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+
+<script>
+let notifSocket = new WebSocket(
+    (window.location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    "/ws/users/notifications/"
+);
+
+let notifBell = document.getElementById("notif-bell");
+let notifList = document.getElementById("notif-list");
+let notifCount = document.getElementById("notif-count");
+let notifDropdown = document.getElementById("notif-dropdown");
+
+// Bell click → Go to notifications page
+notifBell.onclick = () => {
+    window.location.href = "{% url 'notifications_page' %}";
+};
+
+// Receive WebSocket notification
+notifSocket.onmessage = (event) => {
+    let data = JSON.parse(event.data);
+
+    // ----------- FIXED COUNTING (NO MORE NaN) -----------
+    let current = Number(notifCount.textContent.trim());
+    if (isNaN(current)) current = 0;
+    notifCount.textContent = current + 1;
+    notifCount.style.display = "block";
+
+    // Add new notification item
+    let item = document.createElement("div");
+    item.classList = "py-2 px-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer";
+
+    let link = data.link ? data.link : "{% url 'notifications_page' %}";
+
+    item.innerHTML = `
+        <a href="${link}" style="text-decoration:none; color:black;">
+            <strong>${data.title}</strong><br>
+            <span style="font-size:13px;">${data.message}</span>
+        </a>
+    `;
+
+    notifList.prepend(item);
+
+    // Show dropdown for a moment
+    notifDropdown.style.display = "block";
+    setTimeout(() => {
+        notifDropdown.style.display = "none";
+    }, 2000);
+};
+
+// Close dropdown if clicked outside
+document.addEventListener("click", function (e) {
+    if (!notifBell.contains(e.target) && !notifDropdown.contains(e.target)) {
+        notifDropdown.style.display = "none";
+    }
+});
+</script>
+    <!-- Dropdown JS (paste just before </body>) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('profileDropdownButton');
+    const menu = document.getElementById('profileDropdown');
+
+    // Safety checks
+    if (!btn || !menu) {
+        console.warn('Dropdown JS: profile button or menu not found', { btn, menu });
+        return;
+    }
+
+    // Make sure menu starts closed
+    menu.classList.remove('open');
+
+    // Toggle on button click
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const isOpen = menu.classList.contains('open');
+        if (isOpen) {
+            menu.classList.remove('open');
+            console.log('Dropdown closed (button click)');
+        } else {
+            menu.classList.add('open');
+            console.log('Dropdown opened (button click)');
         }
+    });
 
-        // Profile dropdown functionality
-        const profileDropdownButton = document.getElementById('profileDropdownButton');
-        const profileDropdown = document.getElementById('profileDropdown');
+    // Prevent clicks inside menu from closing it
+    menu.addEventListener('click', function (e) {
+        e.stopPropagation();
+    });
 
-        if (profileDropdownButton && profileDropdown) {
-            profileDropdownButton.addEventListener('click', function() {
-                profileDropdown.classList.toggle('hidden');
+    // Close when clicking outside
+    document.addEventListener('click', function () {
+        if (menu.classList.contains('open')) {
+            menu.classList.remove('open');
+            console.log('Dropdown closed (outside click)');
+        }
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menu.classList.contains('open')) {
+            menu.classList.remove('open');
+            console.log('Dropdown closed (Esc)');
+        }
+    });
+});
+</script>
+   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+
+<script>
+window.addEventListener("load", function () {
+
+    console.log("Razorpay JS Loaded");
+
+    const orderForm = document.getElementById("orderForm");
+
+    if (!orderForm) {
+        console.error("❌ orderForm NOT FOUND!");
+        return;
+    }
+
+    orderForm.addEventListener("submit", async function (e) {
+
+        e.preventDefault();
+
+        console.log("Form Submit Triggered");
+
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        console.log("Payment method =", paymentMethod);
+
+        if (paymentMethod === "card") {
+            console.log("Online payment selected → Creating Razorpay order...");
+
+            const formData = new FormData(orderForm);
+            formData.append("checkout_type", "{{ checkout_type }}");
+
+            const resp = await fetch("/user/razorpay/create-order/", {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                body: formData
             });
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
-                    profileDropdown.classList.add('hidden');
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                console.error("Error from server:", data);
+                alert(data.error || "Error creating Razorpay order");
+                return;
+            }
+
+            console.log("Razorpay order created:", data);
+
+            const options = {
+                "key": data.key,
+                "amount": data.amount,
+                "currency": data.currency,
+                "name": "StyleCart",
+                "description": "Order #" + data.order_id,
+                "order_id": data.razorpay_order_id,
+
+                "handler": async function (response) {
+                    console.log("Payment success response:", response);
+
+                    const verifyData = new FormData();
+                    verifyData.append("razorpay_payment_id", response.razorpay_payment_id);
+                    verifyData.append("razorpay_order_id", response.razorpay_order_id);
+                    verifyData.append("razorpay_signature", response.razorpay_signature);
+                    verifyData.append("order_id", data.order_id);
+
+                    const verifyResp = await fetch("/user/razorpay/verify-payment/", {
+                        method: "POST",
+                        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                        body: verifyData
+                    });
+
+                    const verifyJson = await verifyResp.json();
+
+                    console.log("Verification result:", verifyJson);
+
+                    if (verifyJson.status === "success") {
+                        window.location.href = verifyJson.redirect_url;
+                    } else {
+                        alert("Payment verification failed!");
+                    }
+                },
+
+                "method": {
+                    "upi": true,
+                    "card": true,
+                    "netbanking": true,
+                    "wallet": true
+                },
+
+                "prefill": {
+                    "name": "{{ request.user.username }}",
+                    "email": "{{ request.user.email }}"
+                },
+
+                "theme": {
+                    "color": "#6d28d9"
                 }
-            });
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        }
+        else {
+            console.log("COD selected → submitting normally");
+
+            orderForm.action =
+                "{% if checkout_type == 'buynow' %}{% url 'place_order_buy_now' %}{% else %}{% url 'place_order' %}{% endif %}";
+
+            orderForm.submit();
         }
 
-        // Quantity validation
-        document.addEventListener('DOMContentLoaded', function() {
-            const quantityInputs = document.querySelectorAll('input[type="number"]');
+    });
 
-            quantityInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    const max = parseInt(this.getAttribute('max'));
-                    const min = parseInt(this.getAttribute('min'));
-                    let value = parseInt(this.value);
+});
+    console.log("Order form =", orderForm);
+</script>
 
-                    if (isNaN(value) || value < min) {
-                        this.value = min;
-                    } else if (value > max) {
-                        this.value = max;
-                        alert(`Maximum available stock is ${max}`);
-                    }
-                });
-            });
-        });
 
-        // Form submission enhancement
-        const orderForm = document.querySelector('form');
-        if (orderForm) {
-            orderForm.addEventListener('submit', function(e) {
-                const placeOrderBtn = this.querySelector('.place-order-btn');
-                const originalText = placeOrderBtn.innerHTML;
 
-                // Show loading state
-                placeOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-                placeOrderBtn.disabled = true;
+<!-- Dropdown JS (paste just before </body>) -->
 
-                // Re-enable after 3 seconds if still on page (fallback)
-                setTimeout(() => {
-                    if (placeOrderBtn.disabled) {
-                        placeOrderBtn.innerHTML = originalText;
-                        placeOrderBtn.disabled = false;
-                    }
-                }, 3000);
-            });
-        }
-    </script>
+
+
+
+<script>
+setInterval(() => {
+    fetch("/check-status/{{ order.id }}/")
+}, 5000);
+</script>
+
+
 </body>
 </html>

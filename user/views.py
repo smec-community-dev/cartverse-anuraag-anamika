@@ -1,5 +1,5 @@
 from re import search
-from seller.views import send_notification
+
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
 from django.utils.text import normalize_newlines
@@ -12,7 +12,21 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from decorators.decorators import role_required
 from django.db.models import Q
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 from django.conf import settings
+import razorpay
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+
+
+from django.http import JsonResponse
+from .models import OrderItem
+from user.utils import send_user_notification
+from .models import UserNotification
+import re
 
 
 #for user registration
@@ -551,6 +565,7 @@ def place_order(request):
     if request.method == "POST":
         cart_items = Cart.objects.filter(user=request.user)
         address_id = request.POST.get('address_id')
+
         if not address_id:
             messages.error(request, "Please select a shipping address.")
             return redirect("order_page")
@@ -572,30 +587,47 @@ def place_order(request):
             )
             qty = int(request.POST.get(f'quantities[{item.id}]', 1))
             total += item.price * qty
+            qty = int(request.POST.get(f'quantities[{item.id}]', item.quantity))
+            item_total = item.price * qty  # ✔ multiply by qty
+            total += item_total
+
             OrderItem.objects.create(
                 order=order,
                 product=item.product,
                 quantity=qty,
-                price=item.price
+                price=item_total  # ✔ FIXED
             )
+
+            # Update stock
             item.product.stock -= qty
             item.product.save()
 
+            send_user_notification(
+                request.user,
+                "Order Placed",
+                f"Your order for {item.product.product_name} (₹{item_total}) has been placed!"
+            )
+
         order.total_amount = total
         order.save()
+
         cart_items.delete()
 
-    return redirect('order_success')
-
-
+    return redirect('order_success', order_id=order.id)
 
 @role_required('customer', '/user/login')
 def buy_now(request, slug):
     product = Product.objects.get(slug=slug)
-    if product.stock < 1:
-        messages.error(request, "Product is out of stock.")
+
+    qty = int(request.POST.get("quantity", 1))
+
+    if qty > product.stock:
+        messages.error(request, "Only limited stock available.")
         return redirect("single", slug=slug)
+
     request.session["buy_now_product_id"] = product.id
+    request.session["buy_now_qty"] = qty
+
     return redirect("order_page_buy_now")
 
 
@@ -603,50 +635,69 @@ def buy_now(request, slug):
 def order_page_buy_now(request):
     product_id = request.session.get("buy_now_product_id")
     if not product_id:
-        return redirect("shop")
+        return redirect("user_home")
 
     product = Product.objects.get(id=product_id)
+    qty = int(request.session.get("buy_now_qty", 1))   # ⭐ READ SAVED QUANTITY
 
     return render(request, "user/order.html", {
         "checkout_type": "buynow",
         "product": product,
-        "total": product.price,
+        "quantity": qty,                 # ⭐ SEND QUANTITY
+        "total": product.price * qty,    # ⭐ SEND CORRECT TOTAL
     })
+
 
 
 @role_required('customer', '/user/login')
 def place_order_buy_now(request):
     if request.method == "POST":
         product_id = request.session.get("buy_now_product_id")
+        qty = int(request.session.get("buy_now_qty", 1))  # ← Get correct quantity
         product = Product.objects.get(id=product_id)
         address_id = request.POST.get("address_id")
+
         if not address_id:
             messages.error(request, "Please select a shipping address.")
             return redirect("order_page_buy_now")
 
-        if product.stock < 1:
-            messages.error(request, "Out of stock.")
-            return redirect("shop")
+        if qty > product.stock:
+            messages.error(request, "Only limited stock available.")
+            return redirect("order_page_buy_now")
 
+        total_price = product.price * qty  # ← FIXED 💥
+
+        # Create Order
         order = Order.objects.create(
             user=request.user,
-            total_amount=product.price,
+            total_amount=total_price,
             address_id=address_id
         )
 
+        # Order Item
         OrderItem.objects.create(
             order=order,
             product=product,
-            price=product.price,
-            quantity=1
+            price=total_price,  # ← FIXED 💥 (price multiplied by qty)
+            quantity=qty
         )
 
-        product.stock -= 1
+        # Update stock
+        product.stock -= qty
         product.save()
+
+        # Notification
+        send_user_notification(
+            request.user,
+            "Order Placed",
+            f"Your order for {product.product_name} (₹{total_price}) has been placed!"
+        )
+
+        # Remove session
         del request.session["buy_now_product_id"]
+        del request.session["buy_now_qty"]
 
-    return redirect("order_success")
-
+    return redirect('order_success', order_id=order.id)
 
 @role_required('customer', '/user/login')
 def order_details(request, order_id):
@@ -658,11 +709,9 @@ def order_details(request, order_id):
     })
 
 
-@role_required('customer', '/user/login')
-def order_success(request):
-    latest_order = Order.objects.filter(user=request.user).order_by('-order_date').first()
-    return render(request, "user/order_success page.html", {"order": latest_order})
-
+def order_success(request, order_id):
+    order = Order.objects.get(id=order_id, user=request.user)
+    return render(request, "user/order_success_page.html", {"order": order})
 
 
 @role_required('customer', '/user/login')
@@ -898,3 +947,161 @@ def delete_account(request):
 
 def contact(request):
     return render(request,'user/contact.html')
+
+
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+@role_required('customer', '/user/login')
+def create_razorpay_order(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest("POST only")
+
+    # get cart or buy-now logic similar to your place_order view
+    checkout_type = request.POST.get("checkout_type", "cart")  # you will send this from frontend
+    address_id = request.POST.get("address_id")
+    if not address_id:
+        return JsonResponse({"error": "Please select a shipping address."}, status=400)
+
+    if checkout_type == "cart":
+        cart_items = Cart.objects.filter(user=request.user)
+        if not cart_items.exists():
+            return JsonResponse({"error": "Cart empty."}, status=400)
+        total_amount = sum(item.price * int(request.POST.get(f"quantities[{item.id}]", item.quantity)) for item in cart_items)
+    else:  # buynow
+        product_id = request.session.get("buy_now_product_id")
+        product = get_object_or_404(Product, id=product_id)
+        total_amount = product.price
+
+    # create Django Order in DB with Pending/Unpaid status
+    order = Order.objects.create(user=request.user, total_amount=total_amount, address_id=address_id)
+
+    # attach OrderItems now (or alternatively create after payment)
+    if checkout_type == "cart":
+        for item in cart_items:
+            qty = int(request.POST.get(f'quantities[{item.id}]', item.quantity))
+            OrderItem.objects.create(order=order, product=item.product, quantity=qty, price=item.price)
+            # optionally reduce stock now or after payment - here I recommend reduce after success,
+            # but if you want to reserve, reduce now and mark reserved.
+    else:
+        OrderItem.objects.create(order=order, product=product, quantity=1, price=product.price)
+
+    # Razorpay wants amount in paise (1 INR = 100 paise)
+    amount_paise = int(total_amount * 100)
+
+    # create Razorpay order (server-side)
+    razorpay_order = razorpay_client.order.create({
+        "amount": amount_paise,
+        "currency": "INR",
+        "receipt": str(order.id),
+        "payment_capture": 1  # auto-capture
+    })
+
+    return JsonResponse({
+        "razorpay_order_id": razorpay_order['id'],
+        "order_id": order.id,
+        "amount": amount_paise,
+        "currency": "INR",
+        "key": settings.RAZORPAY_KEY_ID
+    })
+
+@csrf_exempt
+def verify_payment(request):
+    if request.method != "POST":
+        return HttpResponseBadRequest("POST only")
+
+    data = request.POST
+    razorpay_payment_id = data.get('razorpay_payment_id')
+    razorpay_order_id = data.get('razorpay_order_id')
+    razorpay_signature = data.get('razorpay_signature')
+    order_id = data.get('order_id')  # your DB order id
+
+    # verify signature
+    params_dict = {
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_payment_id': razorpay_payment_id,
+        'razorpay_signature': razorpay_signature
+    }
+
+    try:
+        # This will raise razorpay.errors.SignatureVerificationError if invalid
+        razorpay_client.utility.verify_payment_signature(params_dict)
+    except Exception as e:
+        # invalid signature
+        return JsonResponse({"status": "error", "message": "Signature verification failed."}, status=400)
+
+    # signature valid — mark order paid
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order.status = "Paid"
+    order.payment_id = razorpay_payment_id  # if you have a field to store payment id
+    order.save()
+
+    # reduce stock now (if you didn't earlier) and clear cart
+    for item in OrderItem.objects.filter(order=order):
+        product = item.product
+        product.stock -= item.quantity
+        product.save()
+    Cart.objects.filter(user=request.user).delete()
+
+    return JsonResponse({"status": "success", "redirect_url": f"/user/order-success/{order_id}/"})
+
+# Create DB record
+
+
+
+def check_order_status(request, order_id):
+
+    items = OrderItem.objects.filter(order_id=order_id)
+
+    for item in items:
+
+        # SHIPPED
+        if item.status == "Shipped" and not request.session.get(f"shipped_{item.id}"):
+
+            send_user_notification(
+                item.order.user,
+                "Order Shipped",
+                f"Your order #{item.order.id} has been shipped!",
+                link=f"/view_details/{item.order.id}/"
+            )
+
+            request.session[f"shipped_{item.id}"] = True
+
+        # DELIVERED
+        if item.status == "Delivered" and not request.session.get(f"delivered_{item.id}"):
+
+            send_user_notification(
+                item.order.user,
+                "Order Delivered",
+                f"Your order #{item.order.id} has been delivered!",
+                link=f"/view_details/{item.order.id}/"
+            )
+
+            request.session[f"delivered_{item.id}"] = True
+
+    return JsonResponse({"ok": True})
+
+@role_required('customer', '/user/login')
+def notifications_page(request):
+    notifications = UserNotification.objects.filter(user=request.user).order_by("-created_at")
+
+    unread_count = UserNotification.objects.filter(user=request.user, is_read=False).count()
+
+    # Mark all as read
+    UserNotification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+
+    return render(request, "user/notifications.html", {
+        "notifications": notifications,
+        "unread_count": unread_count,
+    })
+
+def extract_product_details(message):
+    pattern = r"for (.*?) \(₹(\d+)\)"
+    match = re.search(pattern, message)
+    if match:
+        return match.group(1), match.group(2)
+    return None, None
+
+
+
+
+
