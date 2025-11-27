@@ -435,10 +435,7 @@
                             <input type="text" class="form-input" placeholder="Shop Location" name="location" required>
                         </div>
 
-                        <div class="flex items-center mb-6">
-                            <input type="checkbox" id="newsletter" class="h-4 w-4 text-purple-600 rounded">
-                            <label for="newsletter" class="ml-2 text-gray-700">Subscribe to our newsletter for updates and offers</label>
-                        </div>
+
                         <button type="submit" class="submit-btn">
                             Create Account
                         </button>
@@ -606,9 +603,6 @@
             document.getElementById('mobileMenu').classList.toggle('active');
         });
 
-        // Form submission handler
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
 
             // Get form values
             const password = document.querySelector('input[type="password"]').value;
@@ -620,11 +614,6 @@
                 return;
             }
 
-            // In a real application, you would send the data to a server here
-            alert('Registration successful! Redirecting to your dashboard.');
-
-            // Redirect to home page (in a real app)
-            // window.location.href = 'index.html';
         });
     </script>
 </body>

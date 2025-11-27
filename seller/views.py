@@ -59,24 +59,26 @@ def seller_register(request):
             return redirect('/seller/login/')
         return render(request, 'seller/register.html')
 
+
 def seller_login(request):
-    request.session['role'] ='seller'
+    request.session['role'] = 'seller'
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        seller = authenticate(request,id=id, username=username, password=password)
-        print(seller.role)
-        if seller and seller.role=='seller':
+        seller = authenticate(request, username=username, password=password)
+
+        if seller is not None and seller.role == 'seller':
             login(request, seller)
-            return redirect('/seller/seller_dashboard')
+            return redirect('/seller/seller_dashboard/')
         else:
-            print("Invalid credentials")
             return render(request, 'seller/login.html', {
-                "error": "Invalid email or password"
+                "error": "Invalid username or password"
             })
 
     return render(request, 'seller/login.html')
+
 
 @role_required("seller", login_url="/seller/login")
 def seller_dashboard(request):
