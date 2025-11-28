@@ -332,9 +332,11 @@
                                     </button>
                                 </a>
                                 {% if p.stock > 0 %}
-                                <button onclick="cartAjax('{% url 'add_cart' p.slug %}', this)" class="w-full bg-gray-900 text-white py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold hover:bg-purple-600 transition flex items-center justify-center gap-1 sm:gap-2 responsive-text">
-                                    <i class="fas fa-shopping-cart text-[10px] sm:text-xs"></i> Add to Cart
-                                </button>
+                                <a href="{% url 'add_cart' p.slug %}"
+   class="w-full bg-gray-900 text-white py-1.5 sm:py-2 lg:py-2.5 rounded text-xs sm:text-sm font-semibold hover:bg-purple-600 transition flex items-center justify-center gap-1 sm:gap-2 responsive-text">
+    <i class="fas fa-shopping-cart text-[10px] sm:text-xs"></i> Add to Cart
+</a>
+
                                 {% endif %}
                             </div>
                         </div>
