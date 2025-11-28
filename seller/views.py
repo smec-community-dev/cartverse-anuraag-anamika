@@ -89,14 +89,15 @@ def seller_dashboard(request):
 
     products = Product.objects.filter(seller=seller).order_by('-id')[:3]
 
-    order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
+    order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product').exclude(status='Cancelled')
 
     total_revenue = order_items.aggregate(
         revenue=Sum(F('quantity') * F('price'))
     )['revenue'] or 0
 
     category_revenue = (
-        order_items
+        OrderItem.objects.filter(product__seller=seller)
+        .exclude(status="Cancelled")
         .values('product__subcategory__category__category_name')
         .annotate(total_revenue=Sum(F('quantity') * F('price')))
         .order_by('-total_revenue')
