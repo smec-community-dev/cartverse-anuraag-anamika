@@ -272,7 +272,7 @@
 
                                 <div class="col-span-2 text-right hidden sm:block">
                                     <span class="font-bold text-gray-900 text-lg">
-                                        ₹{{ item.total_price|default:item.price }}
+                                        ₹{{ total }}
                                     </span>
                                 </div>
                             </div>
@@ -312,21 +312,21 @@
                             </div>
                             <div class="flex justify-between text-gray-600">
                                 <span>Shipping estimate</span>
-                                <span class="font-medium text-gray-900">₹50.00</span>
+                                <span class="font-medium text-gray-900">₹0.00</span>
                             </div>
                             <div class="flex justify-between text-gray-600">
                                 <span>Tax estimate</span>
-                                <span class="font-medium text-gray-900">₹25.00</span>
+                                <span class="font-medium text-gray-900">₹0.00</span>
                             </div>
                             <div class="flex justify-between text-green-600">
                                 <span>Discount</span>
-                                <span class="font-medium">-₹10.00</span>
+                                <span class="font-medium">-₹0.00</span>
                             </div>
 
                             <div class="border-t border-gray-200 pt-4 mt-4">
                                 <div class="flex justify-between items-center">
                                     <span class="text-base font-bold text-gray-900">Order Total</span>
-                                    <span class="text-xl font-bold text-purple-600">₹{{ total|add:65 }}</span>
+                                    <span class="text-xl font-bold text-purple-600">₹{{ total}}</span>
                                 </div>
                                 <p class="text-xs text-gray-400 mt-1">Includes all taxes and fees</p>
                             </div>
