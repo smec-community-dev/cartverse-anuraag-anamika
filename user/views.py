@@ -632,7 +632,7 @@ def buy_now(request, slug):
 
 
 @role_required('customer', '/user/login')
-def forder_page_buy_now(request):
+def order_page_buy_now(request):
     product_id = request.session.get("buy_now_product_id")
     if not product_id:
         return redirect("user_home")
