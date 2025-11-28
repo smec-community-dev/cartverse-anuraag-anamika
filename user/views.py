@@ -27,7 +27,7 @@ from .models import OrderItem
 from user.utils import send_user_notification
 from .models import UserNotification
 import re
-
+from seller.views import send_notification
 
 #for user registration
 def user_register(request):
@@ -632,7 +632,7 @@ def buy_now(request, slug):
 
 
 @role_required('customer', '/user/login')
-def order_page_buy_now(request):
+def forder_page_buy_now(request):
     product_id = request.session.get("buy_now_product_id")
     if not product_id:
         return redirect("user_home")
