@@ -295,73 +295,71 @@
                         <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Order Items</h2>
 
                         {% if checkout_type == "cart" %}
-                            <!-- CART ITEMS -->
-                            {% for item in cart_items %}
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-b-0">
-                                <div class="flex items-start space-x-3 sm:space-x-4 mb-3 sm:mb-0 flex-1">
-                                    <img src="{{ item.product.images.first.product_image.url }}"
-                                         class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
-                                    <div class="flex-1 min-w-0">
 
-                                        <div class="flex items-center mt-2">
-                                            <label for="quantity_{{ item.id }}" class="text-xs sm:text-sm font-medium text-gray-700 mr-2">Qty:</label>
-                                            <input type="number"
-                                                   id="quantity_{{ item.id }}"
-                                                   name="quantities[{{ item.id }}]"
-                                                   min="1" max="{{ item.product.stock }}"
-                                                   value="{{ item.quantity }}"
-                                                   class="quantity-input border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="font-bold text-gray-900 text-base sm:text-lg ml-16 sm:ml-0 mt-2 sm:mt-0">₹{{ item.price }}</div>
-                            </div>
-                            {% endfor %}
-                        {% endif %}
+    <!-- CART ITEMS -->
+    {% for item in cart_items %}
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-gray-100 last:border-b-0">
+        <div class="flex items-start space-x-3 sm:space-x-4 mb-3 sm:mb-0 flex-1">
+            <img src="{{ item.product.images.first.product_image.url }}"
+                 class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
 
-                        {% if checkout_type == "buynow" %}
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center mt-2">
+                    <label for="quantity_{{ item.id }}" class="text-xs sm:text-sm font-medium text-gray-700 mr-2">Qty:</label>
+                    <input type="number"
+                           id="quantity_{{ item.id }}"
+                           name="quantities[{{ item.id }}]"
+                           min="1" max="{{ item.product.stock }}"
+                           value="{{ item.quantity }}"
+                           class="quantity-input border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500">
+                </div>
+            </div>
+        </div>
 
-
-                        {% endif %}
-
-<!-- BUY NOW PRODUCT ONLY -->
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
-
-    <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
-        <img src="{{ product.images.first.product_image.url }}"
-             class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
-
-        <div class="flex-1">
-            <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ product.product_name }}</h3>
-            <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ product.stock }}</p>
-
-            <!-- Show selected quantity -->
-            <p class="text-xs text-gray-700 mt-1">
-                Quantity: <strong>{{ quantity }}</strong>
-            </p>
+        <div class="font-bold text-gray-900 text-base sm:text-lg ml-16 sm:ml-0 mt-2 sm:mt-0">
+            ₹{{ item.price }}
         </div>
     </div>
+    {% endfor %}
 
-    <!-- Price × Quantity = Total -->
-    <div class="font-bold text-gray-900 text-base sm:text-lg">
-        ₹{{ product.price }} × {{ quantity }} =
-        <span class="text-green-600">₹{{ total }}</span>
+{% elif checkout_type == "buynow" %}
+
+    <!-- BUY NOW PRODUCT ONLY -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
+
+        <div class="flex items-start space-x-4 mb-3 sm:mb-0 flex-1">
+            <img src="{{ product.images.first.product_image.url }}"
+                 class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg shadow-sm flex-shrink-0">
+
+            <div class="flex-1">
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ product.product_name }}</h3>
+                <p class="text-gray-500 text-xs sm:text-sm mt-1">Stock: {{ product.stock }}</p>
+
+                <!-- Show selected quantity -->
+                <p class="text-xs text-gray-700 mt-1">
+                    Quantity: <strong>{{ quantity }}</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- Price × Quantity = Total -->
+        <div class="font-bold text-gray-900 text-base sm:text-lg">
+            ₹{{ product.price }} × {{ quantity }} =
+            <span class="text-green-600">₹{{ total }}</span>
+        </div>
+
+        <input type="hidden" name="quantity" value="{{ quantity }}">
     </div>
 
-    <!-- Send quantity in POST -->
-    <input type="hidden" name="quantity" value="{{ quantity }}">
-</div>
+{% endif %}
 
+                                                            <a href="{% url 'user_home' %}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium mt-4 text-sm mobile-text-center sm:text-left w-full justify-center sm:justify-start">
+                                                                <i class="fas fa-arrow-left mr-2"></i> Continue Shopping
+                                                            </a>
+                                                        </div>
 
-
-
-                        <a href="{% url 'user_home' %}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium mt-4 text-sm mobile-text-center sm:text-left w-full justify-center sm:justify-start">
-                            <i class="fas fa-arrow-left mr-2"></i> Continue Shopping
-                        </a>
-                    </div>
-
-                    <!-- SHIPPING -->
-                    <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+                                                        <!-- SHIPPING -->
+                                                        <div class="bg-white rounded-xl shadow-sm p-4 sm:p-6">
                         <h2 class="text-xl font-bold text-gray-900 mb-4 pb-3 border-b">Shipping Information</h2>
 
                         <div class="space-y-4">
