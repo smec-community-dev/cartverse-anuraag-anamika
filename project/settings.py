@@ -69,6 +69,10 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 ASGI_APPLICATION = "project.asgi.application"
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://stylecart.anuraag.mysmeclabs.com',
+]
+ALLOWED_HOSTS = ['stylecart.anuraag.mysmeclabs.com', '127.0.0.1', 'localhost']
 
 CHANNEL_LAYERS = {
     "default": {
