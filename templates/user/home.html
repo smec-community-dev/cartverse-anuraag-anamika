@@ -26,6 +26,14 @@
         .dropdown-menu.active {
             display: block;
         }
+        /* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
 
         .dropdown-item {
             display: block;
@@ -63,6 +71,15 @@
             object-fit: cover;
             object-position: center;
         }
+        /* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 
         /* Responsive text sizes */
         @media (max-width: 640px) {
@@ -246,30 +263,41 @@
     </section>
 
     <section class="py-8 sm:py-10 lg:py-12 bg-white">
-        <div class="container mx-auto px-3 sm:px-4">
-            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-center mb-6 sm:mb-8 lg:mb-10 text-gray-800 responsive-heading">Shop by Category</h2>
+    <div class="container mx-auto px-3 sm:px-4">
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-center mb-6 sm:mb-8 lg:mb-10 text-gray-800 responsive-heading">
+            Shop by Category
+        </h2>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
-                {% for x in category %}
-                <div class="group relative rounded-lg overflow-hidden shadow-sm hover:shadow-md transition">
-                    <div class="h-32 sm:h-36 md:h-40 lg:h-48 xl:h-56 w-full bg-gray-200 relative">
-                        <div class="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-110"
-                             style="background-image: url('{{ x.image.url }}');">
-                        </div>
-                        <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition"></div>
-                    </div>
+        <!-- HORIZONTAL SCROLLABLE CAROUSEL -->
+        <div class="flex overflow-x-auto space-x-4 sm:space-x-6 lg:space-x-8 pb-3 scrollbar-hide snap-x snap-mandatory">
+            {% for x in category %}
+            <div class="group relative rounded-lg overflow-hidden shadow-sm hover:shadow-md transition
+                        min-w-[180px] sm:min-w-[200px] lg:min-w-[230px] snap-center cursor-pointer">
 
-                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2 sm:p-3 lg:p-4">
-                        <h3 class="text-white font-bold text-sm sm:text-base lg:text-lg xl:text-xl shadow-sm responsive-text">{{ x.category_name }}</h3>
-                        <a href="{% url 'explore' x.slug %}" class="mt-1 sm:mt-2 lg:mt-3 text-xs sm:text-sm text-white border border-white px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded-full hover:bg-white hover:text-black transition responsive-text">
-                            Explore
-                        </a>
+                <div class="h-32 sm:h-36 md:h-40 lg:h-48 xl:h-56 w-full bg-gray-200 relative">
+                    <div class="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-110"
+                         style="background-image: url('{{ x.image.url }}');">
                     </div>
+                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition"></div>
                 </div>
-                {% endfor %}
+
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2 sm:p-3 lg:p-4">
+                    <h3 class="text-white font-bold text-sm sm:text-base lg:text-lg xl:text-xl responsive-text">
+                        {{ x.category_name }}
+                    </h3>
+
+                    <a href="{% url 'explore' x.slug %}"
+                       class="mt-1 sm:mt-2 lg:mt-3 text-xs sm:text-sm text-white border border-white px-2 sm:px-3 lg:px-4 py-1
+                              rounded-full hover:bg-white hover:text-black transition responsive-text">
+                        Explore
+                    </a>
+                </div>
             </div>
+            {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
+
 
     <section class="py-8 sm:py-10 lg:py-12 bg-gray-50 flex-grow">
         <div class="container mx-auto px-3 sm:px-4">
