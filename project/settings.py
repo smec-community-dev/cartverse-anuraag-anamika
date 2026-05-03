@@ -71,6 +71,7 @@ ASGI_APPLICATION = "project.asgi.application"
 
 CSRF_TRUSTED_ORIGINS = [
     'https://stylecart.anuraag.mysmeclabs.com',
+    'https://stylecart.duckdns.org'
 ]
 ALLOWED_HOSTS = ['13.60.12.218','stylecart.anuraag.mysmeclabs.com', '127.0.0.1', 'localhost','stylecart.duckdns.org']
 
