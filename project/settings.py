@@ -87,6 +87,8 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 # USE_X_FORWARDED_HOST = True
 
+SITE_ID = 1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
