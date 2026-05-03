@@ -1,12 +1,34 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StyleCart - Your Fashion Destination</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --brand-primary: #6d28d9;
+            --brand-secondary: #0f766e;
+            --surface-soft: #f8fafc;
+            --ink-main: #111827;
+        }
+
+        html, body {
+            font-family: "Manrope", sans-serif;
+        }
+
+        body {
+            color: var(--ink-main);
+            background:
+                radial-gradient(1200px 500px at 8% -8%, rgba(109, 40, 217, 0.12), transparent 60%),
+                radial-gradient(900px 450px at 100% 0%, rgba(15, 118, 110, 0.12), transparent 62%),
+                var(--surface-soft);
+        }
+
         /* Essential Custom Styles for Dropdowns */
         .dropdown-menu {
             display: none;
@@ -14,10 +36,10 @@
             right: 0;
             top: 100%;
             background-color: white;
-            min-width: 200px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
+            min-width: 220px;
+            box-shadow: 0 18px 35px -18px rgba(17, 24, 39, 0.4), 0 10px 20px -12px rgba(109, 40, 217, 0.22);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.85rem;
             z-index: 50;
             padding: 0.5rem 0;
             margin-top: 0.5rem;
@@ -40,12 +62,33 @@
             padding: 0.75rem 1rem;
             color: #374151;
             font-size: 0.95rem;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, color 0.2s;
         }
 
         .dropdown-item:hover {
             background-color: #f3f4f6;
-            color: #9333ea;
+            color: #7c3aed;
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -0.35rem;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #6d28d9, #0f766e);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.25s ease;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
         }
 
         /* Mobile Menu Animation */
@@ -70,6 +113,14 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
+        }
+
+        .hero-glow {
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(18px);
+            opacity: 0.35;
+            pointer-events: none;
         }
         /* Hide scrollbar */
 .scrollbar-hide::-webkit-scrollbar {
@@ -119,21 +170,23 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen">
 
-   <nav class="bg-white shadow-md sticky top-0 z-40">
-        <div class="container mx-auto px-3 sm:px-4">
+   <nav class="bg-white/90 backdrop-blur-xl border-b border-white/40 shadow-[0_8px_30px_-20px_rgba(17,24,39,0.35)] sticky top-0 z-40">
+        <div class="container mx-auto px-3 sm:px-4 max-w-7xl">
             <div class="flex justify-between items-center h-14 sm:h-16">
                 <a href="{% url 'home' %}" class="flex items-center flex-shrink-0">
-                    <i class="fas fa-shopping-bag text-xl sm:text-2xl md:text-3xl text-purple-600 mr-2 sm:mr-3"></i>
-                    <span class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">StyleCart</span>
+                    <div class="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-violet-600 to-teal-600 text-white flex items-center justify-center shadow-lg mr-2 sm:mr-3">
+                        <i class="fas fa-shopping-bag text-sm sm:text-base"></i>
+                    </div>
+                    <span class="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-gray-900">StyleCart</span>
                 </a>
 
                 <div class="hidden md:flex space-x-6 lg:space-x-8 items-center">
-                    <a href="{% url 'home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Home</a>
-                    <a href="{% url 'user_home' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Shop</a>
-                    <a href="{% url 'contact' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">Contact</a>
-                    <a href="{% url 'about' %}" class="text-gray-700 hover:text-purple-600 font-medium text-sm lg:text-base uppercase tracking-wide responsive-text">About</a>
+                    <a href="{% url 'home' %}" class="nav-link text-gray-700 hover:text-purple-700 font-semibold text-sm lg:text-base uppercase tracking-wide responsive-text">Home</a>
+                    <a href="{% url 'user_home' %}" class="nav-link text-gray-700 hover:text-purple-700 font-semibold text-sm lg:text-base uppercase tracking-wide responsive-text">Shop</a>
+                    <a href="{% url 'contact' %}" class="nav-link text-gray-700 hover:text-purple-700 font-semibold text-sm lg:text-base uppercase tracking-wide responsive-text">Contact</a>
+                    <a href="{% url 'about' %}" class="nav-link text-gray-700 hover:text-purple-700 font-semibold text-sm lg:text-base uppercase tracking-wide responsive-text">About</a>
                 </div>
 
                 <div class="flex items-center gap-3 sm:gap-4 lg:gap-5">
@@ -159,7 +212,7 @@
 
     <!-- 🔔 Bell Icon -->
     <div id="notif-bell"
-         class="text-black text-2xl cursor-pointer relative hover:text-gray-700 transition">
+         class="text-gray-800 text-2xl cursor-pointer relative hover:text-purple-700 transition">
 
         <i class="fa-solid fa-bell"></i>
 
@@ -171,7 +224,7 @@
 
     <!-- ▼ Dropdown -->
     <div id="notif-dropdown"
-         class="hidden absolute right-0 mt-3 w-72 bg-white shadow-lg rounded-xl border border-gray-200 max-h-80 overflow-y-auto z-50">
+         class="hidden absolute right-0 mt-3 w-72 bg-white shadow-xl rounded-xl border border-gray-200 max-h-80 overflow-y-auto z-50">
         <div id="notif-list" class="p-3 space-y-3"></div>
     </div>
 </div>
@@ -219,7 +272,7 @@
                     </div>
 
                     <div class="md:hidden">
-                        <button id="mobileMenuButton" class="text-gray-700 hover:text-purple-600 focus:outline-none p-1">
+                        <button id="mobileMenuButton" class="text-gray-700 hover:text-purple-700 focus:outline-none p-1">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
                     </div>
@@ -227,7 +280,7 @@
             </div>
         </div>
 
-        <div id="mobileMenu" class="mobile-menu bg-white md:hidden pb-4 shadow-inner">
+        <div id="mobileMenu" class="mobile-menu bg-white/95 backdrop-blur md:hidden pb-4 shadow-inner">
             <div class="container mx-auto px-4 pt-4 space-y-3">
                 <form action="" class="relative">
                     <input type="text" placeholder="Search..." class="w-full bg-gray-100 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
@@ -254,16 +307,19 @@
     </nav>
 
 
-    <section class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-12 md:py-16 lg:py-20">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold mb-4 sm:mb-6 tracking-tight responsive-hero">Trending Collection 2025</h1>
-            <p class="text-purple-100 text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 lg:mb-10 max-w-2xl mx-auto px-4 responsive-text">Discover the latest trends in fashion with up to 50% off on selected items.</p>
-            <a href="{% url 'user_home' %}" class="bg-white text-purple-700 px-6 sm:px-8 lg:px-10 py-2 sm:py-3 lg:py-4 rounded-full font-bold text-sm sm:text-base lg:text-lg hover:bg-gray-100 hover:shadow-lg transition duration-300 inline-block transform hover:-translate-y-1 responsive-text">Shop Now</a>
+    <section class="relative overflow-hidden text-white py-12 md:py-16 lg:py-20 bg-gradient-to-br from-violet-700 via-violet-600 to-teal-600">
+        <div class="hero-glow h-40 w-40 bg-white top-6 left-4"></div>
+        <div class="hero-glow h-56 w-56 bg-teal-100 bottom-2 right-4"></div>
+        <div class="container mx-auto px-4 text-center max-w-6xl relative z-10">
+            <p class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs sm:text-sm font-semibold tracking-wide uppercase mb-4 sm:mb-6">New Season Picks</p>
+            <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold mb-4 sm:mb-6 tracking-tight responsive-hero">Trending Collections For You</h1>
+            <p class="text-violet-100 text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 lg:mb-10 max-w-2xl mx-auto px-4 responsive-text">Discover the latest trends in fashion with up to 50% off on selected items.</p>
+            <a href="{% url 'user_home' %}" class="bg-white text-violet-700 px-6 sm:px-8 lg:px-10 py-2 sm:py-3 lg:py-4 rounded-full font-bold text-sm sm:text-base lg:text-lg hover:bg-gray-100 hover:shadow-2xl transition duration-300 inline-block transform hover:-translate-y-1 responsive-text">Shop Now</a>
         </div>
     </section>
 
-    <section class="py-8 sm:py-10 lg:py-12 bg-white">
-    <div class="container mx-auto px-3 sm:px-4">
+    <section class="py-8 sm:py-10 lg:py-12 bg-white/80 backdrop-blur-sm">
+    <div class="container mx-auto px-3 sm:px-4 max-w-7xl">
         <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-center mb-6 sm:mb-8 lg:mb-10 text-gray-800 responsive-heading">
             Shop by Category
         </h2>
@@ -271,24 +327,24 @@
         <!-- HORIZONTAL SCROLLABLE CAROUSEL -->
         <div class="flex overflow-x-auto space-x-4 sm:space-x-6 lg:space-x-8 pb-3 scrollbar-hide snap-x snap-mandatory">
             {% for x in category %}
-            <div class="group relative rounded-lg overflow-hidden shadow-sm hover:shadow-md transition
+            <div class="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300
                         min-w-[180px] sm:min-w-[200px] lg:min-w-[230px] snap-center cursor-pointer">
 
                 <div class="h-32 sm:h-36 md:h-40 lg:h-48 xl:h-56 w-full bg-gray-200 relative">
                     <div class="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-110"
                          style="background-image: url('{{ x.image.url }}');">
                     </div>
-                    <div class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent group-hover:from-black/70 transition"></div>
                 </div>
 
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-2 sm:p-3 lg:p-4">
-                    <h3 class="text-white font-bold text-sm sm:text-base lg:text-lg xl:text-xl responsive-text">
+                    <h3 class="text-white font-bold text-sm sm:text-base lg:text-lg xl:text-xl drop-shadow-md responsive-text">
                         {{ x.category_name }}
                     </h3>
 
                     <a href="{% url 'explore' x.slug %}"
-                       class="mt-1 sm:mt-2 lg:mt-3 text-xs sm:text-sm text-white border border-white px-2 sm:px-3 lg:px-4 py-1
-                              rounded-full hover:bg-white hover:text-black transition responsive-text">
+                       class="mt-1 sm:mt-2 lg:mt-3 text-xs sm:text-sm text-white border border-white/80 px-2 sm:px-3 lg:px-4 py-1
+                              rounded-full bg-white/10 backdrop-blur-sm hover:bg-white hover:text-black transition responsive-text">
                         Explore
                     </a>
                 </div>
